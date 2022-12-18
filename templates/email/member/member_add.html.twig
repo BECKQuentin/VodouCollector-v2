@@ -2,7 +2,7 @@
 
 {% block bodyEmail %}
 
-    Bonjour {{ user.name }}, <br><br>
+    Bonjour {{ user.firstname|capitalize }} {{ user.lastname|upper }}, <br><br>
 
     Vous avez été invité à rejoindre notre inventaire.
 

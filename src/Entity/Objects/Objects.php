@@ -157,6 +157,12 @@ class Objects
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $updatedBy = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
+    #[ORM\ManyToOne]
+    private ?User $deletedBy = null;
+
     public function __construct()
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
@@ -170,7 +176,7 @@ class Objects
         $this->images = new ArrayCollection();
         $this->videos = new ArrayCollection();
         $this->files = new ArrayCollection();
-        $this->youtube = new ArrayCollection();
+//        $this->youtube = new ArrayCollection();
         $this->actions = new ArrayCollection();
     }
 
@@ -807,6 +813,30 @@ class Objects
     public function setUpdatedBy(?User $updatedBy): self
     {
         $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function getDeletedBy(): ?User
+    {
+        return $this->deletedBy;
+    }
+
+    public function setDeletedBy(?User $deletedBy): self
+    {
+        $this->deletedBy = $deletedBy;
 
         return $this;
     }

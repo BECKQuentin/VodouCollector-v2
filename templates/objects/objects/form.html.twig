@@ -14,7 +14,7 @@
     <div id="objectsForm" class="content_box_element">
 
         <div class="d-flex position-absolute top-0 end-0">
-            {% if object is defined %}
+            {% if object is defined and object.id is not null%}
                 {{ form_row(form.submit) }}
             {% else %}
                 {{ form_row(form.submit, { 'label': 'Ajouter' }) }}
@@ -29,7 +29,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-4">{{ form_row(form.memo) }}</div>
-                {% if object is defined %}
+                {% if object is defined and object.id is not null%}
                     <div class="d-flex"><span>Fiche crée par :{{ object.createdBy.firstname|capitalize }} {{ object.createdBy.lastname|upper }} le {{ object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
                 {% endif %}
             </div>
@@ -305,7 +305,7 @@
     </div>
 
     <div class="d-flex justify-content-end">
-        {% if object is defined %}
+        {% if object is defined and object.id is not null%}
             {{ form_row(form.submit2) }}
         {% else %}
             {{ form_row(form.submit2, { 'label': 'Ajouter' }) }}

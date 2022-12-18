@@ -41,7 +41,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ObjectsController extends AbstractController
 {
 
-    #[Route('/objects', name: 'objects')]
+    #[Route('/objects', name: 'objects_listing')]
     public function listingObjects(ObjectsRepository $objectsRepository, PaginatorInterface $paginator, SessionInterface $session, Request $request): Response
     {
         $data = new SearchData();
@@ -117,7 +117,7 @@ class ObjectsController extends AbstractController
 
 
     #[Route('/objects-add', name: 'objects_add')]
-    #[Route('/objects/{id}', name: 'objects_edit')]
+    #[Route('/objects/{id}', name: 'objects')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
     public function editObjects(Objects $objects=null, ImageRepository $imageRepository, FileRepository $fileRepository, VideoRepository $videoRepository, ActionCategoryRepository $actionCategoryRepository,UploadService $uploadService, Request $request, ManagerRegistry $doctrine): Response
     {
@@ -127,6 +127,8 @@ class ObjectsController extends AbstractController
             $isAdding = true;
         }
 
+        dd($objects);
+
         $user = $this->getUser();
 
         $form = $this->createForm(ObjectsFormType::class, $objects);
@@ -134,10 +136,10 @@ class ObjectsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $objects->setUpdatedAt(new \DateTimeImmutable('now'));
-            $objects->setUpdatedBy($user);
-
-
+            if  (!$isAdding) {
+                $objects->setUpdatedAt(new \DateTimeImmutable('now'));
+                $objects->setUpdatedBy($user);
+            }
 
             $images = $form->get('images')->getData();
             if ($images) {
@@ -290,7 +292,6 @@ class ObjectsController extends AbstractController
         }
 
 
-
         return $this->render('objects/objects/view.html.twig', [
             'object'    => $objects,
             'bookmarks'      => $this->getUser()->getBookmark(),
@@ -304,18 +305,28 @@ class ObjectsController extends AbstractController
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
     public function deleteObjects(Objects $objects, ActionCategoryRepository $actionCategoryRepository,  ManagerRegistry $doctrine): Response
     {
-        //Suppression des images
-        $images = $objects->getImages();
-        $filesystem = new Filesystem();
-        foreach ($images as $image) {
-            $filesystem->remove($image->getAbsolutePath());
-        }
 
-        //Suppression des Videos
-        $videos = $objects->getVideos();
-        foreach ($videos as $video) {
-            $filesystem->remove($video->getAbsolutePath());
-        }
+        $objects->setDeletedAt(new \DateTimeImmutable('now'));
+        $objects->setDeletedBy($this->getUser());
+
+//        //Suppression des images
+//        $images = $objects->getImages();
+//        $filesystem = new Filesystem();
+//        foreach ($images as $image) {
+//            $filesystem->remove($image->getAbsolutePath());
+//        }
+//
+//        //Suppression des Videos
+//        $videos = $objects->getVideos();
+//        foreach ($videos as $video) {
+//            $filesystem->remove($video->getAbsolutePath());
+//        }
+//
+//        //Suppression des Fichiers
+//        $videos = $objects->getVideos();
+//        foreach ($videos as $video) {
+//            $filesystem->remove($video->getAbsolutePath());
+//        }
 
         $action = new Action();
         $action->setName('Objet supprimé');

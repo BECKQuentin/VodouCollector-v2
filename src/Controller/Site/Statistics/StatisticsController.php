@@ -34,7 +34,7 @@ class StatisticsController extends AbstractController
         FloorRepository $floorRepository,
     ): Response
     {
-        $objects = $objectsRepository->findAll();
+        $objects = $objectsRepository->findAllNoDeleted();
 //        $categories = $categoriesRepository->findAll();
         $gods = $godsRepository->findAll();
         $materials = $materialsRepository->findAll();
@@ -143,7 +143,7 @@ class StatisticsController extends AbstractController
 //    #[Route('/statistics.svg', name: 'statistics_svg')]
 //    public function statisticsSVG(ObjectsRepository $objectsRepository): Response
 //    {
-//        $objects = $objectsRepository->findAll();
+//        $objects = $objectsRepository->findAllNoDeleted();
 //
 //
 //        return $this->render('site/statistics/statistics.html.twig', [

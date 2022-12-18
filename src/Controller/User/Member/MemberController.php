@@ -73,28 +73,28 @@ class MemberController extends AbstractController
                 );
                 $user->setPassword($hashedPassword);
 
-//                $action = new Action();
-//                $action->setName('Utilisateur modifié par lui-même');
-//                $action->setUser($userRequest);
-//                $action->setCreatedBy($this->getUser());
-//                $action->setCategory($actionCategoryRepository->find(2));
+                $action = new Action();
+                $action->setName('Utilisateur modifié par lui-même');
+                $action->setUser($userRequest);
+                $action->setCreatedBy($this->getUser());
+                $action->setCategory($actionCategoryRepository->find(2));
 
                 $em = $doctrine->getManager();
                 $em->persist($user);
-//                $em->persist($action);
+                $em->persist($action);
                 $em->flush();
 
             } else {
 
-//                $action = new Action();
-//                $action->setName('Utilisateur modifié par Admin');
-//                $action->setUser($userRequest);
-//                $action->setCreatedBy($this->getUser());
-//                $action->setCategory($actionCategoryRepository->find(2));
+                $action = new Action();
+                $action->setName('Utilisateur modifié par Admin');
+                $action->setUser($userRequest);
+                $action->setCreatedBy($this->getUser());
+                $action->setCategory($actionCategoryRepository->find(2));
 
                 $em = $doctrine->getManager();
                 $em->persist($userRequest);
-//                $em->persist($action);
+                $em->persist($action);
                 $em->flush();
             }
 
@@ -122,17 +122,21 @@ class MemberController extends AbstractController
     public function blockMember(User $user, ManagerRegistry $doctrine, UserRepository $userRepository): Response
     {
 
-        if ($user->isIsActive()) {
-            $user->setIsActive(false);
-            $this->addFlash('success', "Utilisateur bloqué");
-        } else {
-            $user->setIsActive(true);
-            $this->addFlash('success', "Utilisateur débloqué !");
+        if ($user) {
+            if ($user->isIsActive()) {
+                $user->setIsActive(false);
+                $this->addFlash('success', "Utilisateur bloqué");
+
+            } else {
+                $user->setIsActive(true);
+                $this->addFlash('success', "Utilisateur débloqué !");
+            }
+            $em = $doctrine->getManager();
+            $em->persist($user);
+            $em->flush();
+            return $this->redirectToRoute('member');
         }
 
-        $em = $doctrine->getManager();
-        $em->persist($user);
-        $em->flush();
 
         $users = $userRepository->findAll();
 

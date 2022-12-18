@@ -38,13 +38,14 @@ class NewsController extends AbstractController
             //Ajout des tout les roles selon la hierarchie
             $role = $form->getData()->getRoles();
             $roles = [];
+            //Attribution des roles selon la hierarchie sous forme d'Array
             $hierarchy = $this->getParameter('security.role_hierarchy.roles');
             $keys = array_keys($hierarchy);
             $pos = array_search($role[0], $keys);
             for ($i = $pos; $i >= 0; $i--) {
                 $roles[] = $keys[$i];
             }
-            //
+
 
             $news->setRoles($roles);
             $news->setCreatedBy($this->getUser());

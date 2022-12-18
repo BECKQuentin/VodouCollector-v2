@@ -28,6 +28,15 @@ class ObjectsRepository extends ServiceEntityRepository
         $this->paginator = $paginator;
     }
 
+    public function findAllNoDeleted()
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o')
+            ->where('o.deletedAt IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
     /*Count Request*/
     /**
      * @throws NonUniqueResultException
@@ -36,6 +45,7 @@ class ObjectsRepository extends ServiceEntityRepository
     public function countObjects() {
         return $this->createQueryBuilder('o')
             ->select('count(o.id)')
+            ->where('o.deletedAt IS NULL')
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -47,6 +57,7 @@ class ObjectsRepository extends ServiceEntityRepository
     public function countWhereIsLocated($expositionLocation) {
         return $this->createQueryBuilder('o')
             ->where('o.expositionLocation = '.$expositionLocation)
+            ->where('o.deletedAt IS NULL')
             ->select('count(o.expositionLocation)')
             ->getQuery()
             ->getSingleScalarResult();
@@ -57,6 +68,7 @@ class ObjectsRepository extends ServiceEntityRepository
      */
     public function countToFix() {
         return $this->createQueryBuilder('o')
+            ->where('o.deletedAt IS NULL')
             ->where('o.state >= 4')
             ->select('count(o.state)')
             ->getQuery()
@@ -67,20 +79,36 @@ class ObjectsRepository extends ServiceEntityRepository
     /*Find Request*/
     public function findLatest() {
         return $this->createQueryBuilder('o')
+            ->where('o.deletedAt IS NULL')
             ->join('o.tags', 't')
             ->select('o, t')
+            //DeletedAt
             ->getQuery();
     }
 
     public function findMostViewed(): PaginationInterface
     {
         $query = $this->createQueryBuilder('o')
+            ->where('o.deletedAt IS NULL')
             ->select('o')
             ->getQuery();
         return $this->paginator->paginate(
             $query,
             1,
             8
+        );
+    }
+
+    public function findDeletedObjects()
+    {
+        $query = $this->createQueryBuilder('o')
+            ->where('o.deletedAt IS NOT NULL')
+            ->select('o')
+            ->getQuery();
+        return $this->paginator->paginate(
+            $query,
+            1,
+            40
         );
     }
 
@@ -239,8 +267,7 @@ class ObjectsRepository extends ServiceEntityRepository
         }
 
 
-
-
+        $query = $query->andWhere('o.deletedAt IS NULL');
         $query = $query->getQuery();
 
         return $query->getResult();

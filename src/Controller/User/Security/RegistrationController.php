@@ -52,6 +52,7 @@ class RegistrationController extends AbstractController
             );
 
             $user->setPassword($hashedPassword);
+            $user->setIsActive(true);
 
             $em = $doctrine->getManager();
             $em->persist($user);

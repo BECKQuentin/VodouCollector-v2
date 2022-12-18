@@ -30,6 +30,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ObjectsFormType extends AbstractType
 {
@@ -194,12 +196,16 @@ class ObjectsFormType extends AbstractType
                 'required'      => false
             ])
             ->add('expositionLocation', EntityType::class, [
-                'class'     => ExpositionLocation::class,
+                'class'         => ExpositionLocation::class,
                 'label'         => false,
                 'choice_label'  => 'nameFR',
                 'required'      => true,
                 'expanded'      => true,
-                'multiple'      => false
+                'multiple'      => false,
+                 'constraints' => [
+                    new NotNull(),
+                    new NotBlank()
+                ],
             ])
 
             ->add('floor', EntityType::class, [

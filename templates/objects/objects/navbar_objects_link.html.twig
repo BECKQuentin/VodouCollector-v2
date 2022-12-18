@@ -7,7 +7,11 @@
         <div title="Vue fiche" class="tab-active object_tab_edit"
            data-action="click->objects#setContentObjectTab"
            data-object-tab="vue">
-            {{ object.title|u.truncate(20, '...') }}
+            {% if object is defined and object.id is not null%}
+                {{ object.title|u.truncate(20, '...') }}
+            {% else %}
+                Nouvelle Objet
+            {% endif %}
         </div>
 {#    {% else %}#}
 {#        <div title="Vue fiche" class="tab-active">#}
@@ -154,39 +158,43 @@
         {% if object is defined %}
 
             {% if is_granted('ROLE_MEMBER') %}
-                <div>
-                    <a class="btn btn-vodou" href="{{ path('object_pdf', {id:object.id}) }}" title="extraire en PDF">
-                        <i class="fa-solid fa-file-pdf"></i>
-                    </a>
-                </div>
-
-                <!--Ajout aux favoris Groupé-->
-                <div>
-                    <a class="btn btn-vodou" data-bs-toggle="modal" data-bs-target="#groupBookmark" title="Ajouter aux Favoris partagés">
-                        <i class="fa-solid fa-star"></i>
-                    </a>
-                </div>
+                {% if object is defined and object.id is not null%}
+                    <div>
+                        <a class="btn btn-vodou" href="{{ path('object_pdf', {id:object.id}) }}" title="extraire en PDF">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
 
 
 
+                    <!--Ajout aux favoris Groupé-->
+                    <div>
+                        <a class="btn btn-vodou" data-bs-toggle="modal" data-bs-target="#groupBookmark" title="Ajouter aux Favoris partagés">
+                            <i class="fa-solid fa-star"></i>
+                        </a>
+                    </div>
 
 
-                <!-- Modal -->
-                <div class="modal fade" id="groupBookmark" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Ajouter aux Favoris partagés</h5>
-                                <button type="button" class="close btn btn-vodou" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                {{ object.id }}
+
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="groupBookmark" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ajouter aux Favoris partagés</h5>
+                                    <button type="button" class="close btn btn-vodou" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ object.id }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
 
 
@@ -208,24 +216,27 @@
 
 
 
-            <!--Ajout aux favoris personel-->
-            <div>
-                <button data-action="click->bookmark#saveBookmark"
-                        data-url="{{ path('objects_bookmark', {id:object.id}) }}"
-                        class="btn btn-vodou"
+            {% if object is defined and object.id is not null%}
+                <!--Ajout aux favoris personel-->
+                <div>
+                    <button data-action="click->bookmark#saveBookmark"
+                            data-url="{{ path('objects_bookmark', {id:object.id}) }}"
+                            class="btn btn-vodou"
+                            {% if object.id not in bookmarks %}
+                                title="Ajouter aux favoris"
+                            {% else %}
+                                title="Retirer des favoris"
+                            {% endif %}
+                    >
                         {% if object.id not in bookmarks %}
-                        title="Ajouter aux favoris"
+                            <i  class="fa-regular fa-bookmark"></i>
                         {% else %}
-                        title="Retirer des favoris"
+                            <i  class="fa-solid fa-bookmark"></i>
                         {% endif %}
-                >
-                    {% if object.id not in bookmarks %}
-                        <i  class="fa-regular fa-bookmark"></i>
-                    {% else %}
-                        <i  class="fa-solid fa-bookmark"></i>
-                    {% endif %}
-                </button>
-            </div>
+                    </button>
+                </div>
+            {% endif %}
+
         {% endif %}
     </div>
     <div class="d-flex">

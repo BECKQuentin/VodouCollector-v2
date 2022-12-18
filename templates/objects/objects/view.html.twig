@@ -302,10 +302,9 @@
 
 
         {% if is_granted('ROLE_ADMIN') %}
-            {% if object is defined %}
-                <div class="danger-zone">
+            {% if object is defined and object.id is not null%}
+                <div class="danger-zone"></div>
 
-                </div>
                 <div class="d-flex justify-content-end my-4 py-2">
                     <a class="btn btn-vodou" href="{{ path('objects_delete', {id:object.id}) }}" title="Supprimer" onclick="return confirm('Etes vous sûr de vouloir supprimer cet article ?')">
                         <i class="fa-solid fa-trash"></i>

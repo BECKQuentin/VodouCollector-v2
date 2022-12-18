@@ -27,13 +27,18 @@ class News
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $expireAt = null;
 
-    #[ORM\Column]
-    private array $roles = [];
-
     #[ORM\ManyToOne(inversedBy: 'news')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
+    #[ORM\Column]
+    private array $roles = [];
+
+    public function __construct() {
+        if ($this->getCreatedAt() === null) {
+            $this->setCreatedAt(new \DateTimeImmutable('now'));
+        }
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -87,18 +92,6 @@ class News
         return $this;
     }
 
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
-
     public function getCreatedBy(): ?User
     {
         return $this->createdBy;
@@ -107,6 +100,18 @@ class News
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }

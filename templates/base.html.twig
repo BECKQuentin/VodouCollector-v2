@@ -37,10 +37,10 @@
 
                     <div class="d-flex">
                         <div class="col-12 col-sm-9 m-0 p-0">
-                            {% if app.request.get('_route') == 'objects' %}
+                            {% if app.request.get('_route') == 'objects_listing' %}
                                 {% include 'base/tool/search_item_toolbar.html.twig' %}
                             {% else %}
-                                <a href="{{ path('objects') }}">
+                                <a href="{{ path('objects_listing') }}">
                                     <div id="search_item_toolbar_button" class="search form-group">
                                         <div class="form-control">Rechercher</div>
                                     </div>

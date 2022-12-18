@@ -99,7 +99,7 @@
                         <!--Vodou-->
                         <td>
                             {% if object.gods != null %}
-                                <a class="list_tag_link" href="{{ path('objects', {'gods[]': object.gods.id}) }}">
+                                <a class="list_tag_link" href="{{ path('objects_listing', {'gods[]': object.gods.id}) }}">
                                     {{ object.gods.name }}
                                 </a>
                             {% endif %}
@@ -115,7 +115,7 @@
                         {% if is_granted('ROLE_MEMBER') %}
                             <td>
                                 {% if object.floor %}
-                                    <a class="list_tag_link" href="{{ path('objects', {'floor[]': object.floor.id}) }}">
+                                    <a class="list_tag_link" href="{{ path('objects_listing', {'floor[]': object.floor.id}) }}">
                                         <span class="object_floor">{{ object.floor.name }}</span>
                                     </a>
                                 {% endif %}
@@ -128,28 +128,28 @@
                                     {% endif %}
                                 </div>
                                 {% if object.isBasemented != null %}
-                                    <a class="list_tag_link" href="{{ path('objects', {'isBasemented': 1}) }}">
+                                    <a class="list_tag_link" href="{{ path('objects_listing', {'isBasemented': 1}) }}">
                                         <span class="object_basemented">Avec Socle</span>
                                     </a>
                                 {% endif %}
                                 {% if object.expositionLocation != null %}
                                     {% if object.expositionLocation.id == 1 %}
-                                        <a class="list_tag_link" href="{{ path('objects', {'expositionLocation[]': 1}) }}">
+                                        <a class="list_tag_link" href="{{ path('objects_listing', {'expositionLocation[]': 1}) }}">
                                             <span class="object_exposed_rent">{{ object.expositionLocation.nameFR }}</span>
                                         </a>
                                     {% endif %}
                                     {% if object.expositionLocation.id == 2 %}
-                                        <a class="list_tag_link" href="{{ path('objects', {'expositionLocation[]': 2}) }}">
+                                        <a class="list_tag_link" href="{{ path('objects_listing', {'expositionLocation[]': 2}) }}">
                                             <span class="object_exposed_perma">{{ object.expositionLocation.nameFR }}</span>
                                         </a>
                                     {% endif %}
                                     {% if object.expositionLocation.id == 3 %}
-                                        <a class="list_tag_link" href="{{ path('objects', {'expositionLocation[]': 3}) }}">
+                                        <a class="list_tag_link" href="{{ path('objects_listing', {'expositionLocation[]': 3}) }}">
                                             <span class="object_exposed_tempo">{{ object.expositionLocation.nameFR }}</span>
                                         </a>
                                     {% endif %}
                                     {% if object.expositionLocation.id == 4 %}
-                                        <a class="list_tag_link" href="{{ path('objects', {'expositionLocation[]': 4}) }}">
+                                        <a class="list_tag_link" href="{{ path('objects_listing', {'expositionLocation[]': 4}) }}">
                                             <span class="object_exposed_stock">{{ object.expositionLocation.nameFR }}</span>
                                         </a>
                                     {% endif %}
@@ -161,7 +161,7 @@
                         <td colspan="1">
                             <div class="d-flex flex-wrap">
                                 <div>
-                                    <a class="btn btn-vodou" href="{{ path('objects_view', {id:object.id}) }}" title="Voir">
+                                    <a class="btn btn-vodou" href="{{ path('objects', {id:object.id}) }}" title="Voir">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </div>
@@ -174,7 +174,7 @@
                                 {% endif %}
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <div>
-                                        <a class="btn btn-vodou" href="{{ path('objects_edit', {id:object.id}) }}" title="Editer">
+                                        <a class="btn btn-vodou" href="{{ path('objects', {id:object.id}) }}" title="Editer">
                                             <i class="fa-solid fa-pen-nib"></i>
                                         </a>
                                     </div>

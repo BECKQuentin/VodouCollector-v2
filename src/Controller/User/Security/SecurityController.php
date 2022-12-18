@@ -18,9 +18,11 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, UserRepository $userRepository, Request $request): Response
     {
-         if ($this->getUser()) {
+        $user = $this->getUser();
+         if ($user) {
              return $this->redirectToRoute('home');
          }
+
 
 //        $captcha = new Captcha();
 

@@ -16,14 +16,14 @@
                 </a>
             </li>
             <li class="nav-item dropend toolbar_dropdown">
-                <a class="nav-link link_underline {{ route_name == 'objects' or route_name == 'objects_add' ? 'activated' }}"
-                   href="{{ path('objects') }}" title="Objets"
+                <a class="nav-link link_underline {{ route_name == 'objects_listing' or route_name == 'objects' or route_name == 'objects_add' ? 'activated' }}"
+                   href="{{ path('objects_listing') }}" title="Objets"
                    id="navbarDropdownObjects" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa-solid fa-database"></i><span class="d-inline d-sm-none d-md-inline">Objets</span>
                 </a>
                 <div class="dropdown-menu px-2" aria-labelledby="navbarDropdownObjects">
-                    <a class="dropdown-item link_underline {{ route_name == 'objects' ? 'activated' ? 'activated' }}"
-                       href="{{ path('objects') }}">
+                    <a class="dropdown-item link_underline {{ route_name == 'objects_listing' ? 'activated' }}"
+                       href="{{ path('objects_listing') }}">
                         <span><i class="fa-solid fa-database"></i>Tous les objets</span>
                     </a>
                     {% if is_granted('ROLE_ADMIN') %}
@@ -112,6 +112,7 @@
                     <i class="fa-solid fa-calendar"></i><span></span>
                 </a>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link link_underline {{ route_name == 'profil' ? 'activated' }}" href="{{ path('profil') }}">
                     <i class="fa-solid fa-user-group"></i><span class="d-inline d-sm-none d-md-inline">Profil</span>

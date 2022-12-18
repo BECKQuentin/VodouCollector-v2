@@ -36,8 +36,8 @@ class BaseController extends AbstractController
 
         $countToFix = $objectsRepository->countToFix();
 
-        $news = $newsRepository->findActualNews($this->getUser()->getRoles());
-
+        //Recupére le premier role (TODO: A changer si choix de plusieurs roles distinct en BDD)
+        $news = $newsRepository->findActualNews($this->getUser()->getRoles()[0]);
 
         return $this->render('home/home.html.twig', [
             'news' => $news,
