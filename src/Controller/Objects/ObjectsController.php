@@ -127,8 +127,6 @@ class ObjectsController extends AbstractController
             $isAdding = true;
         }
 
-        dd($objects);
-
         $user = $this->getUser();
 
         $form = $this->createForm(ObjectsFormType::class, $objects);
