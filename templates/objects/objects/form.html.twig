@@ -1,0 +1,322 @@
+{{ form_start(form) }}
+
+{#<div class="row">#}
+{#    <ul>#}
+{#        {% for error in errors %}<li>{{ error.message }}</li>{% endfor %}#}
+{#    </ul>#}
+{#</div>#}
+
+{#        <div class="col-md-4">#}
+{#            <!--Image Carousel + Modal-->#}
+{#            {% include 'objects/objects/carousel_modal_objects.html.twig' %}#}
+{#        </div>#}
+
+    <div id="objectsForm" class="content_box_element">
+
+        <div class="d-flex position-absolute top-0 end-0">
+            {% if object is defined %}
+                {{ form_row(form.submit) }}
+            {% else %}
+                {{ form_row(form.submit, { 'label': 'Ajouter' }) }}
+            {% endif %}
+        </div>
+
+        <div id="objectElementContent_identification" class="object_form_elem">
+            <div class="row mb-2">
+                <div class="col-md-2">{{ form_row(form.code) }}</div>
+                <div class="col-md-8">{{ form_row(form.title) }}</div>
+                <div class="col-md-2">{{ form_row(form.gods) }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">{{ form_row(form.memo) }}</div>
+                {% if object is defined %}
+                    <div class="d-flex"><span>Fiche crée par :{{ object.createdBy.firstname|capitalize }} {{ object.createdBy.lastname|upper }} le {{ object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="objectElementContent_creation" class="object_form_elem">
+            <div class="row mb-2">
+                <div class="col-md-2">{{ form_row(form.era) }}</div>
+                <div class="col-md-2">{{ form_row(form.origin) }}</div>
+                <div class="col-md-2">{{ form_row(form.population) }}</div>
+            </div>
+        </div>
+
+        <div id="objectElementContent_utilisation" class="object_form_elem">
+            <div class="row mb-4">
+                <div class="col-md-8">{{ form_row(form.usageFonction) }}</div>
+{#                <div class="col-md-8">{{ form_row(form.usageTags) }}</div>#}
+                <div class="col-md-2">{{ form_row(form.relatedGods) }}</div>
+                <div class="col-md-2">{{ form_row(form.usageUser) }}</div>
+            </div>
+        </div>
+
+        <div id="objectElementContent_etude" class="object_form_elem">
+            <div class="row mb-4">
+                <div class="no_arrow col-md-2">{{ form_row(form.materials) }}</div>
+                <div class="no_arrow col-md-1 px-1">
+                    {{ form_row(form.weight) }}
+                    {{ form_row(form.sizeHigh) }}
+                </div>
+                <div class="no_arrow col-md-1 px-1">
+                    {{ form_row(form.sizeLength) }}
+                    {{ form_row(form.sizeDepth) }}
+                </div>
+{#                <div class="col-md-3">{{ form_row(form.appearanceTags) }}</div>#}
+            </div>
+            <div class="row mb-4">
+                <div class="col-6">{{ form_row(form.naturalLanguageDescription) }}</div>
+                <div class="col-6">{{ form_row(form.inscriptionsEngraving) }}</div>
+            </div>
+
+        </div>
+
+        <div id="objectElementContent_documentation" class="object_form_elem">
+            <div class="row mb-4">
+                <div class="col-6">{{ form_row(form.museumCatalogue) }}</div>
+                <div class="col-6">{{ form_row(form.book) }}</div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-4">{{ form_row(form.historicDetail) }}</div>
+            </div>
+        </div>
+
+        <div id="objectElementContent_regie" class="object_form_elem">
+            <div class="row mb-2">
+                <div class="col-md-2">{{ form_row(form.isBasemented) }}</div>
+                <div id="expositionLocation" class="col-md-2">{{ form_row(form.expositionLocation) }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="d-flex justify-content-center align-items-end">
+                    <div id="form_floor" class="col-md-3 p-1">{{ form_row(form.floor) }}</div>
+                    <div id="form_showCaseCode" class="col-md-3 p-1">{{ form_row(form.showCaseCode) }}</div>
+                    <div id="form_shelf" class="col-md-3 p-1">{{ form_row(form.shelf) }}</div>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-8">
+                    <div class="col-12">{{ form_row(form.stateCommentary) }}</div>
+                    <div class="row">
+                        <div class="col-6">{{ form_row(form.state) }}</div>
+                        <div class="col-6"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">{{ form_row(form.arrivedCollection) }}</div>
+        </div>
+
+
+        <div id="objectElementContent_images" class="object_form_elem">
+            {{ form_row(form.images) }}
+            <ul id="objects_media_input_file_name">
+            </ul>
+{#            <div class="d-flex align-items-center">#}
+{#                <label for="media_form_name" class="d-flex">#}
+{#                    <span class="btn btn-vodou my-2"><i class="fa-solid fa-plus"></i>#}
+{#                        {{ form_row(form.image) }}#}
+{#                    </span>#}
+{#                </label>#}
+{#                <span>Ajouter une Image</span>#}
+{#                <ul id="objects_media_input_file_name">#}
+{#                </ul>#}
+{#            </div>#}
+
+            <div class="d-flex flex-wrap pt-2 {{ object.images.count == 0 ? 'justify-content-center' }}">
+                {% if object.images.count > 0 %}
+                    {% for img in object.images|sort((a, b) => a.src <=> b.src)%}
+                        <div class="card_media p-2 mb-3 m-2">
+                            <div class="img-ratio" style="--ratio:80%;">
+                                <div class="img">
+                                    <img src="{{ img.src|image }}" alt="">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="d-flex align-items-end">{{ img.code }}</span>
+                                <div>
+                                    {% if is_granted('ROLE_MEMBER') %}
+                                        <a href="{{ img.src|image }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
+                                    {% endif %}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('delete_objects_img', {id:img.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="d-flex flex-column text-center pt-5 pb-5">
+                        <p class="fs-2"><i class="fa-solid fa-ban"></i></p>
+                        <p>Cet objet n'a pas d'images</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="objectElementContent_videos" class="object_form_elem">
+            {{ form_row(form.videos) }}
+            <ul id="objects_media_input_file_name">
+            </ul>
+            <div class="d-flex flex-wrap pt-2 {{ object.videos.count == 0 ? 'justify-content-center' }}">
+                {% if object.videos.count > 0 %}
+                    {% for vid in object.videos%}
+                        <!-- 16:9 aspect ratio -->
+                        <div class="card_media p-2 mb-3 m-2">
+                            <div>
+                                <video controls>
+                                    <source src="{{ vid.src|video }}">
+                                </video>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="d-flex align-items-end">{{ vid.code }}</span>
+                                <div>
+                                    <a href="{{ vid.src|video }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
+                                    <a href="{{ path('delete_objects_vid', {id:vid.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="d-flex flex-column text-center pt-5 pb-5">
+                        <p class="fs-2"><i class="fa-solid fa-ban"></i></p>
+                        <p>Cet objet n'a pas de vidéo</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div id="objectElementContent_files" class="object_form_elem">
+            {{ form_row(form.files) }}
+            <ul id="objects_media_input_file_name">
+            </ul>
+            <div class="d-flex flex-wrap pt-2 {{ object.files.count == 0 ? 'justify-content-center' }}">
+
+                {% if object.files.count > 0 %}
+                    {% for file in object.files%}
+                        {% if file.extension == "pdf" %}
+                            <div class="card_file p-2 mb-3 m-2" >
+                                <div class="position-relative">
+                                    <div class="card_object_overlay_modal_button" data-bs-toggle="modal" data-bs-target="#fileModal"></div>
+                                    <object type="application/pdf" width="100%" height="100%">
+                                        <param name="src" value="{{ file.src|file }}" />
+                                        <p>Votre navigateur n'affiche pas les pdf</p>
+                                    </object>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="d-flex align-items-end">{{ file.src }}</span>
+                                    <div>
+                                        {% if is_granted('ROLE_MEMBER') %}
+                                            <a href="{{ file.src|file }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
+                                        {% endif %}
+                                        {% if is_granted('ROLE_ADMIN') %}
+                                            <a href="{{ path('delete_objects_file', {id:file.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% elseif file.extension == "xlsx" or file.extension == "xls" %}
+                            <div class="card_file p-2 mb-3 m-2" data-bs-toggle="modal" data-bs-target="#fileModal">
+                                <div>
+                                    <object type="application/vnd.ms-excel" width="100%" height="100%" data="{{ file.src|file }}">
+                                    </object>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="d-flex align-items-end">{{ file.src }}</span>
+                                    <div>
+                                        {% if is_granted('ROLE_MEMBER') %}
+                                            <a href="{{ file.src|file }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
+                                        {% endif %}
+                                        {% if is_granted('ROLE_ADMIN') %}
+                                            <a href="{{ path('delete_objects_file', {id:file.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="card_file p-2 mb-3 m-2">
+                                <div>
+                                    <div class="d-flex align-items-center fs-4">
+                                        <i class="fa-solid fa-eye-slash p-2"></i>Désolé
+                                    </div>
+                                    <p>Votre navigateur n'affiche pas ce format</p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="d-flex align-items-end">{{ file.src }}</span>
+                                    <div>
+                                        {% if is_granted('ROLE_MEMBER') %}
+                                            <a href="{{ file.src|file }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
+                                        {% endif %}
+                                        {% if is_granted('ROLE_ADMIN') %}
+                                            <a href="{{ path('delete_objects_file', {id:file.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- 16:9 aspect ratio -->
+
+                    {% endfor %}
+                {% else %}
+                    <div class="d-flex flex-column text-center pt-5 pb-5">
+                        <p class="fs-2"><i class="fa-solid fa-ban"></i></p>
+                        <p>Cet objet n'a pas de fichier annexe</p>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <div id="objectElementContent_youtube" class="object_form_elem">
+{#            {{ form_row(form.youtube) }}#}
+{#            {% if object.youtube.count > 0 %}#}
+{#                <div class="d-flex flex-wrap pt-2 {{ object.youtube.count == 0 ? 'justify-content-center' }}">#}
+{#                    {% for ytb in object.youtube %}#}
+{#                        <!-- 16:9 aspect ratio -->#}
+{#                        <div class="card_youtube p-2 mb-3 m-2">#}
+
+{#                            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/{{ ytb.src }}" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>#}
+
+{#                            <div class="d-flex justify-content-end">#}
+{#                                <div>#}
+{#                                    {% if is_granted('ROLE_MEMBER') %}#}
+{#                                        <a href="{{ ytb.src }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>#}
+{#                                    {% endif %}#}
+{#                                    {% if is_granted('ROLE_ADMIN') %}#}
+{#                                        <a href="{{ path('delete_objects_youtube', {id:ytb.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>#}
+{#                                    {% endif %}#}
+{#                                </div>#}
+
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+
+{#            {% else %}#}
+{#                <div class="d-flex flex-column text-center pt-5 pb-5">#}
+{#                    <p class="fs-2"><i class="fa-solid fa-ban"></i></p>#}
+{#                    <p>Cet objet n'a pas de lien Youtube</p>#}
+{#                </div>#}
+{#            {% endif %}#}
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-end">
+        {% if object is defined %}
+            {{ form_row(form.submit2) }}
+        {% else %}
+            {{ form_row(form.submit2, { 'label': 'Ajouter' }) }}
+        {% endif %}
+    </div>
+{{ form_end(form) }}
+
+
+
+
+
+
+
+

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tous les membres{% endblock %}
+
+{% block body %}
+    <div class="content_box">
+        <h2>Tous les membres <span>({{ users|length }})</span></h2>
+
+        <a href="{{ path('member_add') }}" class="btn btn-vodou" title="Ajouter un nouveau"><i class="fa-solid fa-plus"></i></a>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Email</th>
+                <th scope="col">Roles</th>
+                <th scope="col"><i class="fa-solid fa-lock-open"></i></th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if users is defined and users is not empty%}
+                {% for user in users %}
+                    <tr>
+                        <th>
+                            {{ loop.index }}
+                        </th>
+                        <th>{{ user.firstname }}</th>
+                        <th>{{ user.lastname }}</th>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.roles[0]|roles(user.roles) }}</td>
+                        <td>
+                            <a href="{{ path('member_block', {id: user.id}) }}" title="{{ user.isActive == 1 ? 'Bloquer ' : 'Débloquer'}}">
+                                <div class="{{ user.isActive == 1 ? 'member_active_true ' : 'object_active_false'}} member_active_ball"></div>
+                            </a>
+                        </td>
+                        <td colspan="1">
+                            <div class="d-flex flex-wrap">
+                                <div>
+                                    <a class="btn btn-vodou" href="{{ path('member_update', {id:user.id}) }}" title="Editer">
+                                        <i class="fa-solid fa-pen-nib"></i>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a class="btn btn-vodou" href="{{ path('admin_member_delete', {id:user.id}) }}" title="Supprimer" onclick="return confirm('Etes vous sûr de vouloir supprimer cet utilisateur ?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+{% endblock %}

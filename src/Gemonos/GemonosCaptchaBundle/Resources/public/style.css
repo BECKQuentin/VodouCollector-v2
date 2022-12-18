@@ -1,0 +1,12 @@
+.captcha_img_box {
+    display: flex;
+    border: 1px solid red;
+}
+captcha_img_box {
+    height: 180px;
+    width: auto;
+}
+.captcha_img_box img {
+    height: 100%;
+    width: 100%;
+}
