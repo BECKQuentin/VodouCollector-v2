@@ -1,0 +1,16 @@
+/*******LOGIN*****/
+$randBgLogin: random(3);
+$listBgLogin: AnimatedShape, Snow, Wave;
+$nthBgLogin: nth($listBgLogin, $randBgLogin);
+#login {
+  height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../../img/base/background/#{$nthBgLogin}.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+

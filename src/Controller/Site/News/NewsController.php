@@ -25,15 +25,16 @@ class NewsController extends AbstractController
     #[IsGranted("ROLE_ADMIN", message: "Seules les Admins peuvent faire ça")]
     public function news(News $news=null, RoleHierarchyInterface $roleHierarchy, Request $request, ManagerRegistry $doctrine): Response
     {
+        $isAdding = false;
         if ($news == null) {
             $news = new News();
+            $isAdding = true;
         }
 
         $form = $this->createForm(NewsFormType::class, $news);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
 
             //Ajout des tout les roles selon la hierarchie
             $role = $form->getData()->getRoles();
@@ -45,7 +46,6 @@ class NewsController extends AbstractController
             for ($i = $pos; $i >= 0; $i--) {
                 $roles[] = $keys[$i];
             }
-
 
             $news->setRoles($roles);
             $news->setCreatedBy($this->getUser());
@@ -69,12 +69,12 @@ class NewsController extends AbstractController
     public function newsDelete(News $news, ManagerRegistry $doctrine): Response
     {
 
-            $em = $doctrine->getManager();
-            $em->remove($news);
-            $em->flush();
+        $em = $doctrine->getManager();
+        $em->remove($news);
+        $em->flush();
 
-            $this->addFlash('success', 'Vous avez supprimé '.$news->getTitle().' !');
-            return $this->redirectToRoute('home');
+        $this->addFlash('success', 'Vous avez supprimé '.$news->getTitle().' !');
+        return $this->redirectToRoute('home');
 
     }
 

@@ -23,8 +23,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints\AtLeastOneOf;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
+#[UniqueEntity(
+    fields: ['code'],
+    message: 'Ce code est déjà utilisé',
+)]
 #[ORM\Entity(repositoryClass: ObjectsRepository::class)]
 class Objects
 {
@@ -33,9 +40,17 @@ class Objects
     #[ORM\Column]
     private ?int $id = null;
 
+    #[NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 
+    #[NotBlank]
+    #[Length([
+        'min' => 2,
+        'max' => 255,
+        'minMessage' => 'Le titre doit être plus long',
+        'maxMessage' => 'Le titre ne doit pas dépasser 255 caractères.'
+    ])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 

@@ -17,6 +17,7 @@ class NewsFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $news = $options['data'];
         $builder
             ->add('title', TextType::class, [
                 'required' => true,
@@ -41,7 +42,16 @@ class NewsFormType extends AbstractType
                     'Membre' => 'ROLE_MEMBER',
                     'Invité' => 'ROLE_GUEST',
                 ],
-                'data' => 'ROLE_ADMIN',
+                'choice_attr' => function ($choice, $key, $value) use($news) {
+                    if ($news->getId() == null) {
+                        if ($choice === 'ROLE_ADMIN') {
+                            return ['checked' => true];
+                        }
+                    } elseif($choice === $news->getRoles()[0]) {
+                        return ['checked' => true];
+                    }
+                    return [];
+                },
                 'expanded' => true,
                 'label' => 'Visible pour :',
             ])

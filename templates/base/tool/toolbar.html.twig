@@ -1,4 +1,4 @@
-<div id="hideToolbar" class="d-none d-md-block"><i class="fa-solid fa-chevron-left"></i></div>
+{#<div id="hideToolbar" class="d-none d-md-block"><i class="fa-solid fa-chevron-right"></i></div>#}
 
 <nav class="navbar navbar-expand-custom">
 
@@ -19,7 +19,7 @@
                 <a class="nav-link link_underline {{ route_name == 'objects_listing' or route_name == 'objects' or route_name == 'objects_add' ? 'activated' }}"
                    href="{{ path('objects_listing') }}" title="Objets"
                    id="navbarDropdownObjects" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa-solid fa-database"></i><span class="d-inline d-sm-none d-md-inline">Objets</span>
+                    <i class="fa-solid fa-database"></i><span class="d-inline d-sm-none">Objets</span>
                 </a>
                 <div class="dropdown-menu px-2" aria-labelledby="navbarDropdownObjects">
                     <a class="dropdown-item link_underline {{ route_name == 'objects_listing' ? 'activated' }}"
@@ -43,7 +43,7 @@
                 <a class="nav-link link_underline {{ route_name == 'population' or route_name == 'origin' or route_name == 'gods' or route_name == 'materials' or route_name == 'state' or route_name == 'floor' or route_name == 'museumCatalogue' ? 'activated' }}"
                    href="" title="Categories"
                    id="navbarDropdownTags" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa-solid fa-tags"></i><span class="d-inline d-sm-none d-md-inline">Categories</span>
+                    <i class="fa-solid fa-tags"></i><span class="d-inline d-sm-none">Categories</span>
                 </a>
                 <div class="dropdown-menu px-2" aria-labelledby="navbarDropdownTags">
 {#                    <a class="dropdown-item link_underline {{ route_name == 'categories' ? 'activated' }}" href="{{ path('categories') }}">#}
@@ -79,7 +79,7 @@
                 <a class="nav-link link_underline {{ route_name == 'libraries' or route_name == 'library_add' or route_name == 'listing_book' or route_name == 'book_add' ? 'activated' }}"
                    href="{{ path('libraries') }}" title="Collections"
                    id="navbarDropdownCollection" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fa-solid fa-folder-tree"></i><span class="d-inline d-sm-none d-md-inline">Biblio</span>
+                    <i class="fa-solid fa-folder-tree"></i><span class="d-inline d-sm-none">Biblio</span>
                 </a>
                 <div class="dropdown-menu px-2" aria-labelledby="navbarDropdownCollection">
                     <a class="dropdown-item link_underline {{ route_name == 'libraries' ? 'activated' }}" href="{{ path('libraries') }}">
@@ -115,19 +115,19 @@
 
             <li class="nav-item">
                 <a class="nav-link link_underline {{ route_name == 'profil' ? 'activated' }}" href="{{ path('profil') }}">
-                    <i class="fa-solid fa-user-group"></i><span class="d-inline d-sm-none d-md-inline">Profil</span>
+                    <i class="fa-solid fa-user-group"></i><span class="d-inline d-sm-none">Profil</span>
                 </a>
             </li>
             {% if is_granted('ROLE_ADMIN') %}
                 <li class="nav-item ">
                     <a class="nav-link link_underline {{ route_name == 'statistics' ? 'activated' }}" href="{{ path('statistics') }}" title="Graphiques">
-                        <i class="fa-solid fa-chart-line"></i><span class="d-inline d-sm-none d-md-inline">Statistics</span>
+                        <i class="fa-solid fa-chart-line"></i><span class="d-inline d-sm-none">Statistics</span>
                     </a>
                 </li>
             {% endif %}
             <li class="nav-item">
                 <a class="nav-link link_underline {{ route_name == 'style' ? 'activated' }}" href="{{ path('style') }}" title="Stylisation">
-                    <i class="fa-solid fa-palette"></i><span class="d-inline d-sm-none d-md-inline">Stylisation</span>
+                    <i class="fa-solid fa-palette"></i><span class="d-inline d-sm-none">Stylisation</span>
                 </a>
             </li>
 
@@ -137,7 +137,7 @@
                 <li class="nav-item dropend toolbar_dropdown">
                     <a class="nav-link link_underline {{ route_name == 'action_log' or route_name == 'site_parameter' ? 'activated' }}" href="{{ path('action_log') }}" title="Monitoring"
                        id="navbarDropdownMonitoring" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-desktop"></i><span class="d-inline d-sm-none d-md-inline">Monitoring</span>
+                        <i class="fa-solid fa-desktop"></i><span class="d-inline d-sm-none">Monitoring</span>
                     </a>
                     <div class="dropdown-menu px-2" aria-labelledby="navbarDropdownMonitoring">
                         <a class="dropdown-item link_underline {{ route_name == 'news_add' or route_name == 'news_edit' ? 'activated' }}" href="{{ path('news_add') }}">

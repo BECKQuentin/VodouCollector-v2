@@ -40,11 +40,11 @@ class ObjectsFormType extends AbstractType
 
         $builder
             ->add('code', TextType::class, [
-                'label'         => 'Numéro Inventaire',
+                'label'         => 'Numéro Inventaire *',
                 'required'      => true
             ])
             ->add('title', TextType::class, [
-                'label'         => 'Titre',
+                'label'         => 'Titre *',
                 'required'      => true
             ])
             ->add('memo', TextareaType::class, [
@@ -140,7 +140,7 @@ class ObjectsFormType extends AbstractType
             ])
             ->add('usageFonction', TextareaType::class, [
                 'label'         => 'Fonction d\' usage',
-                'required'      => false
+                'required'      => true
             ])
 //            ->add('usageTags', TextType::class, [
 //                'label'         => 'Mots clés sur utilisation',

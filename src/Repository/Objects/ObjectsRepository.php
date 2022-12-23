@@ -129,21 +129,21 @@ class ObjectsRepository extends ServiceEntityRepository
             $query = $query
                 ->orWhere('o.code LIKE :q')
                 ->orWhere('o.title LIKE :q')
-                ->orWhere('cat.name LIKE :q')
-                ->orWhere('subCat.name LIKE :q')
+//                ->orWhere('cat.name LIKE :q')
+//                ->orWhere('subCat.name LIKE :q')
                 ->orWhere('pop.name LIKE :q')
                 ->orWhere('ori.name LIKE :q')
                 ->orWhere('g.name LIKE :q')
 //                ->orWhere('o.relatedGods LIKE :q')
 //                ->orWhere('o.materials LIKE :q')
-                ->orWhere('o.description LIKE :q')
+                ->orWhere('o.usageFonction LIKE :q')
                 ->orWhere('o.era LIKE :q')
 //                ->orWhere('o.historicDate = :q')
                 ->orWhere('o.historicDetail LIKE :q')
                 ->orWhere('o.usageFonction LIKE :q')
                 ->orWhere('o.stateCommentary LIKE :q')
 //                ->orWhere('o.state LIKE :q')
-                ->orWhere('o.remarks LIKE :q')
+                ->orWhere('o.memo LIKE :q')
                 ->setParameter('q', "%{$searchData->q}%");
         }
 

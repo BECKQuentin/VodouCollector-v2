@@ -4,6 +4,8 @@ namespace App\Security;
 
 use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,8 +31,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public const LOGIN_ROUTE = 'app_login';
 
     private UrlGeneratorInterface $urlGenerator;
-    private $csrfTokenManager;
-    private $entityManager;
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager, CsrfTokenManagerInterface $csrfTokenManager)
     {
@@ -40,7 +42,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $this->csrfTokenManager = $csrfTokenManager;
     }
 
-    public function getCredentials(Request $request)
+    #[ArrayShape(['email' => "mixed", 'password' => "mixed", 'csrf_token' => "mixed"])]
+    public function getCredentials(Request $request): array
     {
         $credentials = [
             'email' => $request->request->get('email'),
@@ -58,22 +61,17 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        //Vérification Captcha
-//        if ($this->verifyCaptcha($request)) {
-            $email = $request->request->get('email', '');
+        $email = $request->request->get('email', '');
 
-            $request->getSession()->set(Security::LAST_USERNAME, $email);
+        $request->getSession()->set(Security::LAST_USERNAME, $email);
 
-            return new Passport(
-                new UserBadge($email),
-                new PasswordCredentials($request->request->get('password', '')),
-                [
-                    new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
-                ]
-            );
-//        } else {
-//            throw new CustomUserMessageAuthenticationException('Captcha Incorrect');
-//        }
+        return new Passport(
+            new UserBadge($email),
+            new PasswordCredentials($request->request->get('password', '')),
+            [
+                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
+            ]
+        );
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider): ?User
@@ -87,14 +85,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         if (!$user) {
             // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Email could not be found.');
+            throw new CustomUserMessageAuthenticationException('Email non trouvé');
         }
         return $user;
-    }
-
-    public function checkCredentials($credentials, UserInterface $user)
-    {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 
     /**
@@ -106,7 +99,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
@@ -121,17 +114,4 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
-
-//    private function verifyCaptcha($request) {
-//
-//        $captchaRequest = $request->request->get('captcha');
-//        $captchaCode = $request->request->get('captchaCode');
-//
-//        if ($captchaRequest === $captchaCode) {
-//            return true;
-//        } else {
-//            // fail captcha with a custom error
-//            throw new CustomUserMessageAuthenticationException('Captcha Incorrect');
-//        }
-//    }
 }

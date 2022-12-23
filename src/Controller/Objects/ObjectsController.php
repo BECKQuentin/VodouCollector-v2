@@ -277,6 +277,7 @@ class ObjectsController extends AbstractController
             $action = new Action();
             $action->setName('Objet modifié');
             if ($isAdding) $action->setName('Objet crée');
+            if ($isAdding) $objects->setCreatedBy($user);
             $action->setObject($objects);
             $action->setCreatedBy($user);
             $action->setCategory($actionCategoryRepository->find(2));
@@ -287,6 +288,7 @@ class ObjectsController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', "Les modifications ont bien été sauvegardées !");
+            $this->redirectToRoute('objects', ['id' => $objects->getId()]);
         }
 
 
@@ -422,7 +424,7 @@ class ObjectsController extends AbstractController
 //            $subCategories = '';
             $relatedGods = [];
 
-            if ($obj->getDescription() != null ) $description = $obj->getDescription();
+//            if ($obj->getDescription() != null ) $description = $obj->getDescription();
 //            if ($obj->getCategories() != null ) $categories = $obj->getCategories()->getName();
 //            if ($obj->getSubCategories() != null ) $subCategories = $obj->getSubCategories()->getName();
             if ($obj->getGods() != null ) $gods = $obj->getGods()->getName();
@@ -435,14 +437,14 @@ class ObjectsController extends AbstractController
             }
 
             $data = array(
-                $obj->getQuantity(),
+//                $obj->getQuantity(),
                 $obj->getCode(),
                 $obj->getTitle(),
 //                $categories,
 //                $subCategories,
                 $gods,
                 $relatedGods,
-                $description
+//                $description
             );
             $rows[] = implode(';', $data);
         }
@@ -630,7 +632,7 @@ class ObjectsController extends AbstractController
 
 
             //Application des données dans les cellules
-            $sheet->setCellValue('A'.$key, $obj->getQuantity());
+//            $sheet->setCellValue('A'.$key, $obj->getQuantity());
             $sheet->setCellValue('B'.$key, $obj->getCode());
             $sheet->setCellValue('C'.$key, $obj->getTitle());
 //            $sheet->setCellValue('D'.$key, $categories);

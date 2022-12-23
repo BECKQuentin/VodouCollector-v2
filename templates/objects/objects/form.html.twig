@@ -308,9 +308,10 @@
         {% if object is defined and object.id is not null%}
             {{ form_row(form.submit2) }}
         {% else %}
-            {{ form_row(form.submit2, { 'label': 'Ajouter' }) }}
+            {{ form_row(form.submit2, { 'label': 'Ajouter'}) }}
         {% endif %}
     </div>
+
 {{ form_end(form) }}
 
 

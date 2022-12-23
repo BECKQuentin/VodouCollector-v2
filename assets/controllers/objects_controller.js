@@ -27,66 +27,88 @@ export default class extends Controller {
 
     connect() {
 
-        verifyError();
+        //Vérification des champs requis aux cliques sur les boutons Submit
+        document.querySelectorAll('#objects_form_submit, #objects_form_submit2').forEach(button => {
+            button.addEventListener('click', () => {
+                this.verifyError()
+            });
+        })
 
-        function verifyError() {
-            //récupère la div des erreurs eventuelles
-            let div = document.querySelector('div[id^="objects_form_"][id$="_errors"]');
-            // Une erreur
-            if (div) {
-                //recupérer le champ du form
-                let divId = div.id;  // "objects_form_images_errors"
-                let regex = /_([a-z]+)_errors/;
-                let match = divId.match(regex);
-                let word = match[1];  // "images"
+        //Vérification des champs et ajout des badges requis lors de la connection
+        let connection = true;
+        this.verifyError(connection);
+    }
 
-                //Défini les champs et donc erreur eventuel par onglet
-                const constants = {
-                    identification: ['code', 'title' , 'memo', 'gods'],
-                    images: ['images'],
-                    files: ['files'],
-                };
+    verifyError(connection = false) {
 
-                let constantName = null;
-                //On regarde si l'erreur est présent dans un des onglets
-                for (const key in constants) {
-                    const value = constants[key];
-                    //Si on trouve un onglet avec le champ de l'erreur
-                    if (Array.isArray(value) && value.includes('images')) {
-                        constantName = key; //images
-                        //On ajoute 1 au badge erreur
-                        let tab = document.getElementById('object_'+key+'_tab');
-                        let span = tab.querySelector('span');
-                        //On verifier si la span existe
-                        if (span !== null) {
-                            span.innerText += 1;
-                            tab.click();
-                        } else {
-                            let span = document.createElement('span');
-                            span.classList.add('error_badge');
-                            span.setAttribute('title', 'Erreur dans le champ ' + key);
-                            span.innerText += 1;
-                            tab.append(span);
-                            tab.click();
-                        }
-                        break;
+        const errorElements = [];
+
+        // Pour les champs requis vide
+        let form = document.querySelectorAll('#objectsForm input[required], #objectsForm textarea[required], #objectsForm select[required]');
+
+        // Pour parcourir les types radios
+        let lastName;
+        form.forEach((item) => {
+            if (lastName !== item.name) {
+                lastName = item.name;
+                if (item.getAttribute('type') === 'radio') {
+                    if (!document.querySelectorAll('[name="' + lastName + '"]:checked').length) {
+                        errorElements.push(item);
                     }
+                } else if (item.value === "") {
+                    errorElements.push(item);
                 }
             }
+        });
+
+        // Pour les erreurs détecter (erreur de pattern par exemple) après submission
+        let errorInput = document.querySelectorAll('.form-error-message');
+
+        errorInput.forEach((item) => {
+            let label = item.closest('label');
+            errorElements.push(document.querySelector('#' + label.getAttribute('for')));
+        });
+
+
+        // Ajout des badges lors d'Erreurs
+        if (errorElements) {
+
+            // Pour commençer de gauche à droite les erreurs(et finir par afficher la première erreur à gauche)
+            errorElements.reverse();
+            //Réinitialisation des badges
+            document.querySelectorAll('span.error_badge').forEach(badge => badge.remove());
+
+            errorElements.forEach((element) => {
+
+                // Récupération de l'onglet ou se trouve l'erreur
+                let tabContent = element.closest('.object_form_elem');
+                let regex = /objectElementContent_([a-z]+)/;
+                let match = tabContent.id.match(regex);
+
+                //Ajout des badges
+                let tab = document.getElementById('object_' + match[1] + '_tab');
+                let span = tab.querySelector('span');
+                //On verifier si la span existe
+                if (span !== null) {
+                    span.innerText = parseInt(span.innerText) + 1;
+                    if (!connection) tab.click();
+                } else {
+                    let span = document.createElement('span');
+                    span.classList.add('error_badge');
+                    span.title = "Champs requis";
+                    span.innerText = 1;
+                    tab.append(span);
+                    if (!connection) tab.click();
+                }
+            });
         }
-
-
     }
 
 
     setContentObjectTab(e) {
-
         e.preventDefault();
 
         let objectTab = e.currentTarget.dataset.objectTab;
-
-        changeClassActive(e.currentTarget);
-        displayFormElem(document.getElementById('objectElementContent_'+objectTab));
 
         // Chercher tous les onglets
         let allTabs = document.querySelectorAll('.object_tab_edit');
@@ -94,10 +116,18 @@ export default class extends Controller {
         let otherTabs = Array.prototype.filter.call(allTabs, function(element) {
             return element !== e.currentTarget;
         });
+
         // Reinitialiser les elements
         otherTabs.forEach((item) => {
             clearElem(item)
         })
+
+        changeTabClassActive(e.currentTarget);
+        displayFormElem(document.getElementById('objectElementContent_'+objectTab));
+
+
+
+
 
         function clearElem(tab) {
             tab.classList.remove('tab-active');
@@ -105,13 +135,13 @@ export default class extends Controller {
 
             let content = document.getElementById('objectElementContent_'+tab.dataset.objectTab);
             content.classList.add('slide-out');
-            setTimeout(() => {
-                content.style.display = "none";
-                content.classList.remove('slide-out');
-            }, 200)
+
+            content.style.display = "none";
+            content.classList.remove('slide-out');
+
         }
 
-        function changeClassActive(tab) {
+        function changeTabClassActive(tab) {
             if (!tab.classList.contains('tab-active')) {
                 tab.classList.toggle('tab-active');
                 tab.classList.toggle('tab');
