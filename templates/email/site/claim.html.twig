@@ -1,0 +1,16 @@
+{% extends "email/base.html.twig" %}
+
+{% block bodyEmail %}
+
+    Bonjour, <br><br>
+
+    Mail reçu depuis la section [CLAIM] de Vodoucollector.fr<br><br>
+
+    From : {{ user.firstname|capitalize }} {{ user.lastname|upper }} - {{ user.email }}<br>
+    Section : {{ section }}<br>
+    Sujet : {{ subject }}<br><br>
+
+    Description:<br>
+    {{ description }}
+
+{% endblock %}

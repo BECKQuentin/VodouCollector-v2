@@ -7,6 +7,7 @@ use App\Form\User\RegistrationFormType;
 use App\Repository\User\UserRepository;
 use App\Security\EmailVerifier;
 use App\Security\LoginFormAuthenticator;
+use App\Service\ActionService;
 use App\Service\EmailService;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -26,12 +27,13 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
 
-    public function __construct(EmailVerifier $emailVerifier)
-    {
-        $this->emailVerifier = $emailVerifier;
-    }
+
+    public function __construct(
+        private EmailVerifier $emailVerifier,
+        private ActionService $actionService,
+    )
+    {}
 
     #[Route('/add-member', name: 'member_add')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
@@ -44,7 +46,7 @@ class RegistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             // get password entry
-            $plaintextPassword = $form->getData()->getPassword();
+            $plaintextPassword = $form->get('password')->getData();
             // hash the password (based on the security.yaml config for the $user class)
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
@@ -53,6 +55,10 @@ class RegistrationController extends AbstractController
 
             $user->setPassword($hashedPassword);
             $user->setIsActive(true);
+
+//            dd($user);
+            $this->actionService->addAction(1, 'Utilisateur crée', $user, $this->getUser());
+
 
             $em = $doctrine->getManager();
             $em->persist($user);

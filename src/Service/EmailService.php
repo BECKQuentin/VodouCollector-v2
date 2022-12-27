@@ -42,6 +42,7 @@ class EmailService
             }
             $data['to'] = $this->emailDeveloper;
         }
+        if ($data['to'] === 'developer') $data['to'] = $this->emailDeveloper;
 
 //        $email = (new Email())
 //            ->from('admin@vodoucollector.fr')

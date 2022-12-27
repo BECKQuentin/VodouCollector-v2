@@ -7,6 +7,7 @@ use App\Entity\User\User;
 use App\Form\User\RegistrationFormType;
 use App\Repository\Site\ActionCategoryRepository;
 use App\Repository\User\UserRepository;
+use App\Service\ActionService;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MemberController extends AbstractController
 {
+
+    public function __construct(
+        private ActionService $actionService
+    ){}
 
 
     #[Route('/profil', name: 'profil')]
@@ -46,6 +51,7 @@ class MemberController extends AbstractController
     #[IsGranted('ROLE_GUEST', message: 'Seuls les Invités peuvent faire ça !')]
     public function memberUpdate(ActionCategoryRepository $actionCategoryRepository, UserPasswordHasherInterface $passwordHasher, User $userRequest, Request $request, ManagerRegistry $doctrine)
     {
+
         $user = $this->getUser();
         $isAdmin = false;
         if ($this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
@@ -61,40 +67,31 @@ class MemberController extends AbstractController
         if ($isAdmin && $user !== $userRequest) {
             $form->remove('password');
         }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($user === $userRequest) {
-                $plaintextPassword = $form->getData()->getPassword();
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $plaintextPassword
-                );
-                $user->setPassword($hashedPassword);
+                if (!$form->get('password')->getData()) {
+                    $plaintextPassword = $form->getData()->getPassword();
+                    $hashedPassword = $passwordHasher->hashPassword(
+                        $user,
+                        $plaintextPassword
+                    );
+                    $user->setPassword($hashedPassword);
+                }
 
-                $action = new Action();
-                $action->setName('Utilisateur modifié par lui-même');
-                $action->setUser($userRequest);
-                $action->setCreatedBy($this->getUser());
-                $action->setCategory($actionCategoryRepository->find(2));
-
+                $this->actionService->addAction(1, 'Utilisateur modifié par lui-même', $userRequest, $user);
                 $em = $doctrine->getManager();
                 $em->persist($user);
-                $em->persist($action);
                 $em->flush();
 
             } else {
 
-                $action = new Action();
-                $action->setName('Utilisateur modifié par Admin');
-                $action->setUser($userRequest);
-                $action->setCreatedBy($this->getUser());
-                $action->setCategory($actionCategoryRepository->find(2));
-
+                $this->actionService->addAction(1, 'Utilisateur modifié par Admin', $userRequest, $user);
                 $em = $doctrine->getManager();
                 $em->persist($userRequest);
-                $em->persist($action);
                 $em->flush();
             }
 
@@ -126,10 +123,11 @@ class MemberController extends AbstractController
             if ($user->isIsActive()) {
                 $user->setIsActive(false);
                 $this->addFlash('success', "Utilisateur bloqué");
-
+                $this->actionService->addAction(1, 'Utilisateur bloqué', $user, $this->getUser());
             } else {
                 $user->setIsActive(true);
                 $this->addFlash('success', "Utilisateur débloqué !");
+                $this->actionService->addAction(1, 'Utilisateur débloqué', $user, $this->getUser());
             }
             $em = $doctrine->getManager();
             $em->persist($user);
@@ -144,6 +142,5 @@ class MemberController extends AbstractController
             'users' => $users,
         ]);
     }
-
 
 }

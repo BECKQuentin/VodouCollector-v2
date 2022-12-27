@@ -1,0 +1,33 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    <div class="content_box">
+        <h2>Question / Problème</h2>
+        <hr>
+
+        <div class="container">
+            <p class="fs-8">Dans cette section, vous pouvez signaler un problème ou une remarque d'amélioration de l'application. Nous prendrons le temps de les consulter et feront le maximum pour améliorer votre expérience.<br>
+                Nous vous prions d'être le plus précis possible pour résoudre au mieux vos attentes.
+            </p>
+
+            {{ form_start(form) }}
+                <div class="row pt-4 pb-2">
+                    <div class="col-6">{{ form_row(form.section) }}</div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-6">{{ form_row(form.subject) }}</div>
+                </div>
+                <div class="row pb-2">
+                    <div class="col-12">{{ form_row(form.description) }}</div>
+                </div>
+                <div class="row">{{ form_row(form.submit) }}</div>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

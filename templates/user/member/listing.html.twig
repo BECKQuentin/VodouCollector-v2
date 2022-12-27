@@ -31,9 +31,11 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.roles[0]|roles(user.roles) }}</td>
                         <td>
-                            <a href="{{ path('member_block', {id: user.id}) }}" title="{{ user.isActive == 1 ? 'Bloquer ' : 'Débloquer'}}">
-                                <div class="{{ user.isActive == 1 ? 'member_active_true ' : 'object_active_false'}} member_active_ball"></div>
-                            </a>
+                            {% if user.roles[0] != 'ROLE_ADMIN' %}
+                                <a href="{{ path('member_block', {id: user.id}) }}" title="{{ user.isActive == 1 ? 'Bloquer ' : 'Débloquer'}}">
+                                    <div class="{{ user.isActive == 1 ? 'member_active_true ' : 'object_active_false'}} member_active_ball"></div>
+                                </a>
+                            {% endif %}
                         </td>
                         <td colspan="1">
                             <div class="d-flex flex-wrap">

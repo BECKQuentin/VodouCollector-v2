@@ -17,16 +17,24 @@
             </div>
         {% endif %}
     </div>
-    <div class="row">
-        {% if user is defined and app.user is same as user or adding_member is defined %}
+    {% if user is defined and app.user is same as user %}
+        {% if adding_member is defined %}
+            <div class="row">
                 <div class="col-md-6">{{ form_row(form.password.first) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">{{ form_row(form.password.second) }}</div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-md-6">{{ form_row(form.password.first, {'required' : false}) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">{{ form_row(form.password.second, {'required' : false}) }}</div>
+            </div>
         {% endif %}
-    </div>
-    <div class="row">
-        {% if user is defined and app.user is same as user or adding_member is defined %}
-            <div class="col-md-6">{{ form_row(form.password.second) }}</div>
-        {% endif %}
-    </div>
+
+    {% endif %}
 
 
     <div class="d-flex justify-content-between">

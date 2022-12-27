@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -63,10 +64,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Libraries::class)]
     private Collection $libraries;
 
-    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: News::class)]
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: News::class, orphanRemoval: true)]
     private Collection $news;
 
     #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Action::class)]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private Collection $actions;
 
     #[ORM\Column]

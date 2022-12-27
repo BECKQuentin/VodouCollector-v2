@@ -25,13 +25,16 @@ class Action
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'actions')]
+    #[ORM\ManyToOne(cascade: ["persist"], inversedBy: 'actions')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'actions')]
+    #[ORM\ManyToOne(cascade: ["persist"], inversedBy: 'actions')]
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     private ?Objects $object = null;
 
-    #[ORM\ManyToOne(inversedBy: 'actions')]
+    #[ORM\ManyToOne(cascade: ["persist"], inversedBy: 'actions')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $user = null;
 
     #[ORM\Column(length: 255, nullable: true)]

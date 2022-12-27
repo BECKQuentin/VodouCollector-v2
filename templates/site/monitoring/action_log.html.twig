@@ -11,7 +11,7 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th>Catergories</th>
+                <th>Categories</th>
                 <th>Action</th>
                 <th>Valeur</th>
                 <th>Fait par</th>
@@ -27,20 +27,20 @@
                     <td>
                         {% if action.object != null %}
                             <a class="list_tag_link" href="{{ path('objects', {id:action.object.id}) }}" title="{{ action.object.title }}">
-                                {{ action.object.title|u.truncate(20, '...') }}
+                                {{ action.object.code }} - {{ action.object.title|u.truncate(20, '...') }}
                             </a>
                         {% endif %}
                         {% if action.user != null %}
                             <span title="{{ action.createdBy.firstname|upper }} {{ action.createdBy.lastname|capitalize }}">
-                                {{ action.createdBy.firstname|upper|u.truncate(20, '...') }} {{ action.createdBy.lastname|capitalize|u.truncate(20, '...') }}
+                                {{ action.createdBy.firstname|capitalize|u.truncate(20, '...') }} {{ action.createdBy.lastname|upper|u.truncate(20, '...') }}
                             </span>
                         {% endif %}
                         {% if action.othersValue != null %}
                             <span title="{{ action.othersValue }}">{{ action.othersValue|u.truncate(20, '...') }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ action.createdBy.firstname|upper }} {{ action.createdBy.lastname|capitalize }}</td>
-                    <td>{{ action.createdAt|date('d/m/Y-h:m') }}</td>
+                    <td>{{ action.createdBy.firstname|capitalize }} {{ action.createdBy.lastname|upper }}</td>
+                    <td>{{ action.createdAt|format_datetime('short', 'short', locale='FR') }}</td>
                 </tr>
             {% endfor %}
             </tbody>

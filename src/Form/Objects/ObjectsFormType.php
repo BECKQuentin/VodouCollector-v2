@@ -140,7 +140,7 @@ class ObjectsFormType extends AbstractType
             ])
             ->add('usageFonction', TextareaType::class, [
                 'label'         => 'Fonction d\' usage',
-                'required'      => true
+                'required'      => false
             ])
 //            ->add('usageTags', TextType::class, [
 //                'label'         => 'Mots clés sur utilisation',

@@ -6,16 +6,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadService
 {
-    private string $uploadImagesDirectory;
-    private string $uploadVideosDirectory;
-    private string $uploadFilesDirectory;
-
-    public function __construct(string $uploadImagesDirectory, string $uploadVideosDirectory, string $uploadFilesDirectory)
-    {
-        $this->uploadImagesDirectory = $uploadImagesDirectory;
-        $this->uploadVideosDirectory = $uploadVideosDirectory;
-        $this->uploadFilesDirectory = $uploadFilesDirectory;
-    }
+    public function __construct(
+        private string $uploadImagesDirectory,
+        private string $uploadVideosDirectory,
+        private string $uploadFilesDirectory
+    ){}
 
     public function isImage($file): bool
     {

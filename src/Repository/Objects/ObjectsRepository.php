@@ -99,7 +99,7 @@ class ObjectsRepository extends ServiceEntityRepository
         );
     }
 
-    public function findDeletedObjects()
+    public function findDeletedObjects(): PaginationInterface
     {
         $query = $this->createQueryBuilder('o')
             ->where('o.deletedAt IS NOT NULL')

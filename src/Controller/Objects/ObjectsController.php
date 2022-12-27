@@ -18,7 +18,9 @@ use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\Media\VideoRepository;
 use App\Repository\Objects\ObjectsRepository;
 use App\Repository\Site\ActionCategoryRepository;
+use App\Service\ActionService;
 use App\Service\UploadService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Dompdf\Dompdf;
@@ -29,9 +31,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -40,6 +40,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ObjectsController extends AbstractController
 {
+
+    public function __construct(
+        private ActionService $actionService,
+        private EntityManagerInterface $entityManager,
+    )
+    {
+    }
 
     #[Route('/objects', name: 'objects_listing')]
     public function listingObjects(ObjectsRepository $objectsRepository, PaginatorInterface $paginator, SessionInterface $session, Request $request): Response
@@ -125,6 +132,12 @@ class ObjectsController extends AbstractController
         if  ($objects == null) {
             $objects = new Objects();
             $isAdding = true;
+        } else {
+            //Vérification d'Objet existant
+            if ($objects->getDeletedAt()) {
+                $this->addFlash('danger', $objects->getCode() . ' - ' . $objects->getTitle() . ' n \'existe plus !');
+                return $this->redirectToRoute('home');
+            }
         }
 
         $user = $this->getUser();
@@ -153,16 +166,10 @@ class ObjectsController extends AbstractController
                         $img->setObjects($objects);
                         $objects->addImage($img);
 
-                        $action = new Action();
-                        $action->setName('Image ajouté');
-                        $action->setObject($objects);
-                        $action->setOthersValue($img->getSrc());
-                        $action->setCreatedBy($this->getUser());
-                        $action->setCategory($actionCategoryRepository->find(2));
+                        $this->actionService->addAction(2, 'Image ajouté', $objects, $this->getUser(), $img->getSrc());
 
                         $em = $doctrine->getManager();
                         $em->persist($objects);
-                        $em->persist($action);
                         $em->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas une image valide');
@@ -186,16 +193,10 @@ class ObjectsController extends AbstractController
                         $fl->setObjects($objects);
                         $objects->addFile($fl);
 
-                        $action = new Action();
-                        $action->setName('Fichier ajouté');
-                        $action->setObject($objects);
-                        $action->setOthersValue($fl->getSrc());
-                        $action->setCreatedBy($this->getUser());
-                        $action->setCategory($actionCategoryRepository->find(2));
+                        $this->actionService->addAction(2, 'Fichier ajouté', $objects, $this->getUser(), $fl->getSrc());
 
                         $em = $doctrine->getManager();
                         $em->persist($objects);
-                        $em->persist($action);
                         $em->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas un fichier valide');
@@ -220,20 +221,14 @@ class ObjectsController extends AbstractController
                         $vid->setObjects($objects);
                         $objects->addVideo($vid);
 
-                        $action = new Action();
-                        $action->setName('Video ajouté');
-                        $action->setObject($objects);
-                        $action->setOthersValue($vid->getSrc());
-                        $action->setCreatedBy($this->getUser());
-                        $action->setCategory($actionCategoryRepository->find(2));
+                        $this->actionService->addAction(2, 'Video ajouté', $objects, $this->getUser(), $vid->getSrc());
 
                         $em = $doctrine->getManager();
                         $em->persist($objects);
-                        $em->persist($action);
                         $em->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas une vidéo valide');
-                        $this->redirectToRoute('objects_files',
+                        $this->redirectToRoute('objects',
                             ['id' => $objects->getId()]);
                     }
                 }
@@ -254,15 +249,10 @@ class ObjectsController extends AbstractController
 //                    $youtube->setCode($objects->getCode());
 //                    $youtube->setObjects($objects);
 //
-//                    $action = new Action();
-//                    $action->setName('Video youtube ajouté');
-//                    $action->setObject($objects);
-//                    $action->setCreatedBy($this->getUser());
-//                    $action->setCategory($actionCategoryRepository->find(2));
+//                    $this->actionService->addAction(2, 'Video youtube ajouté', $objects, $this->getUser());
 //
 //                    $em = $doctrine->getManager();
 //                    $em->persist($youtube);
-//                    $em->persist($action);
 //                    $em->flush();
 //
 //                } else {
@@ -274,17 +264,15 @@ class ObjectsController extends AbstractController
 //            }
 
 
-            $action = new Action();
-            $action->setName('Objet modifié');
-            if ($isAdding) $action->setName('Objet crée');
-            if ($isAdding) $objects->setCreatedBy($user);
-            $action->setObject($objects);
-            $action->setCreatedBy($user);
-            $action->setCategory($actionCategoryRepository->find(2));
+            if ($isAdding) {
+                $objects->setCreatedBy($user);
+                $this->actionService->addAction(2, 'Objet crée',$objects, $this->getUser());
+            } else {
+                $this->actionService->addAction(2, 'Objet modifié', $objects, $this->getUser());
+            }
 
             $em = $doctrine->getManager();
             $em->persist($objects);
-            $em->persist($action);
             $em->flush();
 
             $this->addFlash('success', "Les modifications ont bien été sauvegardées !");
@@ -301,6 +289,7 @@ class ObjectsController extends AbstractController
     }
 
 
+    //SOFT DELETE
     #[Route('/objects-delete/{id}', name: 'objects_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
     public function deleteObjects(Objects $objects, ActionCategoryRepository $actionCategoryRepository,  ManagerRegistry $doctrine): Response
@@ -309,40 +298,76 @@ class ObjectsController extends AbstractController
         $objects->setDeletedAt(new \DateTimeImmutable('now'));
         $objects->setDeletedBy($this->getUser());
 
-//        //Suppression des images
-//        $images = $objects->getImages();
-//        $filesystem = new Filesystem();
-//        foreach ($images as $image) {
-//            $filesystem->remove($image->getAbsolutePath());
-//        }
-//
+        $this->actionService->addAction(2, 'Objet supprimé', $objects, $this->getUser());
+
+        $em = $doctrine->getManager();
+        $em->persist($objects);
+        $em->flush();
+
+        $this->addFlash('success', 'Vous avez supprimé '.$objects->getTitle().' !');
+        return $this->redirectToRoute('objects_listing');
+    }
+
+    //LISTING des objets supprimés
+    #[Route('/deleted-objects', name: 'deleted_objects')]
+    #[IsGranted("ROLE_ADMIN", message: "Seules les Admins peuvent faire ça")]
+    public function deletedObjects(ObjectsRepository $objectsRepository): Response
+    {
+        return $this->render('site/monitoring/deleted_objects.html.twig', [
+            'objects' => $objectsRepository->findDeletedObjects(),
+        ]);
+    }
+
+    //RESTAURATION d'un objet supprimé
+    #[Route('/deleted-objects/restore/{id}', name: 'restore_deleted_objects')]
+    #[IsGranted("ROLE_ADMIN", message: "Seules les Admins peuvent faire ça")]
+    public function restoreDeletedObjects(Objects $objects): Response
+    {
+
+        $objects->setDeletedAt(null);
+        $objects->setDeletedBy(null);
+
+        $this->entityManager->persist($objects);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', "Objet restauré !");
+        return $this->redirectToRoute('objects', ['id' => $objects->getId()]);
+    }
+
+    //REMOVE - Forçage de suppression d'un objet
+    #[Route('/deleted-objects/force-delete/{id}', name: 'force_deleted_objects')]
+    #[IsGranted("ROLE_ADMIN", message: "Seules les Admins peuvent faire ça")]
+    public function forceDeletedObjects(Objects $objects, Request $request): Response
+    {
+        if (!$objects->getDeletedAt()) {
+            $this->addFlash('danger', "Objet encore dans l'inventaire. Supprimé le d'abord.");
+            return $this->redirectToRoute($request->getUri());
+        }
+
+        //Suppression des images
+        $images = $objects->getImages();
+        $filesystem = new Filesystem();
+        foreach ($images as $image) {
+            if ($image) {
+                $filesystem->remove($image->getAbsolutePath());
+            }
+        }
 //        //Suppression des Videos
 //        $videos = $objects->getVideos();
 //        foreach ($videos as $video) {
 //            $filesystem->remove($video->getAbsolutePath());
 //        }
-//
 //        //Suppression des Fichiers
 //        $videos = $objects->getVideos();
 //        foreach ($videos as $video) {
 //            $filesystem->remove($video->getAbsolutePath());
 //        }
+        $this->entityManager->remove($objects);
+        $this->entityManager->flush();
 
-        $action = new Action();
-        $action->setName('Objet supprimé');
-        $action->setOthersValue($objects->getCode() . ' - ' . $objects->getTitle());
-        $action->setCreatedBy($this->getUser());
-        $action->setCategory($actionCategoryRepository->find(2));
-
-        $em = $doctrine->getManager();
-        $em->remove($objects);
-        $em->persist($action);
-        $em->flush();
-
-        $this->addFlash('success', 'Vous avez supprimé '.$objects->getTitle().' !');
-        return $this->redirectToRoute('objects');
+        $this->addFlash('success', "Objet supprimé definitivement !");
+        return $this->redirectToRoute('objects_listing');
     }
-
 
 //    #[Route('/objects-view/{id}', name: 'objects_view')]
 //    public function viewObjects(Objects $object, ManagerRegistry $doctrine): Response

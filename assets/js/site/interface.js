@@ -1,6 +1,6 @@
 let toolbar = document.getElementById('toolbar');
 let page = document.getElementById('page');
-let textNavLink = document.querySelectorAll('.nav-link span');
+let spanNavLink = document.querySelectorAll('.nav-link span');
 let hideToolbar = document.getElementById('hideToolbar');
 
 toolbar.addEventListener('mouseenter', () => {
@@ -22,7 +22,7 @@ function extendToolbar() {
     page.classList.add('col-md-10');
 
     setTimeout(() => {
-        textNavLink.forEach((item) => {
+        spanNavLink.forEach((item) => {
             item.classList.add('d-md-inline');
         })
     }, 150)
@@ -37,7 +37,7 @@ function retractToolbar() {
     page.classList.remove('offset-md-2');
     page.classList.remove('col-md-10');
 
-    textNavLink.forEach((item) => {
+    spanNavLink.forEach((item) => {
         item.classList.remove('d-md-inline');
     })
 }

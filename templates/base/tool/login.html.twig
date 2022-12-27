@@ -17,9 +17,13 @@
                 <span><i class="fa-solid fa-ellipsis-vertical"></i></span>
             </a>
             <div class="dropdown-menu px-2" aria-labelledby="loginDropdownLink">
-                <a href="{{ path('profil') }}" class="dropdown-item link_underline text-right">Profil<i class="fa-solid fa-user-gear px-2"></i></a>
+                <a href="{{ path('profil') }}" class="dropdown-item link_underline text-end">Profil<i class="fa-solid fa-user-gear px-2"></i></a>
                 <div class="text-end dropdown-item disabled">{{ app.user.roles[0]|roles(app.user.roles) }}</div>
-                <a href="{{ path('app_logout') }}" class="dropdown-item link_underline text-right">Se déconnecter<i class="fa-solid fa-arrow-right-to-bracket px-2"></i></a>
+                <div class="d-flex">
+                    <a href="{{ path('claim') }}" class="dropdown-item link_underline text-end"><i class="fa-regular fa-circle-question px-2"></i></a>
+                </div>
+
+                <a href="{{ path('app_logout') }}" class="dropdown-item link_underline text-end">Se déconnecter<i class="fa-solid fa-arrow-right-to-bracket px-2"></i></a>
             </div>
         </div>
     </div>

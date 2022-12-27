@@ -9,10 +9,9 @@
     <div class="collapse navbar-collapse w-100" id="navbarNavDropdown">
         <ul class="navbar-nav d-flex flex-column">
             <li class="d-none d-sm-block nav-item">
-                <a class="nav-link{{ route_name == 'home' ? 'activated' }}" href="/" title="Accueil">
-                    <div class="logo">
-                        <img src="{{ asset('img/base/logos/cropped-logo-musee-vodou.png') }}" alt="" style="height : 40px">
-                    </div>
+                <a class="nav-link {{ route_name == 'home' ? 'activated' }}" href="/" title="Accueil">
+                    <i class="fa-solid fa-chess-rook"></i>
+                    <span class="d-inline d-sm-none"><img src="{{ asset('img/base/logos/cropped-logo-musee-vodou.png') }}" alt="" style="height : 20px"></span>
                 </a>
             </li>
             <li class="nav-item dropend toolbar_dropdown">
@@ -135,7 +134,7 @@
 
             {% if is_granted('ROLE_ADMIN') %}
                 <li class="nav-item dropend toolbar_dropdown">
-                    <a class="nav-link link_underline {{ route_name == 'action_log' or route_name == 'site_parameter' ? 'activated' }}" href="{{ path('action_log') }}" title="Monitoring"
+                    <a class="nav-link link_underline {{ route_name == 'news_add' or route_name == 'news_edit' or route_name == 'deleted_objects' or route_name == 'action_log' or route_name == 'site_parameter' ? 'activated' }}" href="{{ path('action_log') }}" title="Monitoring"
                        id="navbarDropdownMonitoring" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa-solid fa-desktop"></i><span class="d-inline d-sm-none">Monitoring</span>
                     </a>
@@ -148,6 +147,9 @@
                         </a>
                         <a class="dropdown-item link_underline {{ route_name == 'site_parameter' ? 'activated' }}" href="{{ path('site_parameter') }}">
                             <span><i class="fa-solid fa-screwdriver-wrench"></i>Paramètre Site</span>
+                        </a>
+                        <a class="dropdown-item link_underline {{ route_name == 'deleted_objects' ? 'activated' }}" href="{{ path('deleted_objects') }}">
+                            <span><i class="fa-solid fa-trash-can"></i>Objets Supprimés</span>
                         </a>
                     </div>
                 </li>

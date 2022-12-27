@@ -162,7 +162,8 @@ class Objects
 //    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: Youtube::class, cascade: ["persist"], orphanRemoval: true)]
 //    private Collection $youtube;
 
-    #[ORM\OneToMany(mappedBy: 'object', targetEntity: Action::class, cascade: ["persist", "remove"])]
+    #[ORM\OneToMany(mappedBy: 'object', targetEntity: Action::class)]
+    #[ORM\JoinColumn(onDelete: "SET NULL")]
     private Collection $actions;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
