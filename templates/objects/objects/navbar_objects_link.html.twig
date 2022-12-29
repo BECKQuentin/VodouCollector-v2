@@ -166,27 +166,12 @@
 
                 <!--Ajout aux favoris Groupé-->
                 <div>
-                    <a class="btn btn-vodou" data-bs-toggle="modal" data-bs-target="#groupBookmark" title="Ajouter aux Favoris partagés">
+                    <a class="btn btn-vodou" data-bs-toggle="modal" data-bs-target="#sharedBookmark" title="Ajouter aux Favoris partagés">
                         <i class="fa-solid fa-star"></i>
                     </a>
                 </div>
 
-                <!-- Modal -->
-                <div class="modal fade" id="groupBookmark" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Ajouter aux Favoris partagés</h5>
-                                <button type="button" class="close btn btn-vodou" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                {{ object.id }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{ render(controller('App\\Controller\\Objects\\SharedBookmarks\\SharedBookmarksController::create', {idObject:object.id})) }}
             {% endif %}
 
             <!--Ajout aux favoris personel-->

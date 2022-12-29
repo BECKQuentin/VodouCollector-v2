@@ -1,0 +1,40 @@
+<!-- Modal Shared Bookmarks-->
+<div class="modal fade" id="sharedBookmark" tabindex="-1" role="dialog" aria-hidden="true" data-controller="sharedBookmarks">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Favoris partagés</h3>
+                </div>
+                <button class="close btn btn-vodou" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="fs-3"><i class="fa-solid fa-xmark"></i></span>
+                </button>
+
+            </div>
+            <div class="modal-body px-1">
+                <div class="d-flex align-items-center"><span class="px-2">Nouveau</span><a data-action="click->sharedBookmarks#displayForm" class="btn-vodou px-2"><i class="fa-solid fa-plus"></i></a></div>
+                <div id="SharedBookmarksForm" class="flex-column justify-content-center">
+                    {{ form_start(sharedBookmarksForm, {'action' : path('sharedBookmark_create'), 'attr' : {'id' : 'shared_bookmarks_form'} }) }}
+                    <div class="row mb-2">
+                        <div class="col-11">{{ form_row(sharedBookmarksForm.name) }}</div>
+                        <div class="col-1"><a class="btn btn-vodou" title="Fermer formulaire" data-action="click->sharedBookmarks#removeForm"><i class="fa-solid fa-xmark"></i></a></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-vodou"
+{#                               data-action="click->sharedBookmarks#addSharedBookmarks"#}
+{#                               data-url="{{ path('sharedBookmark_create') }}"#}
+                            >Ajouter</button>
+                        </div>
+                        {{ form_rest(sharedBookmarksForm) }}
+                    </div>
+                    {{ form_end(sharedBookmarksForm) }}
+                </div>
+
+                {% set idObject = app.request.get('idObject') %}
+                {{ render(controller('App\\Controller\\Objects\\SharedBookmarks\\SharedBookmarksController::index', {idObject:idObject})) }}
+
+            </div>
+        </div>
+    </div>
+</div>

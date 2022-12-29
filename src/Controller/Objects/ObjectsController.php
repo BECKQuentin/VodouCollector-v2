@@ -44,9 +44,7 @@ class ObjectsController extends AbstractController
     public function __construct(
         private ActionService $actionService,
         private EntityManagerInterface $entityManager,
-    )
-    {
-    }
+    ){}
 
     #[Route('/objects', name: 'objects_listing')]
     public function listingObjects(ObjectsRepository $objectsRepository, PaginatorInterface $paginator, SessionInterface $session, Request $request): Response

@@ -4,6 +4,7 @@ namespace App\Entity\User;
 
 use App\Entity\Libraries\Libraries;
 use App\Entity\Objects\Objects;
+use App\Entity\Objects\SharedBookmarks\SharedBookmarks;
 use App\Entity\Site\Action;
 use App\Entity\Site\News;
 use App\Repository\User\UserRepository;
@@ -77,6 +78,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'updatedBy', targetEntity: Objects::class)]
     private Collection $updatedObjects;
 
+    #[ORM\ManyToMany(targetEntity: SharedBookmarks::class, mappedBy: 'users')]
+    private Collection $sharedBookmarks;
+
     public function __construct()
     {
         if ($this->getCreatedAt() === null) {
@@ -87,6 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->news = new ArrayCollection();
         $this->actions = new ArrayCollection();
         $this->updatedObjects = new ArrayCollection();
+        $this->sharedBookmarks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -400,6 +405,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($updatedObject->getUpdatedBy() === $this) {
                 $updatedObject->setUpdatedBy(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SharedBookmarks>
+     */
+    public function getSharedBookmarks(): Collection
+    {
+        return $this->sharedBookmarks;
+    }
+
+    public function addSharedBookmark(SharedBookmarks $sharedBookmark): self
+    {
+        if (!$this->sharedBookmarks->contains($sharedBookmark)) {
+            $this->sharedBookmarks->add($sharedBookmark);
+            $sharedBookmark->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedBookmark(SharedBookmarks $sharedBookmark): self
+    {
+        if ($this->sharedBookmarks->removeElement($sharedBookmark)) {
+            $sharedBookmark->removeUser($this);
         }
 
         return $this;

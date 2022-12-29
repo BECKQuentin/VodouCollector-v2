@@ -56,9 +56,7 @@ class RegistrationController extends AbstractController
             $user->setPassword($hashedPassword);
             $user->setIsActive(true);
 
-//            dd($user);
             $this->actionService->addAction(1, 'Utilisateur crée', $user, $this->getUser());
-
 
             $em = $doctrine->getManager();
             $em->persist($user);

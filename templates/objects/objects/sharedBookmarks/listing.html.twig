@@ -1,0 +1,64 @@
+<div id="SharedBookmarksItems" class="d-flex justify-content-center flex-wrap">
+    {% for sharedBookmark in sharedBookmarks %}
+        <div class="shared_bookmark_card" style="border: 1px dashed black">
+            <a href="" class="link_underline shared_bookmark_card_title" style="background-color: var(--second)"><h5 class="text-center">{{ sharedBookmark.name|u.truncate(15, '.') }}</h5></a>
+
+
+            <div class="row px-1">
+                <div class="col-6 border-end">
+                    <p class="fs-8 m-0 border-bottom">Objets</p>
+                    {% for object in sharedBookmark.objects %}
+                        <a href="{{ path('objects', {id:object.id}) }}"><span class="fs-9">#{{ object.code }}</span></a>
+                    {% endfor %}
+                </div>
+                <div class="col-6">
+                    <p class="fs-8 m-0 border-bottom">Membre</p>
+                    {% for user in sharedBookmark.users %}
+                        <span class="fs-9">{{ user.firstname|capitalize|u.truncate(8, '') }} {{ user.lastname|upper|u.truncate(8, '') }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="shared_bookmark_card_add_button">
+
+                {% if object != null %}
+                    {% if sharedBookmark.objects.contains(object) %}
+                        <div class="btn btn-vodou btn-vodou-active fs-8"
+                             title="Retire l'objet consulté de ce favoris partagé"
+                             data-action="click->sharedBookmarks#addObjectSharedBookmark"
+                             data-url="{{ path('sharedBookmark_add_object', {id:sharedBookmark.id, idObject:object.id}) }}"
+                             data-id-object="{{ object.id }}"
+                        >Retirer l'objet</div>
+                    {% else %}
+                        <div class="btn btn-vodou fs-8"
+                             title="Ajoute l'objet consulté a ce favoris partagé"
+                             data-action="click->sharedBookmarks#addObjectSharedBookmark"
+                             data-url="{{ path('sharedBookmark_add_object', {id:sharedBookmark.id, idObject:object.id}) }}"
+                             data-id-object="{{ object.id }}"
+                        >Ajouter l'objet</div>
+                    {% endif %}
+                {% endif %}
+
+
+
+                {% if sharedBookmark.users.contains(app.user) %}
+                    <div class="btn btn-vodou btn-vodou-active fs-8"
+                         title="Se désinscrire de ce favoris partagé"
+                         data-action="click->sharedBookmarks#registerSharedBookmark"
+                         data-url="{{ path('sharedBookmark_register', {id:sharedBookmark.id}) }}"
+                         data-id-object="{{ object.id }}"
+                    >Se désinscrire</div>
+                {% else %}
+                    <div class="btn btn-vodou fs-8"
+                         title="S'inscrire à ce favoris partagé"
+                         data-action="click->sharedBookmarks#registerSharedBookmark"
+                         data-url="{{ path('sharedBookmark_register', {id:sharedBookmark.id}) }}"
+                         data-id-object="{{ object.id }}"
+                    >S'inscrire</div>
+                {% endif %}
+            </div>
+
+
+        </div>
+    {% endfor %}
+</div>

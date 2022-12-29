@@ -113,7 +113,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link link_underline {{ route_name == 'profil' ? 'activated' }}" href="{{ path('profil') }}">
+                <a class="nav-link link_underline {{ route_name == 'profil' ? 'activated' or route_name == 'member' ? 'activated' }}" href="{{ path('profil') }}">
                     <i class="fa-solid fa-user-group"></i><span class="d-inline d-sm-none">Profil</span>
                 </a>
             </li>
@@ -130,6 +130,7 @@
                 </a>
             </li>
 
+{#            $2y$13$zb0bfPGnY1QkvNKGj97qa.2Y3ww9XmqvPnlnsTQsKW8/WQGPiK0d.#}
             <hr>
 
             {% if is_granted('ROLE_ADMIN') %}

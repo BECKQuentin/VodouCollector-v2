@@ -74,6 +74,9 @@ input:checked {
 .fs-8 {
   font-size: 10px;
 }
+.fs-9 {
+  font-size: 8px;
+}
 /*BASIC FUNCTION*/
 .show {
   display: block;
@@ -82,6 +85,8 @@ input:checked {
   display: none;
 }
 .btn-vodou {
+  position: relative;
+  cursor: pointer;
   background-color: #FFFFFF;
   border-radius: 4px;
   border-bottom: solid 2px var(--main);
@@ -172,5 +177,59 @@ a:not(.activated) span:hover {
     padding: 5px 10px;
   }
 }
+
+//LOADING
+@-webkit-keyframes scaling-dots {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+  40%, 60% {
+    -webkit-transform: scale(1);
+    transform: scale(1); } }
+@keyframes scaling-dots {
+  0%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+  40%, 60% {
+    -webkit-transform: scale(1);
+    transform: scale(1); } }
+
+.scaling-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(5, 10px);
+  border-radius: inherit;
+  background-color: inherit;
+  border: inherit;
+}
+.scaling-dots div {
+  position: relative;
+  top: 40%;
+  -webkit-animation: scaling-dots 1s infinite ease backwards;
+  animation: scaling-dots 1s infinite ease backwards;
+  background-color: black;
+  border-radius: 100%;
+  height: 10px;
+  width: 10px; }
+.scaling-dots div:nth-child(1) {
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s; }
+.scaling-dots div:nth-child(2) {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s; }
+.scaling-dots div:nth-child(3) {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s; }
+.scaling-dots div:nth-child(4) {
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s; }
+.scaling-dots div:nth-child(5) {
+  -webkit-animation-delay: 0.5s;
+  animation-delay: 0.5s; }
 //@import "~bootstrap/scss/bootstrap";
 //@import "bootstrap.min.css";

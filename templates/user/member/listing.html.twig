@@ -22,7 +22,7 @@
             <tbody>
             {% if users is defined and users is not empty%}
                 {% for user in users %}
-                    <tr>
+                    <tr class="{{ app.user == user ? 'activated' }}">
                         <th>
                             {{ loop.index }}
                         </th>

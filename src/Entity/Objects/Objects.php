@@ -15,6 +15,7 @@ use App\Entity\Objects\Metadata\Materials;
 use App\Entity\Objects\Metadata\Origin;
 use App\Entity\Objects\Metadata\Population;
 use App\Entity\Objects\Metadata\State;
+use App\Entity\Objects\SharedBookmarks\SharedBookmarks;
 use App\Entity\Site\Action;
 use App\Entity\User\User;
 use App\Repository\Objects\ObjectsRepository;
@@ -179,6 +180,9 @@ class Objects
     #[ORM\ManyToOne]
     private ?User $deletedBy = null;
 
+    #[ORM\ManyToMany(targetEntity: SharedBookmarks::class, mappedBy: 'objects')]
+    private Collection $sharedBookmarks;
+
     public function __construct()
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
@@ -194,6 +198,7 @@ class Objects
         $this->files = new ArrayCollection();
 //        $this->youtube = new ArrayCollection();
         $this->actions = new ArrayCollection();
+        $this->sharedBookmarks = new ArrayCollection();
     }
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
@@ -853,6 +858,33 @@ class Objects
     public function setDeletedBy(?User $deletedBy): self
     {
         $this->deletedBy = $deletedBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SharedBookmarks>
+     */
+    public function getSharedBookmarks(): Collection
+    {
+        return $this->sharedBookmarks;
+    }
+
+    public function addSharedBookmark(SharedBookmarks $sharedBookmark): self
+    {
+        if (!$this->sharedBookmarks->contains($sharedBookmark)) {
+            $this->sharedBookmarks->add($sharedBookmark);
+            $sharedBookmark->addObject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedBookmark(SharedBookmarks $sharedBookmark): self
+    {
+        if ($this->sharedBookmarks->removeElement($sharedBookmark)) {
+            $sharedBookmark->removeObject($this);
+        }
 
         return $this;
     }

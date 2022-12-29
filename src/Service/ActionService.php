@@ -21,7 +21,7 @@ class ActionService
 
     //Création d'une action et ajout en DB
     //ID CATEGORY [1 => User, 2 => Objects, 3 => Categories]
-    public function addAction(int $IdCategory, string $name, User|Objects $items,  User $createdBy, string $othersValue='')
+    public function addAction(int $IdCategory, string $name, User|Objects $items=null,  User $createdBy, string $othersValue='')
     {
         $action = new Action();
         $action->setCategory($this->actionCategoryRepository->find($IdCategory));
