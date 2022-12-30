@@ -34,11 +34,18 @@ tbody tr:last-child td
 }
 /*TOOLS*/
 .badge_vodou {
+    margin: 0 2px;
     padding: 0 0.6em;
     border-radius: 10rem;
     background-color: var(--main);
     font-size: 12px;
     color: white;
+}
+.badge_success {
+    background-color: darkgreen;
+}
+.badge_error {
+    background-color: darkred !important;
 }
 
 /*Member*/
@@ -75,7 +82,7 @@ tbody tr:last-child td
 
 .danger-zone {
     position: relative;
-    margin: 35px 0;
+    margin: 100px 0 35px;
     width: 100%;
     height: 80px;
     background: linear-gradient(-45deg, var(--main) 25%, var(--bg1) 25%, var(--bg1) 50%, var(--main) 50%, var(--main) 75%, var(--bg1) 75%, var(--bg1));

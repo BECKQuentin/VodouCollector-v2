@@ -1,12 +1,12 @@
-<div class="d-flex sort_item_toolbar">
+<div class="d-flex sort_item_toolbar bg_main py-1">
     {% if is_granted('ROLE_MEMBER') %}
         <div id="extract_csv">
-            <a href="{{ path('objects_extract_csv', {idsSearchObjs:idsSearchObjs}) }}" title="Extraire recherche CSV" class="btn btn-vodou">
+            <a href="{{ path('objects_extract_csv', {idsSearchObjs:idsSearchObjs}) }}" title="Extraire recherche CSV" class="btn btn-vodou btn-vodou-neumorphism">
                 <i class="fa-solid fa-file-csv"></i>
             </a>
         </div>
         <div id="extract_xls">
-            <a href="{{ path('objects_extract_xls', {idsSearchObjs:idsSearchObjs}) }}" title="Extraire recherche XLS" class="btn btn-vodou">
+            <a href="{{ path('objects_extract_xls', {idsSearchObjs:idsSearchObjs}) }}" title="Extraire recherche XLS" class="btn btn-vodou btn-vodou-neumorphism">
                 <i class="fa-solid fa-file-excel"></i>
             </a>
         </div>

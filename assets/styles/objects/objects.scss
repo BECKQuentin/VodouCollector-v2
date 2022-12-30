@@ -11,12 +11,14 @@
 /*Listing*/
 .table_listing_row {
     transition: all 0.35s;
-    background-color: #fff;
+    //background-color: #fff;
+    border-radius: 4px;
 }
 .table_listing_row:hover {
     //transform: scale(1.015);
     border-radius: 4px;
-    background-color: rgba(138, 42, 45, 0.85);
+    //background-color: rgba(138, 42, 45, 0.85);
+
 }
 .table_listing_row:hover .list_tag_link {
     background-color: #fff;
@@ -119,9 +121,7 @@
         border-bottom-left-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
         margin: 1px;
-        background: #8a2a2d;
-        box-shadow: inset 8px 8px 16px #732325,
-        inset -8px -8px 16px #a13135;
+        background-color: white;
     }
     .tab:hover {
         background: #b13939;
@@ -141,7 +141,9 @@
     .tab-active {
         height: 40px;
         margin: 0 1px;
-        background-color: white;
+        background: #8a2a2d;
+        //box-shadow: inset 8px 8px 16px #732325;
+        //inset -8px -8px 16px #a13135;
     }
     .tab:first-child {
         margin: 1px 1px 1px 0;
@@ -216,6 +218,31 @@
         bottom: 0;
         left: 0;
         width: 100%;
+    }
+}
+
+.card_object {
+    position: relative;
+    height: 250px;
+    width: 180px;
+    margin: 6px 12px;
+    border-radius: 4px;
+    h5 {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        z-index: 50;
+        color: white;
+        background-color: #212121;
+        border-radius: 4px;
+        padding: 4px 10px;
+    }
+    img {
+        height: 100%;
+        width: 100%;
+        border-radius: 4px;
     }
 }
 

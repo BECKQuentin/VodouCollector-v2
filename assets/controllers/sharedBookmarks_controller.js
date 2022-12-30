@@ -12,8 +12,8 @@ import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
 
-
     connect() {
+        this.idObject = document.getElementById('objectPage').dataset.idObject;
     }
 
     displayForm() {
@@ -23,7 +23,6 @@ export default class extends Controller {
         const form = document.querySelector('#shared_bookmarks_form');
         form.addEventListener('submit', e => {
             e.preventDefault();
-
             const formData = new FormData(form); // récupère les données du formulaire
 
             fetch(form.action, {
@@ -37,18 +36,15 @@ export default class extends Controller {
         })
 
     }
-
-
     removeForm() {
         document.querySelector('#SharedBookmarksForm').style.display = "none";
     }
 
     registerSharedBookmark(e) {
         this.addLoader(e);
-        const idObject = e.currentTarget.dataset.idObject
 
         fetch(e.currentTarget.dataset.url).then( (response) => {
-            this.reloadSharedBookmarks(idObject);
+            this.reloadSharedBookmarks();
             this.removeLoader(e);
             return response.blob();
         })
@@ -56,10 +52,9 @@ export default class extends Controller {
 
     addObjectSharedBookmark(e) {
         this.addLoader(e);
-        const idObject = e.currentTarget.dataset.idObject
 
         fetch(e.currentTarget.dataset.url).then((response) => {
-            this.reloadSharedBookmarks(idObject);
+            this.reloadSharedBookmarks();
             this.removeLoader(e);
             return response.blob();
         })
@@ -67,16 +62,15 @@ export default class extends Controller {
 
 
     //Recharger les items lors de l'ajout d'un nouveau et de la modification d'un
-    reloadSharedBookmarks(idObject) {
+    reloadSharedBookmarks() {
         const sharedBookmarksItems = document.querySelector('#SharedBookmarksItems');
         // Créer un objet URLSearchParams
         const params = new URLSearchParams();
         // Ajouter le paramètre idObject à l'objet URLSearchParams
-        params.append("idObject", idObject);
+        params.append("idObject", this.idObject);
         let url = '/shared-bookmarks'
         // Ajouter la chaîne de paramètres à l'URL
         const urlWithParams = `${url}?${params.toString()}`;
-
         fetch(urlWithParams)
             .then(response => response.text())
             .then(templateContent => {
@@ -93,7 +87,6 @@ export default class extends Controller {
             let div = document.createElement('div');
             scalingDots.appendChild(div);
         }
-        console.log(e.currentTarget);
         e.currentTarget.appendChild(scalingDots);
     }
 
@@ -103,17 +96,4 @@ export default class extends Controller {
             if (scalingDots) e.currentTarget.removeChild();
         }
     }
-
-    // addSharedBookmarks(e) {
-    //     e.preventDefault();
-    //
-    //
-    //     fetch(e.currentTarget.dataset.url).then( (response) => {
-    //         reloadSharedBookmarks();
-    //         return response.blob();
-    //     })
-    //
-
-    // }
-
 }

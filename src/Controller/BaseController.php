@@ -26,6 +26,8 @@ class BaseController extends AbstractController
     #[Route('/', name: 'home')]
     public function home(ObjectsRepository $objectsRepository, RoleHierarchyInterface $roleHierarchy, LibrariesRepository $librariesRepository, NewsRepository $newsRepository, BookRepository $bookRepository, UserRepository $userRepository): Response
     {
+
+        $mostViewedObjects = $objectsRepository->findAllNoDeleted();
         $countObjects = $objectsRepository->countObjects();
 
         //TODO: Factorisez ceci avec le nombres de lignes dans location
@@ -40,6 +42,7 @@ class BaseController extends AbstractController
         $news = $newsRepository->findActualNews($this->getUser()->getRoles()[0]);
 
         return $this->render('home/home.html.twig', [
+            'mostViewedObjects' => $mostViewedObjects,
             'news' => $news,
             'countObjects' => $countObjects,
             'countIsRent' => $countIsRent,

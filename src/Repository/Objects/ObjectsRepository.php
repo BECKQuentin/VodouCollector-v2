@@ -17,6 +17,7 @@ use Knp\Component\Pager\PaginatorInterface;
  * @method Objects[]    findAll()
  * @method Objects[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
+
 class ObjectsRepository extends ServiceEntityRepository
 {
     private PaginatorInterface $paginator;

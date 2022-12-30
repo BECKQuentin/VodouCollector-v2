@@ -1,0 +1,14 @@
+<div id="SharedBookmarksForm" class="flex-column justify-content-center">
+    {{ form_start(sharedBookmarksForm, {'action' : path('sharedBookmark_create'), 'attr' : {'id' : 'shared_bookmarks_form'} }) }}
+    <div class="row mb-2">
+        <div class="col-11">{{ form_row(sharedBookmarksForm.name) }}</div>
+        <div class="col-1"><a class="btn btn-vodou" title="Fermer formulaire" data-action="click->sharedBookmarks#removeForm"><i class="fa-solid fa-xmark"></i></a></div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <button type="submit" class="btn btn-vodou">Ajouter</button>
+        </div>
+        {{ form_rest(sharedBookmarksForm) }}
+    </div>
+    {{ form_end(sharedBookmarksForm) }}
+</div>

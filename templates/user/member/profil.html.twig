@@ -5,8 +5,9 @@
     <div class="d-flex justify-content-center flex-column">
 
         <div class="content_box col-md-4 align-self-center">
-            <h5 class="text-center m-3">Mon Profil</h5>
+            <h2>Mon Profil</h2>
             <hr>
+
             <div class="member_infos">
                 {% if app.user %}
                     <p class="text-center mb-2">{{ app.user.firstname|upper }} {{ app.user.lastname|capitalize }}</p>

@@ -153,32 +153,31 @@
 
 <!--Seconde ligne-->
 {% if object is defined and object.id is not null%}
-    <div class="d-flex justify-content-between" data-controller="bookmark">
+    <div class="d-flex justify-content-between bg_main py-1" data-controller="bookmark">
         <div class="d-flex">
-            <a class="btn btn-vodou" href="{{ app.request.uri }}" id="prev_object" title="Objet précédent de la recherche"><i class="fa-solid fa-chevron-left"></i></a>
+            <a class="btn btn-vodou btn-vodou-neumorphism" href="{{ app.request.uri }}" id="prev_object" title="Objet précédent de la recherche"><i class="fa-solid fa-chevron-left"></i></a>
 
             {% if is_granted('ROLE_MEMBER') %}
                 <div>
-                    <a class="btn btn-vodou" href="{{ path('object_pdf', {id:object.id}) }}" title="extraire en PDF">
+                    <a class="btn btn-vodou btn-vodou-neumorphism" href="{{ path('object_pdf', {id:object.id}) }}" title="extraire en PDF">
                         <i class="fa-solid fa-file-pdf"></i>
                     </a>
                 </div>
 
                 <!--Ajout aux favoris Groupé-->
                 <div>
-                    <a class="btn btn-vodou" data-bs-toggle="modal" data-bs-target="#sharedBookmark" title="Ajouter aux Favoris partagés">
+                    <a class="btn btn-vodou btn-vodou-neumorphism" data-bs-toggle="modal" data-bs-target="#sharedBookmark" title="Ajouter aux Favoris partagés">
                         <i class="fa-solid fa-star"></i>
                     </a>
                 </div>
-
-                {{ render(controller('App\\Controller\\Objects\\SharedBookmarks\\SharedBookmarksController::create', {idObject:object.id})) }}
+                {% include 'objects/objects/sharedBookmarks/modal.html.twig' with {object:object} %}
             {% endif %}
 
             <!--Ajout aux favoris personel-->
             <div>
                 <button data-action="click->bookmark#saveBookmark"
                         data-url="{{ path('objects_bookmark', {id:object.id}) }}"
-                        class="btn btn-vodou"
+                        class="btn btn-vodou btn-vodou-neumorphism"
                         {% if object.id not in bookmarks %}
                             title="Ajouter aux favoris"
                         {% else %}
@@ -194,7 +193,7 @@
             </div>
         </div>
         <div class="d-flex">
-            <a class="btn btn-vodou" href="{{ app.request.uri }}" id="next_object" title="Objet suivant de la recherche"><i class="fa-solid fa-chevron-right"></i></a>
+            <a class="btn btn-vodou btn-vodou-neumorphism" href="{{ app.request.uri }}" id="next_object" title="Objet suivant de la recherche"><i class="fa-solid fa-chevron-right"></i></a>
         </div>
 
     </div>

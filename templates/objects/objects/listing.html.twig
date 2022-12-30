@@ -8,7 +8,7 @@
 
 
     <div class="content_box">
-        <h4 class="p-1">Resultats : {{ totalItemsCount ?? '' }} objets</h4>
+        <h4 class="p-1 m-0 bg_main rounded-top">Resultats : {{ totalItemsCount ?? '' }} objets</h4>
 
         <div class="position-relative">
             {% include 'base/tool/sort_item_toolbar.html.twig' %}
@@ -17,17 +17,15 @@
         <table class="table">
             <thead>
             <tr>
-{#                <th scope="col"></th>#}
                 <th scope="col">#</th>
-                <th scope="col">Image</th>
-                <th scope="col">Titre</th>
-{#                <th scope="col">Categories</th>#}
-                <th scope="col">Vodou</th>
-                <th scope="col">Fonction d'usage</th>
+                <th>Image</th>
+                <th>Titre</th>
+                <th>Vodou</th>
+                <th>Fonction d'usage</th>
                 {% if is_granted('ROLE_MEMBER') %}
-                    <th scope="col">Emplacement</th>
+                    <th>Emplacement</th>
                 {% endif %}
-                <th scope="col">Action</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody data-controller="bookmark">

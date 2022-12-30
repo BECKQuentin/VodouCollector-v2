@@ -8,7 +8,7 @@ html {
   --body-bg-color: #6e3930 !important;
   --main: #8a2a2d;
   --second: #008080;
-  --third: #ffcc00;
+  --third: #ADB04F;
   --text: #212121;
   --bg1: #B0413E;
   --bg2: #2C75B0;
@@ -54,9 +54,6 @@ a {
 hr {
   color: var(--main);
 }
-h2  {
-  margin: 10px !important;
-}
 input:focus,
 input:active,
 textarea:focus,
@@ -84,6 +81,15 @@ input:checked {
 .hide {
   display: none;
 }
+.bg_main {
+  background-color: var(--main);
+}
+.bg_second {
+  background-color: var(--second);
+}
+.bg_third {
+  background-color: var(--third);
+}
 .btn-vodou {
   position: relative;
   cursor: pointer;
@@ -91,17 +97,31 @@ input:checked {
   border-radius: 4px;
   border-bottom: solid 2px var(--main);
   width: fit-content;
-  //background: #8a2a2d;
-  //box-shadow:  14px 14px 28px #732325,
-  //-14px -14px 28px #a13135;
 }
 .btn-vodou:hover {
-  background-color: var(--main) !important;
+  background-color: var(--main);
 }
 .btn-vodou:focus,
 .btn-vodou:active {
   box-shadow: 0 0 4px var(--main);
 }
+
+.btn-vodou-neumorphism {
+  color: white;
+  margin: 1px;
+  background: linear-gradient(145deg, #7c2629, #942d30);
+  box-shadow:  3px 1px 3px #4c1719;
+  border-bottom: none !important;
+}
+.btn-vodou-neumorphism:hover {
+  color: white;
+  background: var(--main);
+  box-shadow: inset 5px 5px 10px #4c1719,
+  inset -5px -5px 10px #c83d41;
+}
+
+
+
 .btn-vodou-cancel {
   color: #FFFFFF;
   background-color: var(--main) !important;
@@ -168,13 +188,80 @@ a:not(.activated) span:hover {
 .content_box {
   position: relative;
   border: none;
-  background-color: #FFFFFF;
+  background-color: white;
   padding-bottom: 10px;
   margin: 5px 20px 40px 20px !important;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.3) 2px 4px 3px;
   .content_box_element {
     padding: 5px 10px;
+  }
+  h2  {
+    background-color: var(--main);
+    padding: 10px 20px;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    //margin: 10px !important;
+  }
+}
+
+//CAROUSEL GRAB//
+.carousel_grab {
+  background-color: lighten(skyblue, 60%);
+  grid-area: main;
+  padding: 0;
+  margin: 25px 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  .carousel_grab_items {
+    position: relative;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    transition: all 0.2s;
+    will-change: transform;
+    user-select: none;
+    cursor: pointer;
+    .item {
+      display: inline-block;
+      background: var(--main);
+      height: 400px;
+      width: 370px;
+      img {
+        margin: 0 auto;
+        height: 100%;
+        max-width: 370px !important;
+      }
+      @media screen and (max-width: 500px) {
+        min-height: 200px;
+        min-width: 200px;
+      }
+    }
+  }
+  .carousel_grab_items.active {
+    background: rgba(255,255,255,0.3);
+    cursor: grabbing;
+    //cursor: -webkit-grabbing;
+  }
+}
+
+
+//SCROLLBAR//
+@media (hover:hover) {
+  .scrollbar {
+    &::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      background-color: white;
+    }
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+      background-color: #F5F5F5;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--main);
+    }
   }
 }
 

@@ -1,0 +1,49 @@
+{% extends "base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('object') }}
+{% endblock %}
+
+{% block body %}
+
+    <div class="content_box">
+
+        <h4 class="p-2">Favoris partagé : {{ sharedBookmarks.name|upper }}</h4>
+        <hr>
+
+        <div class="content_box_element" data-controller="formSharedBookmarks">
+            {{ form_start(sharedBookmarksForm) }}
+            <div class="row mb-2">
+                <div class="col-6">{{ form_row(sharedBookmarksForm.name) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-12">{{ form_row(sharedBookmarksForm.objects) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <button type="submit" class="btn btn-vodou">Ajouter</button>
+                </div>
+                {{ form_rest(sharedBookmarksForm) }}
+            </div>
+            {{ form_end(sharedBookmarksForm) }}
+        </div>
+
+    </div>
+
+    <div class="content_box d-flex">
+        {% for object in objects %}
+            <div class="card_object">
+                {% for img in object.images %}
+                    {% if loop.first %}
+                        <img src="{{ img.src|image }}" alt="">
+                    {% endif %}
+                {% endfor %}
+                <h5>#{{ object.code }} - {{ object.title }}</h5>
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+{% endblock %}

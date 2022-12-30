@@ -44,10 +44,22 @@ class ObjectsController extends AbstractController
     public function __construct(
         private ActionService $actionService,
         private EntityManagerInterface $entityManager,
+        private ObjectsRepository $objectsRepository,
     ){}
 
+    #[Route('/objects/all-code')]
+    #[IsGranted("ROLE_MEMBER", message: "Seules les MEMBRES peuvent faire ça")]
+    public function allObjectsCode(): \Symfony\Component\HttpFoundation\JsonResponse
+    {
+        $json = [];
+        foreach ($this->objectsRepository->findAllNoDeleted() as $object) {
+            $json[] = $object->getCode();
+        }
+        return $this->json($json);
+    }
+
     #[Route('/objects', name: 'objects_listing')]
-    public function listingObjects(ObjectsRepository $objectsRepository, PaginatorInterface $paginator, SessionInterface $session, Request $request): Response
+    public function listingObjects(PaginatorInterface $paginator, SessionInterface $session, Request $request): Response
     {
         $data = new SearchData();
         $data->page = $request->get('page', 1);
@@ -58,7 +70,7 @@ class ObjectsController extends AbstractController
             $searchForm->remove('updatedBy');
         }
         $searchForm->handleRequest($request);
-        $searchObjects = $objectsRepository->searchObjects($data);
+        $searchObjects = $this->objectsRepository->searchObjects($data);
 
         //array des ID de la recherche
         $arrIdSearchObj = [];
