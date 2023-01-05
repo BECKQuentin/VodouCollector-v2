@@ -6,7 +6,9 @@ use App\Entity\Site\Action;
 use App\Entity\User\User;
 use App\Form\User\RegistrationFormType;
 use App\Repository\Site\ActionCategoryRepository;
+use App\Repository\Site\ActionRepository;
 use App\Repository\User\UserRepository;
+use App\Service\ActionService;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
 {
+    public function __construct(
+        private ActionService $actionService
+    ){}
 
 //    #[Route('/a/member-update/{id}', name: 'admin_member_update')]
 //    #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
@@ -46,18 +51,19 @@ class AdminController extends AbstractController
 
     #[Route('/a/member-delete/{id}', name: 'admin_member_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function memberDeleteByAdmin(User $user, ActionCategoryRepository $actionCategoryRepository, Request $request, UserRepository $userRepository, ManagerRegistry $doctrine)
+    public function memberDeleteByAdmin(User $user, Request $request, UserRepository $userRepository, ManagerRegistry $doctrine)
     {
 
-//        $action = new Action();
-//        $action->setName('Utilisateur supprimé');
-//        $action->setUser($user);
-//        $action->setCreatedBy($this->getUser());
-//        $action->setCategory($actionCategoryRepository->find(2));
+        $this->actionService->addAction(1, 'Utilisateur supprimé', $user, $user);
+
+        foreach ($user->getActions() as $action) {
+            $action->setUser(null);
+            $action->setCreatedBy(null);
+        }
+
 
         $em = $doctrine->getManager();
         $em->remove($user);
-//        $em->persist($action);
         $em->flush();
 
         $this->addFlash('success', 'Vous avez supprimé '.$user->getEmail().' !');

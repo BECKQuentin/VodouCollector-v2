@@ -65,7 +65,7 @@ class Objects
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'objects')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $createdBy = null;
 
     #[ORM\Column(nullable: true)]
@@ -178,6 +178,7 @@ class Objects
     private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $deletedBy = null;
 
     #[ORM\ManyToMany(targetEntity: SharedBookmarks::class, mappedBy: 'objects')]

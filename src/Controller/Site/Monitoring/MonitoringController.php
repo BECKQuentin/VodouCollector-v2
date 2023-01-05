@@ -35,6 +35,10 @@ class MonitoringController extends AbstractController
         $site = $siteParameterRepository->find(1);
         if (count($actions) > $site->getLimitActionLog()) {
             foreach (array_slice($actions, $site->getLimitActionLog()) as $actionToRemove) {
+
+
+                $actionToRemove->getCreatedBy(null);
+
                 $em = $doctrine->getManager();
                 $em->remove($actionToRemove);
                 $em->flush();

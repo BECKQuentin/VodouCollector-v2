@@ -1,10 +1,26 @@
 #toolbar {
     /*margin-top: 50px !important;*/
     position: absolute;
+    z-index: 9999;
     top: 0;
     bottom: 0;
     height: 100vh;
     transition: all ease 0.2s;
+    background-color: #212121;
+    color: white;
+    .dropdown-menu {
+        background-color: #212121;
+        color: white;
+        .dropdown-item {
+            color: white;
+        }
+    }
+    .nav-link {
+        color: white;
+    }
+    .nav-link:hover span, .nav-link:hover i {
+        color: var(--main);
+    }
 }
 
 #hideToolbar {
@@ -35,7 +51,7 @@ nav {
 }
 .navbar-collapse {
     z-index: 9999;
-    background-color: white;
+    background-color: inherit;
 }
 .navbar-nav li a {
     border-bottom: 2px solid transparent;
@@ -47,11 +63,11 @@ nav {
     margin: 0 5px 0 15px !important;
 }
 .nav-link {
-    color: black;
     span {
         transition: all ease 0.2s;
     }
 }
+
 /*.navbar-nav li a:hover {*/
 /*    animation: border 1s forwards, growUp 1s forwards;*/
 /*}*/

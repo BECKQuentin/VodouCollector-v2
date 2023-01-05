@@ -84,7 +84,7 @@ tbody tr:last-child td
     position: relative;
     margin: 100px 0 35px;
     width: 100%;
-    height: 80px;
+    height: 50px;
     background: linear-gradient(-45deg, var(--main) 25%, var(--bg1) 25%, var(--bg1) 50%, var(--main) 50%, var(--main) 75%, var(--bg1) 75%, var(--bg1));
     background-size: 20px 20px;
 }
@@ -95,7 +95,7 @@ tbody tr:last-child td
     font-weight: bold;
     position: absolute;
     z-index: 150;
-    top: 20px;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
 }

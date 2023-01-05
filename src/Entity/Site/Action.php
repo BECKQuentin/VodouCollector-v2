@@ -26,7 +26,7 @@ class Action
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(cascade: ["persist"], inversedBy: 'actions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(cascade: ["persist"], inversedBy: 'actions')]

@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('login', './assets/js/login.js')
+    .addEntry('home', './assets/js/home.js')
     .addEntry('site_style', './assets/js/site/style.js')
     .addEntry('search', './assets/js/tool/search.js')
     .addEntry('object', './assets/js/object.js')

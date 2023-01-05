@@ -73,6 +73,7 @@ class MemberController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($user === $userRequest) {
+
                 if ($form->get('password')->getData() !== null) {
                     $plaintextPassword = $form->getData()->getPassword();
                     $hashedPassword = $passwordHasher->hashPassword(
@@ -80,6 +81,8 @@ class MemberController extends AbstractController
                         $plaintextPassword
                     );
                     $user->setPassword($hashedPassword);
+//                    $2y$13$gYCoAywQi32IAp79rFaCNuvSvTPthfu4U2bBtlGmHOqt5c27ybQoG
+//                    $2y$13$68cGdvQj2MwLg/fVNylLPOquNjKVEA.f1BHiZNWcPFWI9w1kGLOKm
                 }
 
                 $this->actionService->addAction(1, 'Utilisateur modifié par lui-même', $userRequest, $user);
