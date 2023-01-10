@@ -1,12 +1,12 @@
 {% if object is defined %}
     <!-- Modal -->
     <div class="modal fade" id="modalObjectImg{{ object.code }}" tabindex="-1" role="dialog" aria-labelledby="modalObjectImg{{ object.code }}" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg_main">
                     <h5 class="modal-title" id="modalObjectImg{{ object.code }}">{{ object.code }} - {{ object.title }}</h5>
                     <button type="button" class="btn btn-vodou close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -30,18 +30,17 @@
         </div>
     </div>
     <!--Carousel-->
-    <div id="carouselObjectImg" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+    <div id="carouselObjectImg" class="carousel slide m-1" data-bs-ride="carousel" data-bs-interval="1500000">
         {% if object is defined and object.images.count > 0 %}
             <div class="carousel-inner">
                 {% for img in object.images %}
-                    <div class="carousel-item {{ loop.first ? 'active' }}">
-                        <div class="img-ratio" style="--ratio:80%;">
-                            <div class="img">
-                                <img data-bs-toggle="modal" data-bs-target="#modalObjectImg{{ object.code }}" src="{{ img.src|image }}" alt="">
+                    <div class="carousel-item {{ loop.first ? 'active' }} object_img_thumb_container">
+                        <div class="d-flex justify-content-center align-items-center h-100 w-100" style="border-radius: 4px">
+                            <img data-bs-toggle="modal" data-bs-target="#modalObjectImg{{ object.code }}" src="{{ img.src|image }}" alt="{{ img.src }}">
+
+                            <div class="carousel-caption d-none d-md-block m-0 px-2 py-1">
+                                <h5 class="m-0">{{ img.code }}</h5>
                             </div>
-                        </div>
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5 class="m-0">{{ img.code }}</h5>
                         </div>
                     </div>
                 {% endfor %}

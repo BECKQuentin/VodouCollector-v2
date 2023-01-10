@@ -49,10 +49,10 @@ class MemberController extends AbstractController
 
     #[Route('/member-update/{id}', name: 'member_update')]
     #[IsGranted('ROLE_GUEST', message: 'Seuls les Invités peuvent faire ça !')]
-    public function memberUpdate(ActionCategoryRepository $actionCategoryRepository, UserPasswordHasherInterface $passwordHasher, User $userRequest, Request $request, ManagerRegistry $doctrine)
+    public function memberUpdate(User $userRequest, ActionCategoryRepository $actionCategoryRepository, UserPasswordHasherInterface $passwordHasher, Request $request, ManagerRegistry $doctrine)
     {
-
         $user = $this->getUser();
+
         $isAdmin = false;
         if ($this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
             $isAdmin = true;
@@ -66,6 +66,8 @@ class MemberController extends AbstractController
         }
         if ($isAdmin && $user !== $userRequest) {
             $form->remove('password');
+        } else {
+            $form->get('password')->setData('');
         }
 
         $form->handleRequest($request);
@@ -74,24 +76,24 @@ class MemberController extends AbstractController
 
             if ($user === $userRequest) {
 
-                if ($form->get('password')->getData() !== null) {
-                    $plaintextPassword = $form->getData()->getPassword();
+//                dd($form->get('password')->getData());
+
+                if ($form->get('password')->getData() !== null && (!$passwordHasher->isPasswordValid($userRequest, $form->get('password')->getData())) ) {
+
+                    $plaintextPassword = $form->get('password')->getData();
                     $hashedPassword = $passwordHasher->hashPassword(
-                        $user,
+                        $userRequest,
                         $plaintextPassword
                     );
                     $user->setPassword($hashedPassword);
-//                    $2y$13$gYCoAywQi32IAp79rFaCNuvSvTPthfu4U2bBtlGmHOqt5c27ybQoG
-//                    $2y$13$68cGdvQj2MwLg/fVNylLPOquNjKVEA.f1BHiZNWcPFWI9w1kGLOKm
                 }
 
                 $this->actionService->addAction(1, 'Utilisateur modifié par lui-même', $userRequest, $user);
                 $em = $doctrine->getManager();
-                $em->persist($user);
+                $em->persist($userRequest);
                 $em->flush();
 
             } else {
-
                 $this->actionService->addAction(1, 'Utilisateur modifié par Admin', $userRequest, $user);
                 $em = $doctrine->getManager();
                 $em->persist($userRequest);

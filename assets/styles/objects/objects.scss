@@ -112,6 +112,26 @@
     transform: scale(1.75);
     z-index: 9999;
 }
+.object_img_thumb_container {
+    border-radius: 6px;
+    height: 400px;
+    width: 100%;
+    position: relative;
+    background-color: black;
+    cursor: pointer;
+    .carousel-caption {
+        width: fit-content;
+        background-color: black;
+        h5 {
+            color: white;
+        }
+    }
+}
+.object_img_thumb_container img {
+    //width: 100%;
+    //height: 100%;
+}
+
 #navbarObjectTab {
     background-color: var(--second);
     i {

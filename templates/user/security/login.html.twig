@@ -43,12 +43,12 @@
                             </div>
 
                         </div>
-                        <div class="form-group mb-2">
+                        <div class="position-relative form-group mb-2">
                             <div class="d-flex align-items-center">
                                 <i class="fa-solid fa-lock px-1"></i>
                                 <input class="form-control" type="password" id="password" name="password" placeholder="Password"/>
                             </div>
-
+                            <i class="login_password_show position-absolute fa-solid fa-eye fs-8 px-1" style="right: 0; top: 50%; transform: translateY(-50%); cursor: pointer"></i>
                         </div>
 
                         {% if csrf_token('authenticate') %}
@@ -71,7 +71,7 @@
         </div>
 
         {% block javascripts %}
-{#            {{ encore_entry_script_tags('login') }}#}
+            {{ encore_entry_script_tags('login') }}
         {% endblock %}
 
     </body>

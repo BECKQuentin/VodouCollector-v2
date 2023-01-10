@@ -31,3 +31,15 @@ if (idObject.dataset) {
     }
 }
 
+//Affichage des images selon leur format
+let images = document.querySelectorAll('.object_img_thumb_container img');
+for (let i = 0; i < images.length; i++) {
+    let aspectRatio = images[i].naturalWidth / images[i].naturalHeight;
+    if (aspectRatio > 1) {
+        images[i].style.width = 100 + '%';
+    } else {
+        images[i].style.height = 100 + '%';
+    }
+}
+
+

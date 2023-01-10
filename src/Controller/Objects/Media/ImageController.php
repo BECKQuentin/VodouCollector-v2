@@ -94,7 +94,7 @@ class ImageController extends AbstractController
         $em->persist($action);
         $em->flush();
 
-        return($this->redirectToRoute('objects_medias',
+        return($this->redirectToRoute('objects',
             ['id' => $objId],
         ));
 

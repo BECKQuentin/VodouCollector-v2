@@ -117,7 +117,6 @@ class RegistrationController extends AbstractController
         }
 
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
-
 //        try {
 //            $userAuthenticator->authenticateUser(
 //                $user,
