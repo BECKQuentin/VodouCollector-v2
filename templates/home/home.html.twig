@@ -9,65 +9,126 @@
 
 {% block body %}
 
-    <h1 class="text-center">Bienvenue sur l'inventaire du Musée Vodou</h1>
+    <h1 class="text-center">Collection ARBOGAST</h1>
 
-    {% include 'base/tool/carousel.html.twig' %}
+    <div class="row">
+        <div class="col-12 col-md-9 px-0">
+            <div id="mostViewedObject" class="content_box" data-controller="bookmark">
+                <h2 class="text-center my-3">Les plus consultés</h2>
+                <hr>
 
-    <div class="d-flex home_box_content">
-        <div class="col-md-4">
-            <div class="home_box home_box_first">
-                <span class="fs-3">Nombre d'objets</span>
-                <span class="fs-1 py-2">{{ countObjects }}</span>
-                <span class="fs-5">{{ countIsExposedPermObjects }} expo permanente</span>
-                <span class="fs-5">{{ countIsExposedTempObjects }} expo temporaire</span>
-                <span class="fs-5">{{ countIsExposedStock }} En réserve</span>
-                <span class="fs-5">{{ countIsRent }} est loué</span>
-                <span class="fs-5">{{ countToFix}} à reparé</span>
+                <div class="d-flex flex-wrap justify-content-center">
+                    {% for object in mostViewedObjects %}
+                        <div class="card" style="width: 14rem;">
+                            {% if object.images is not null %}
+                                {% for img in object.images %}
+                                    {% if loop.first %}
+                                        <div class="object_img_thumb_container card-img-top d-flex justify-content-center align-items-center">
+                                            <img src="{{ img.src|image }}" alt="">
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ object.code }} - {{ object.title }}</h5>
+                                <p class="card-text">{{ object.usageFonction|u.truncate(50, '...') }}</p>
 
-                <div class="d-flex">
-                    <a class="btn btn-vodou" href="{{ path('objects_listing', {'expositionLocation[]': 1}) }}">Voir les objets loué</a>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button data-action="click->bookmark#saveBookmark"
+                                        data-url="{{ path('objects_bookmark', {id:object.id}) }}"
+                                        class="btn btn-vodou btn-vodou-neumorphism">
+                                    {% if object.id not in bookmarks %}
+                                        <i title="Ajouter aux favoris" class="fa-regular fa-bookmark"></i>
+                                    {% else %}
+                                        <i title="Retirer des favoris" class="fa-solid fa-bookmark"></i>
+                                    {% endif %}
+                                </button>
+                                <a href="{{ path('objects', {id:object.id}) }}" class="btn btn-vodou">Consulter</a>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="col-12 col-md-3 px-0">
+            <div class="content_box">
+                <h2 class="text-center my-3">Total : {{ countObjects }}</h2>
+                <hr>
+                <div class="d-flex flex-column">
+                    <span class="fs-5 p-2">{{ countIsExposedPermObjects }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':3}) }}">Expo permanente</a></span>
+                    <span class="fs-5 p-2">{{ countIsExposedTempObjects }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':2}) }}">Expo temporaire</a></span>
+                    <span class="fs-5 p-2">{{ countIsExposedStock }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':4}) }}">En Reserve</a></span>
+                    <span class="fs-5 p-2">{{ countIsRent }} - <a class="link_underline" href="{{ path('objects_listing', {'state[]':5, 'state[]':4}) }}">En location</a></span>
+                    <span class="fs-5 p-2">{{ countToFix}} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]': 1}) }}">En réparation</a></span>
+
+                    {% if is_granted('ROLE_MEMBER') %}
+                        <div class="d-flex">
+
+
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+{#            <div class="d-flex home_box_content">#}
+{#                #}
+{#            </div>#}
+            <div class="content_box">
+                <h2 class="text-center my-3">Actualités</h2>
+                <hr>
+                <div class="d-flex justify-content-center flex-wrap">
+                    {% for new in news %}
+                        <div class="card_news">
+                            <div class="d-flex justify-content-between">
+                                <h4>{{ new.title}}</h4>
+                            </div>
+                            <p>{{ new.description|u.truncate(150, '...') }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div>
+                                        <em style="font-size: 10px">{{ new.createdBy.firstname|capitalize }} {{ new.createdBy.lastname|upper }} : {{ new.createdAt|date('H:i d-m-Y') }}</em>
+                                    </div>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <div>
+                                            <em style="font-size: 10px">expire : {{ new.expireAt|date('d-m-Y') }}</em>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <div>
+                                            <a href="{{ path('news_edit', {id:new.id}) }}">
+                                                <i class="fa-solid fa-pen-nib"></i>
+                                            </a>
+                                            <a href="{{ path('news_delete', {id:new.id}) }}" onclick="return confirm('Etes vous sûr de vouloir supprimer cet actu ?')">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+
             </div>
         </div>
     </div>
 
-    <div class="content_box">
-        <h2 class="text-center my-3">Actualités</h2>
-
-        <hr>
-
-        <div class="d-flex justify-content-center flex-wrap">
-            {% for new in news %}
-                <div class="card_news">
-                    <div class="d-flex justify-content-between">
-                        <h4>{{ new.title}}</h4>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <div>
-                                <a href="{{ path('news_edit', {id:new.id}) }}">
-                                    <i class="fa-solid fa-pen-nib"></i>
-                                </a>
-                                <a href="{{ path('news_delete', {id:new.id}) }}" onclick="return confirm('Etes vous sûr de vouloir supprimer cet actu ?')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <p>{{ new.description|u.truncate(150, '...') }}</p>
-                    <div>
-                        <div>
-                            <em style="font-size: 10px">{{ new.createdBy.firstname|capitalize }} {{ new.createdBy.lastname|upper }} : {{ new.createdAt|date('H:i d-m-Y') }}</em>
-                        </div>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <div>
-                                <em style="font-size: 10px">expire : {{ new.expireAt|date('d-m-Y') }}</em>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
 
 
-    </div>
+{#    {% include 'base/tool/carousel.html.twig' %}#}
+
+
+
+
 
 {% endblock %}

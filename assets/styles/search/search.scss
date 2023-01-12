@@ -12,14 +12,13 @@
     top: 50px;
     background-color: #ffffff;
 }
-#expositionLocation #location {
+#expositionLocation .form-check {
     display: flex;
-}
-#expositionLocation #location .form-check {
     margin: 0 8px;
 }
-#expositionLocation #location .form-check .form-check-label {
+#expositionLocation .form-check .form-check-label {
     white-space: nowrap;
+    padding: 0 4px;
 }
 #search_item_toolbar_button {
     border-radius: 5px;

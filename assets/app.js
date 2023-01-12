@@ -11,7 +11,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/app.scss';
 import './styles/base/style.scss';
 import './styles/base/home.scss';
-import './styles/base/responsive.scss';
 import './styles/base/toolbar.scss';
 import './styles/objects/media.scss';
 import './styles/objects/objects.scss';
@@ -20,6 +19,7 @@ import './styles/search/search.scss';
 import './styles/site/style.css';
 import './styles/bundles/captcha.css';
 import './styles/app.scss';
+import './styles/base/responsive.scss';
 
 
 // start the Stimulus application

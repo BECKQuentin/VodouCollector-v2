@@ -81,6 +81,9 @@
     .object_form_elem:first-of-type {
         display: block;
     }
+    textarea {
+        min-height: 225px;
+    }
 }
 
 
@@ -100,7 +103,9 @@
     min-width: fit-content;
 }
 
-
+#carouselObjectImg {
+    border-radius: 6px;
+}
 .object_listing_img {
     width: 80px;
     cursor: pointer;
@@ -213,6 +218,7 @@
 .fa-solid.fa-bookmark {
     color: #F5F358;
 }
+
 #SharedBookmarksForm {
     display: none;
     padding: 0  0 3px 5px;

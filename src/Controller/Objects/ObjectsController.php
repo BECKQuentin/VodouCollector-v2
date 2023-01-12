@@ -45,6 +45,10 @@ class ObjectsController extends AbstractController
         private ActionService $actionService,
         private EntityManagerInterface $entityManager,
         private ObjectsRepository $objectsRepository,
+        private UploadService $uploadService,
+        private ImageRepository $imageRepository,
+        private VideoRepository $videoRepository,
+        private FileRepository $fileRepository
     ){}
 
     #[Route('/objects/all-code')]
@@ -63,7 +67,6 @@ class ObjectsController extends AbstractController
     {
         $data = new SearchData();
         $data->page = $request->get('page', 1);
-
 
         $searchForm = $this->createForm(SearchFieldType::class, $data);
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
@@ -99,45 +102,32 @@ class ObjectsController extends AbstractController
         ]);
     }
 
-
-
-//    #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-//    public function addObjects(ActionCategoryRepository $actionCategoryRepository, Request $request, ManagerRegistry $doctrine, ValidatorInterface $validator): Response
-//    {
-//        $objects = new Objects();
-//        $form = $this->createForm(ObjectsFormType::class, $objects);
-//        $form->handleRequest($request);
-//
-//        if ($form->isSubmitted() && $form->isValid()) {
-//
-//            $objects->setCreatedBy($this->getUser());
-//
-//            $action = new Action();
-//            $action->setName('Objet crée');
-//            $action->setObject($objects);
-//            $action->setCreatedBy($this->getUser());
-//            $action->setCategory($actionCategoryRepository->find(2));
-//
-//            $em = $doctrine->getManager();
-//            $em->persist($action);
-//            $em->persist($objects);
-//            $em->flush();
-//
-//            $this->addFlash('success', "L'article a bien été ajouté");
-//            return $this->redirectToRoute('objects');
-//        }
-//
-//        return $this->render('objects/objects/add.html.twig', [
-//            'form' => $form->createView(),
-//        ]);
-//    }
-
-
     #[Route('/objects-add', name: 'objects_add')]
-    #[Route('/objects/{id}', name: 'objects')]
-    #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function editObjects(Objects $objects=null, ImageRepository $imageRepository, FileRepository $fileRepository, VideoRepository $videoRepository, ActionCategoryRepository $actionCategoryRepository,UploadService $uploadService, Request $request, ManagerRegistry $doctrine): Response
+    #[IsGranted("ROLE_ADMIN", message: "Seules les Invités peuvent faire ça")]
+    public function create(Request $request)
     {
+        return $this->renderEdit(new Objects(), $request);
+    }
+
+    #[Route('/objects/{id}', name: 'objects')]
+    #[IsGranted("ROLE_GUEST", message: "Seules les Invités peuvent faire ça")]
+    public function editObjects(Objects $objects, ImageRepository $imageRepository, FileRepository $fileRepository, VideoRepository $videoRepository, ActionCategoryRepository $actionCategoryRepository,UploadService $uploadService, Request $request, ManagerRegistry $doctrine): Response
+    {
+        //Vérification du ROLE_MEMBER au moins, les invités ne peuvent que voir l'objet
+        if ($this->container->get('security.authorization_checker')->isGranted('ROLE_MEMBER')) {
+            return $this->renderEdit($objects, $request);
+        } else {
+            return $this->render('objects/objects/view.html.twig', [
+                'object'    => $objects,
+                'bookmarks'      => $this->getUser()->getBookmark(),
+            ]);
+        }
+    }
+
+    private function renderEdit(Objects $objects, Request $request)
+    {
+        $user = $this->getUser();
+
         $isAdding = false;
         if  ($objects == null) {
             $objects = new Objects();
@@ -146,15 +136,11 @@ class ObjectsController extends AbstractController
             //Vérification d'Objet existant
             if ($objects->getDeletedAt()) {
                 $this->addFlash('danger', $objects->getCode() . ' - ' . $objects->getTitle() . ' n \'existe plus !');
-                return $this->redirectToRoute('home');
+                return $this->redirectToRoute('objects_listing');
             }
         }
-
-        $user = $this->getUser();
-
         $form = $this->createForm(ObjectsFormType::class, $objects);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
 
             if  (!$isAdding) {
@@ -166,9 +152,9 @@ class ObjectsController extends AbstractController
             if ($images) {
                 foreach ($images as $image) {
 
-                    if($uploadService->isImage($image)) {
-                        $fileNameCode = $uploadService->createFileName($image, $objects, $imageRepository);
-                        $fileName = $uploadService->upload($image, $objects, $fileNameCode);
+                    if($this->uploadService->isImage($image)) {
+                        $fileNameCode = $this->uploadService->createFileName($image, $objects, $this->imageRepository);
+                        $fileName = $this->uploadService->upload($image, $objects, $fileNameCode);
 
                         $img = new Image();
                         $img->setSrc($fileName);
@@ -178,9 +164,8 @@ class ObjectsController extends AbstractController
 
                         $this->actionService->addAction(2, 'Image ajouté', $objects, $this->getUser(), $img->getSrc());
 
-                        $em = $doctrine->getManager();
-                        $em->persist($objects);
-                        $em->flush();
+                        $this->entityManager->persist($objects);
+                        $this->entityManager->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas une image valide');
                         $this->redirectToRoute('objects',
@@ -193,9 +178,9 @@ class ObjectsController extends AbstractController
             if ($files) {
                 foreach ($files as $file) {
 
-                    if($uploadService->isFile($file)) {
-                        $fileNameCode = $uploadService->createFileName($file, $objects, $fileRepository);
-                        $fileName = $uploadService->upload($file, $objects, $fileNameCode);
+                    if($this->uploadService->isFile($file)) {
+                        $fileNameCode = $this->uploadService->createFileName($file, $objects, $this->fileRepository);
+                        $fileName = $this->uploadService->upload($file, $objects, $fileNameCode);
 
                         $fl = new File();
                         $fl->setSrc($fileName);
@@ -205,9 +190,8 @@ class ObjectsController extends AbstractController
 
                         $this->actionService->addAction(2, 'Fichier ajouté', $objects, $this->getUser(), $fl->getSrc());
 
-                        $em = $doctrine->getManager();
-                        $em->persist($objects);
-                        $em->flush();
+                        $this->entityManager->persist($objects);
+                        $this->entityManager->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas un fichier valide');
                         $this->redirectToRoute('objects',
@@ -221,9 +205,9 @@ class ObjectsController extends AbstractController
             if ($videos) {
                 foreach ($videos as $video) {
 
-                    if($uploadService->isVideo($video)) {
-                        $fileNameCode = $uploadService->createFileName($video, $objects, $videoRepository);
-                        $fileName = $uploadService->upload($video, $objects, $fileNameCode);
+                    if($this->uploadService->isVideo($video)) {
+                        $fileNameCode = $this->uploadService->createFileName($video, $objects, $this->videoRepository);
+                        $fileName = $this->uploadService->upload($video, $objects, $fileNameCode);
 
                         $vid = new Video();
                         $vid->setSrc($fileName);
@@ -233,9 +217,8 @@ class ObjectsController extends AbstractController
 
                         $this->actionService->addAction(2, 'Video ajouté', $objects, $this->getUser(), $vid->getSrc());
 
-                        $em = $doctrine->getManager();
-                        $em->persist($objects);
-                        $em->flush();
+                        $this->entityManager->persist($objects);
+                        $this->entityManager->flush();
                     } else {
                         $this->addFlash('danger', 'Ceci n\'est pas une vidéo valide');
                         $this->redirectToRoute('objects',
@@ -281,22 +264,21 @@ class ObjectsController extends AbstractController
                 $this->actionService->addAction(2, 'Objet modifié', $objects, $this->getUser());
             }
 
-            $em = $doctrine->getManager();
-            $em->persist($objects);
-            $em->flush();
+            $this->entityManager->persist($objects);
+            $this->entityManager->flush();
 
             $this->addFlash('success', "Les modifications ont bien été sauvegardées !");
             $this->redirectToRoute('objects', ['id' => $objects->getId()]);
         }
 
-
         return $this->render('objects/objects/view.html.twig', [
             'object'    => $objects,
             'bookmarks'      => $this->getUser()->getBookmark(),
-            'extension' => $objects->getFiles(),
+//            'extension' => $objects->getFiles(),
             'form'      => $form->createView(),
         ]);
     }
+
 
 
     //SOFT DELETE

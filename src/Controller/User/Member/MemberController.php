@@ -76,8 +76,6 @@ class MemberController extends AbstractController
 
             if ($user === $userRequest) {
 
-//                dd($form->get('password')->getData());
-
                 if ($form->get('password')->getData() !== null && (!$passwordHasher->isPasswordValid($userRequest, $form->get('password')->getData())) ) {
 
                     $plaintextPassword = $form->get('password')->getData();

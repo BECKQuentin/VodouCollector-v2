@@ -7,6 +7,7 @@ if (idObject.dataset) {
     //Si object inclut dans la recherche
     if (idsSearchObjs.includes(idObject)) {
 
+
         let indexOfObject = idsSearchObjs.indexOf(idObject);
         let idPrevElement = idsSearchObjs.at(indexOfObject-1);
         let idNextElement = idsSearchObjs.at(indexOfObject+1);
@@ -26,10 +27,37 @@ if (idObject.dataset) {
         prevObject.setAttribute('href', prevUrl);
         nextObject.setAttribute('href', nextUrl);
 
+        //Affichage de l'index de la recherche dans la vue
+        const indexSearchObject = document.getElementById('indexSearchObject');
+        indexSearchObject.innerText = indexOfObject+1 + '/' + idsSearchObjs.length;
+
     } else {
         //n'est pas dans la liste, désafficher les icons de navigation suivant et précedent des fiches objets
     }
 }
+
+
+//Message POPUP pour avertir lorsqu'un utilisateur quitte le form Object sans sauvegarder
+let formModified = false;
+let inputObjectForm = document.querySelectorAll('input');
+
+inputObjectForm.forEach((input) => {
+    input.addEventListener('change', () => {
+        formModified = true;
+    })
+})
+
+window.addEventListener('beforeunload', (event) => {
+    // Cancel the event as stated by the standard.
+    event.preventDefault();
+
+    if (formModified) {
+        // Chrome requires returnValue to be set.
+        event.returnValue = '';
+    }
+
+});
+
 
 //Affichage des images selon leur format
 let images = document.querySelectorAll('.object_img_thumb_container img');

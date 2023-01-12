@@ -39,8 +39,8 @@ class NewsFormType extends AbstractType
             ->add('roles', ChoiceType::class, [
                 'choices'   => [
                     'Admin' => 'ROLE_ADMIN',
-                    'Membre' => 'ROLE_MEMBER',
-                    'Invité' => 'ROLE_GUEST',
+                    'Admin + Membre' => 'ROLE_MEMBER',
+                    'Admin + Membre + Invité' => 'ROLE_GUEST',
                 ],
                 'choice_attr' => function ($choice, $key, $value) use($news) {
                     if ($news->getId() == null) {

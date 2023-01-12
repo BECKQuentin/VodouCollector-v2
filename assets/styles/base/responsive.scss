@@ -1,5 +1,5 @@
 
-
+/*Plus petit que*/
 @media (max-width: 576px) {
   nav {
     height: 100%;
@@ -7,6 +7,16 @@
   }
   .logo_login {
     height: 90px;
+  }
+  .toolbar_retract_page {
+    margin-left: 0 !important;
+  }
+}
+
+/*Plus grand que*/
+@media (min-width: 767px) {
+  .w-md-auto {
+    width: auto;
   }
 }
 

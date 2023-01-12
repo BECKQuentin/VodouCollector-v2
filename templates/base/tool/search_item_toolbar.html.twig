@@ -45,7 +45,7 @@
             <div class="col-2 hr-right">
                 {{ form_row(searchForm.isBasemented) }}
             </div>
-            <div id="expositionLocation" class="col-2">
+            <div class="col-3">
                 {{ form_row(searchForm.expositionLocation) }}
             </div>
         </div>
@@ -102,9 +102,7 @@
 
         <div class="d-flex justify-content-between">
             <div class="px-1">
-                <button class="btn btn-vodou my-3">
-                    <a href="{{ path('objects_listing') }}">Réinitialiser filtre</a>
-                </button>
+                <a class="btn btn-vodou my-3" href="{{ path('objects_listing') }}">Réinitialiser filtre</a>
             </div>
             <div class="px-1">
                 {{ form_row(searchForm.submit) }}

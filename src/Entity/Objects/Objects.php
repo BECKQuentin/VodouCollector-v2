@@ -145,7 +145,7 @@ class Objects
     #[ORM\ManyToOne(inversedBy: 'objects')]
     private ?State $state = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $stateCommentary = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -208,11 +208,6 @@ class Objects
             'fields' => 'id',
             'errorPath' => 'id',
             'message' => 'Ce code existe déjà !',
-        ]));
-        $metadata->addConstraint(new UniqueEntity([
-            'fields' => 'title',
-            'errorPath' => 'title',
-            'message' => 'Ce titre existe déjà !',
         ]));
     }
 

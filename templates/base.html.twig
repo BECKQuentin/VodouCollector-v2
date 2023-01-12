@@ -3,9 +3,7 @@
 {% set route_name = app.request.attributes.get('_route') %}
 <head>
     <meta charset="UTF-8">
-    <title>
-        {% block title %}Vodou Collector{% endblock %}
-    </title>
+    <title>{% block title %}Vodou Collector{% endblock %} | Collection ARBOGAST</title>
 
     {% block stylesheets %}
 
@@ -33,7 +31,7 @@
                 <div id="toolbar" class="col-1 col-md-2 toolbar_retract">
                     {% include 'base/tool/toolbar.html.twig'%}
                 </div>
-                <div id="page" class="offset-1 offset-md-2 col-11 col-md-10 toolbar_retract_page">
+                <div id="page" class="offset-1 offset-md-2 col-11 col-md-10 toolbar_retract_page w-md-auto">
 
                     <div class="d-flex">
                         <div class="col-12 col-sm-9 m-0 p-0">
@@ -56,11 +54,13 @@
                         {% include "base/flash.html.twig" %}
                     </div>
 
-                    <div id="content">
+                    <div id="content" class="d-flex flex-column justify-content-between" style="min-height: 92vh">
                         {% block body %}
 
 
                         {% endblock %}
+
+                        {% include "base/footer.html.twig" %}
                     </div>
                 </div>
             </div>

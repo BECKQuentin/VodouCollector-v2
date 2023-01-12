@@ -2,9 +2,9 @@
 
 namespace App\Controller\Librairies;
 
-use App\Entity\Objects\Libraries;
+use App\Entity\Libraries\Libraries;
 use App\Form\Libraries\LibrariesFormType;
-use App\Repository\Objects\LibrariesRepository;
+use App\Repository\Libraries\LibrariesRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +21,7 @@ class LibrariesController extends AbstractController
     {
         $libraries = $librariesRepository->findAll();
 
-        return $this->render('objects/libraries/listing.html.twig', [
+        return $this->render('libraries/libraries/listing.html.twig', [
             'libraries'     => $libraries,
         ]);
     }
@@ -46,7 +46,7 @@ class LibrariesController extends AbstractController
             return $this->redirectToRoute('library_add');
         }
 
-        return $this->render('objects/libraries/add.html.twig', [
+        return $this->render('libraries/libraries/add.html.twig', [
             'form'      => $form->createView(),
             'libraries' => $allLibraries,
         ]);
@@ -70,7 +70,7 @@ class LibrariesController extends AbstractController
             return $this->redirectToRoute('library_add');
         }
 
-        return $this->render('objects/libraries/add.html.twig', [
+        return $this->render('libraries/libraries/add.html.twig', [
             'library'    => $library,
             'libraries'     => $allLibraries,
             'form'          => $form->createView(),

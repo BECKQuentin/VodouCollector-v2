@@ -7,44 +7,47 @@
         <hr>
 
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th>Categories</th>
-                <th>Action</th>
-                <th>Valeur</th>
-                <th>Fait par</th>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for action in actions %}
-                <tr class="table_listing_row">
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{ action.category.name }}</td>
-                    <td>{{ action.name }}</td>
-                    <td>
-                        {% if action.object != null %}
-                            <a class="list_tag_link" href="{{ path('objects', {id:action.object.id}) }}" title="{{ action.object.title }}">
-                                {{ action.object.code }} - {{ action.object.title|u.truncate(20, '...') }}
-                            </a>
-                        {% endif %}
-                        {% if action.user != null %}
-                            <span title="{{ action.createdBy.firstname|upper }} {{ action.createdBy.lastname|capitalize }}">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th>Categories</th>
+                    <th>Action</th>
+                    <th>Valeur</th>
+                    <th>Fait par</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for action in actions %}
+                    <tr class="table_listing_row">
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ action.category.name }}</td>
+                        <td>{{ action.name }}</td>
+                        <td>
+                            {% if action.object != null %}
+                                <a class="list_tag_link" href="{{ path('objects', {id:action.object.id}) }}" title="{{ action.object.title }}">
+                                    {{ action.object.code }} - {{ action.object.title|u.truncate(20, '...') }}
+                                </a>
+                            {% endif %}
+                            {% if action.user != null %}
+                                <span title="{{ action.createdBy.firstname|upper }} {{ action.createdBy.lastname|capitalize }}">
                                 {{ action.createdBy ? action.createdBy.firstname|capitalize|u.truncate(20, '...') }} {{ action.createdBy ? action.createdBy.lastname|upper|u.truncate(20, '...') }}
                             </span>
-                        {% endif %}
-                        {% if action.othersValue != null %}
-                            <span title="{{ action.othersValue }}">{{ action.othersValue|u.truncate(20, '...') }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ action.createdBy ? action.createdBy.firstname|capitalize }} {{ action.createdBy ? action.createdBy.lastname|upper }}</td>
-                    <td>{{ action.createdAt|format_datetime('short', 'short', locale='FR') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                            {% endif %}
+                            {% if action.othersValue != null %}
+                                <span title="{{ action.othersValue }}">{{ action.othersValue|u.truncate(20, '...') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ action.createdBy ? action.createdBy.firstname|capitalize }} {{ action.createdBy ? action.createdBy.lastname|upper }}</td>
+                        <td>{{ action.createdAt|format_datetime('short', 'short', locale='FR') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
 
 
     </div>

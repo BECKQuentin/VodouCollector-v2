@@ -39,7 +39,7 @@ class BookController extends AbstractController
             return $this->redirectToRoute('libraries');
         }
 
-        return $this->render('objects/book/add.html.twig', [
+        return $this->render('libraries/book/add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -63,7 +63,7 @@ class BookController extends AbstractController
             $this->addFlash('success', "Les modifications ont bien été sauvegardées !");
         }
 
-        return $this->render('objects/book/edit.html.twig', [
+        return $this->render('libraries/book/edit.html.twig', [
             'form'      => $form->createView(),
             'book'      => $book,
         ]);
@@ -75,7 +75,7 @@ class BookController extends AbstractController
     public function listingBook(BookRepository $bookRepository, Request $request, ManagerRegistry $doctrine): Response
     {
 
-        return $this->render('objects/book/listing.html.twig', [
+        return $this->render('libraries/book/listing.html.twig', [
             'books'      => $bookRepository->findAll(),
         ]);
     }
@@ -98,7 +98,7 @@ class BookController extends AbstractController
     public function viewBook(Book $book, ManagerRegistry $doctrine): Response
     {
 
-        return $this->render('objects/book/view.html.twig', [
+        return $this->render('libraries/book/view.html.twig', [
             'book'      => $book,
         ]);
     }

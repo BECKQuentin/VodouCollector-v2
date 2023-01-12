@@ -25,10 +25,12 @@ window.onload = () => {
         let secondColor = getComputedStyle(root).getPropertyValue('--second')
         let thirdColor = getComputedStyle(root).getPropertyValue('--third')
         let textColor = getComputedStyle(root).getPropertyValue('--text')
-        mainColorInput.value = mainColor.trim()
-        secondColorInput.value = secondColor.trim()
-        thirdColorInput.value = thirdColor.trim()
-        textColorInput.value = textColor.trim()
+        if ( mainColorInput != null) {
+            mainColorInput.value = mainColor.trim()
+            secondColorInput.value = secondColor.trim()
+            thirdColorInput.value = thirdColor.trim()
+            textColorInput.value = textColor.trim()
+        }
     }
 }
 

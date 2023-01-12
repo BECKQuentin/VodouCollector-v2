@@ -53,6 +53,7 @@ class BaseController extends AbstractController
             'libraries' => $librariesRepository->findAll(),
             'books' => $bookRepository->findAll(),
             'users' => $userRepository->findAll(),
+            'bookmarks'      => $this->getUser()->getBookmark(),
         ]);
     }
 
@@ -81,6 +82,15 @@ class BaseController extends AbstractController
         else {
             return $this->redirectToRoute('login');
         }
+    }
+
+
+    #[Route('/mentions-legales', name: 'legal_notice')]
+    public function legalNotice()
+    {
+        return $this->render('base/legal_notice.html.twig', [
+
+        ]);
     }
 
 }

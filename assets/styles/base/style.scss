@@ -156,6 +156,15 @@ tbody tr:last-child td
     background-color: transparent !important;
 }
 
+
+footer {
+    background-color: #212121;
+    .footer_elem {
+        padding: 10px 13px;
+        color: white;
+    }
+}
+
 /*--IMG RATIO--*/
 .img-ratio {
     position: relative;

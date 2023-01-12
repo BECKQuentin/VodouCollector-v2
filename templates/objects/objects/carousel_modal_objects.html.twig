@@ -1,10 +1,10 @@
 {% if object is defined %}
     <!-- Modal -->
-    <div class="modal fade" id="modalObjectImg{{ object.code }}" tabindex="-1" role="dialog" aria-labelledby="modalObjectImg{{ object.code }}" aria-hidden="true">
+    <div class="modal fade" id="modalObjectImg{{ object.code }}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg_main">
-                    <h5 class="modal-title" id="modalObjectImg{{ object.code }}">{{ object.code }} - {{ object.title }}</h5>
+                    <h5 class="modal-title">{{ object.code }} - {{ object.title }}</h5>
                     <button type="button" class="btn btn-vodou close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
                     </button>
@@ -18,12 +18,14 @@
                                 </div>
                             {% endfor %}
                         </div>
-                        <a class="carousel-control-prev" href="#carouselModalObjectImg{{ object.code }}" role="button" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselModalObjectImg{{ object.code }}" role="button" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        </a>
+                        {% if object.images|length > 1 %}
+                            <a class="carousel-control-prev" href="#carouselModalObjectImg{{ object.code }}" role="button" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselModalObjectImg{{ object.code }}" role="button" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -45,14 +47,16 @@
                     </div>
                 {% endfor %}
             </div>
-            <a class="carousel-control-prev" href="#carouselObjectImg" role="button" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselObjectImg" role="button" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
+            {% if object.images|length > 1 %}
+                <a class="carousel-control-prev" href="#carouselObjectImg" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselObjectImg" role="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            {% endif %}
         {% else %}
             <div class="img-ratio" style="--ratio:80%;">
                 <div class="img">

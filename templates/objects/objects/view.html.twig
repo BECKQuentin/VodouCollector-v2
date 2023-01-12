@@ -14,24 +14,23 @@
             {% include 'objects/objects/navbar_objects_link.html.twig' %}
         </div>
 
-
         <div class="d-flex">
 
             <div class="col-8">
 
                 <div id="objectElementContent_vue" class="content_box_element">
-                    <h1>{{ object.code }} - {{ object.title }}</h1>
+                    <h1>#{{ object.code }} - {{ object.title }}</h1>
                     <div class="d-flex">
                         <h4>
-                            {#                        {% if object.categories is defined and object.categories is not null %}#}
-                            {#                            {{ object.categories.name }}#}
-                            {#                        {% else %}#}
-                            {#                            <span class="px-2"><i class="fa-solid fa-ban"></i></span>#}
-                            {#                        {% endif %}#}
-                            {#                        {% if object.subCategories is defined and object.subCategories is not null %}#}
-                            {#                            -#}
-                            {#                            {{ object.subCategories.name }}#}
-                            {#                        {% endif %}#}
+                            {% if object.categories is defined and object.categories is not null %}
+                                {{ object.categories.name }}
+                            {% else %}
+                                <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                            {% endif %}
+                            {% if object.subCategories is defined and object.subCategories is not null %}
+                                -
+                                {{ object.subCategories.name }}
+                            {% endif %}
                         </h4>
                     </div>
                     <div class="col-12">
@@ -143,9 +142,8 @@
                         </div>
                         <div class="col-6 px-4">
                             <em>Ouvrages Bibliographie :&nbsp;</em>
-                            <ul class="px-2">
                                 {% if object.book is defined and object.book is not null %}
-                                    <ul>
+                                    <ul class="px-2">
                                         {% for book in object.book%}
                                             <div class="d-flex">
                                                 <a class="mx-2" href="{{ path('book', {id: book.id}) }}">
@@ -159,7 +157,6 @@
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
-                            </ul>
                         </div>
                     </div>
 
@@ -177,7 +174,7 @@
                     <hr>
 
                     <div class="row">
-                        <div class="col-12 col-md-4 px-4">
+                        <div class="col-12 col-md-4 px-2">
                             <div class="d-flex">
                                 <em>Poids :&nbsp;</em>
                                 {% if object.weight is defined and object.weight is not null %}
@@ -211,7 +208,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-12 col-md-4 px-4">
+                        <div class="col-12 col-md-4 px-0">
                             <div class="d-flex">
                                 <em>Exposition :&nbsp;</em>
                                 {% if object.location is defined and object.location is not null %}
@@ -246,7 +243,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 col-md-4 px-4">
+                        <div class="col-12 col-md-4 px-0">
                             <div class="d-flex">
                                 <em>Mode d'acquisition :&nbsp;</em>
                                 {% if object.historicDetail is defined and object.historicDetail is not null %}
@@ -264,7 +261,7 @@
                                 {% endif %}
                             </div>
                             <div class="d-flex">
-                                <em>Crée le :&nbsp;</em>
+                                <em>Fiche crée le :&nbsp;</em>
                                 {% if object.createdAt is defined and object.createdAt is not null %}
                                     {{ object.createdAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
                                 {% else %}
@@ -272,7 +269,15 @@
                                 {% endif %}
                             </div>
                             <div class="d-flex">
-                                <em>Modifié le :&nbsp;</em>
+                                <em>Fiche crée par :&nbsp;</em>
+                                {% if object.createdBy is defined and object.createdBy is not null %}
+                                    {{ object.createdBy.firstname }} {{ object.createdBy.lastname }}
+                                {% else %}
+                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex">
+                                <em>Dernière modif. le :&nbsp;</em>
                                 {% if object.updatedAt is defined and object.updatedAt is not null %}
                                     {{ object.updatedAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
                                 {% else %}
@@ -288,35 +293,15 @@
                 {% endif %}
             </div>
 
-
             <div class="col-4">
                 <!--Image Carousel + Modal-->
                 {% include 'objects/objects/carousel_modal_objects.html.twig' %}
             </div>
         </div>
 
-
-
-
-
-
-{#        <div class="position-relative">#}
-{#            {% include 'objects/objects/navbar_objects_tool_standard.html.twig' %}#}
-{#        </div>#}
-
-{#        <div class="d-flex">#}
-{#            <div class="col-8">#}
-{#                {% if is_granted('ROLE_MEMBER') %}#}
-{#                    {% include 'objects/objects/form.html.twig' %}#}
-{#                {% endif %}#}
-{#            </div>#}
-{#            <div class="col-4">#}
-{#                {% include 'objects/objects/carousel_modal_objects.html.twig' %}#}
-{#            </div>#}
-{#        </div>#}
-
-
-
+        <div class="position-relative">
+            {% include 'objects/objects/navbar_objects_tool_standard.html.twig' %}
+        </div>
 
         {% if is_granted('ROLE_ADMIN') %}
             {% if object is defined and object.id is not null%}
@@ -334,12 +319,12 @@
 
     <!-- Modals -->
     <div class="modal fade p-0" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content" style="height: 100vh">
-                <div class="modal-header">
-                    <h5 class="modal-title px-5" id="fileModal">{{ object.id }} - {{ object.title }}</h5>
+                <div class="modal-header bg_main">
+                    <h5 class="modal-title px-5">{{ object.id }} - {{ object.title }}</h5>
                     <button type="button" class="close btn btn-vodou px-1 py-0" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="fs-3">&times;</span>
+                        <span aria-hidden="true" class="fs-3"><i class="fa-solid fa-xmark"></i></span>
                     </button>
                 </div>
                 <div class="modal-body p-0">

@@ -28,6 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -35,6 +36,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 
 class ObjectsFormType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
@@ -44,7 +46,7 @@ class ObjectsFormType extends AbstractType
                 'required'      => true
             ])
             ->add('title', TextType::class, [
-                'label'         => 'Titre *',
+                'label'         => 'Nom Vernaculaire *',
                 'required'      => true
             ])
             ->add('memo', TextareaType::class, [
@@ -181,7 +183,7 @@ class ObjectsFormType extends AbstractType
             ])
 
 
-            ->add('stateCommentary', TextType::class, [
+            ->add('stateCommentary', TextAreaType::class, [
                 'label'         => 'Remarque sur l\' état',
                 'required'      => false
             ])
