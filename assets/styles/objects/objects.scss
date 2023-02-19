@@ -1,10 +1,16 @@
+#tableObjectsListing {
+    td {
+        padding: 4px;
+    }
+}
+
 .object_exposed {
     height: 20px;
     width: 20px;
     border-radius: 10px;
 }
 /*TAG OBJETS*/
-.form_description textarea{
+.form_description .big_textarea {
     min-height: calc(15em) !important;
 }
 
@@ -80,9 +86,6 @@
     }
     .object_form_elem:first-of-type {
         display: block;
-    }
-    textarea {
-        min-height: 225px;
     }
 }
 

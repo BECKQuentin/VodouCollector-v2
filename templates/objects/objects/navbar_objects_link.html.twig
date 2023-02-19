@@ -8,7 +8,7 @@
            data-action="click->objects#setContentObjectTab"
            data-object-tab="vue">
             {% if object is defined and object.id is not null%}
-                #{{ object.code }} - {{ object.title|u.truncate(20, '...') }}
+                N° {{ object.code }} - {{ object.vernacularName.name|u.truncate(20, '...') }}
             {% else %}
                 Nouvelle Objet
             {% endif %}

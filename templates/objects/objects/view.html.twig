@@ -14,12 +14,17 @@
             {% include 'objects/objects/navbar_objects_link.html.twig' %}
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex flex-column-reverse flex-md-row">
 
-            <div class="col-8">
+            <div class="col-12 col-md-8">
 
                 <div id="objectElementContent_vue" class="content_box_element">
-                    <h1>#{{ object.code }} - {{ object.title }}</h1>
+                    {% if object.id is not null %}
+                        <h1>N° {{ object.code }} - {{ object.vernacularName.name }}</h1>
+                    {% else %}
+                        <h1>Nouvel Objet</h1>
+                    {% endif %}
+
                     <div class="d-flex">
                         <h4>
                             {% if object.categories is defined and object.categories is not null %}
@@ -37,7 +42,9 @@
                         <div class="d-flex">
                             <em>Population :&nbsp;</em>
                             {% if object.population is defined and object.population is not null %}
-                                {{ object.population.name }}
+                                {% for population in object.population %}
+                                    {{ population.name }}
+                                {% endfor %}
                             {% else %}
                                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                             {% endif %}
@@ -45,7 +52,9 @@
                         <div class="d-flex">
                             <em>Origine :&nbsp;</em>
                             {% if object.origin is defined and object.origin is not null %}
-                                {{ object.origin.name }}
+                                {% for origin in object.origin %}
+                                    {{ origin.name }}
+                                {% endfor %}
                             {% else %}
                                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                             {% endif %}
@@ -59,7 +68,7 @@
                             {% endif %}
                         </div>
                         <div class="d-flex">
-                            <em>Divinité associées :&nbsp;</em>
+                            <em>Divinités associées :&nbsp;</em>
                             {% if object.relatedGods is defined and object.relatedGods is not null %}
                                 {% for relatedGod in object.relatedGods %}
                                     {{ relatedGod.name }},
@@ -128,7 +137,7 @@
 
                     <div class="row">
                         <div class="col-6 px-4">
-                            <em class="text-center">Parution du Musée :&nbsp;</em>
+                            <em class="text-center">Publications du Musée :&nbsp;</em>
                             <ul class="px-2">
                                 {% if object.museumCatalogue is defined and object.museumCatalogue is not null %}
                                     {% for museumCatalogue in object.museumCatalogue%}
@@ -141,7 +150,7 @@
                             </ul>
                         </div>
                         <div class="col-6 px-4">
-                            <em>Ouvrages Bibliographie :&nbsp;</em>
+                            <em>Littérature qui se réfère à l’objet :&nbsp;</em>
                                 {% if object.book is defined and object.book is not null %}
                                     <ul class="px-2">
                                         {% for book in object.book%}
@@ -208,83 +217,98 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-12 col-md-4 px-0">
-                            <div class="d-flex">
-                                <em>Exposition :&nbsp;</em>
-                                {% if object.location is defined and object.location is not null %}
-                                    {{ object.location.nameFR }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
+                        {% if is_granted('ROLE_MEMBER') %}
+                            <div class="col-12 col-md-4 px-0">
+                                <div class="d-flex">
+                                    <em>Exposition :&nbsp;</em>
+                                    {% if object.location is defined and object.location is not null %}
+                                        {{ object.location.nameFR }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Etage :&nbsp;</em>
+                                    {% if object.floor is defined and object.floor is not null %}
+                                        {{ object.floor.name }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>N° Virtrine :&nbsp;</em>
+                                    {% if object.showcaseCode is defined and object.showcaseCode is not null %}
+                                        {{ object.showcaseCode }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>N° Etagère :&nbsp;</em>
+                                    {% if object.shelf is defined and object.shelf is not null %}
+                                        {{ object.shelf }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <em>Etage :&nbsp;</em>
-                                {% if object.floor is defined and object.floor is not null %}
-                                    {{ object.floor.name }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex">
-                                <em>N° Virtrine :&nbsp;</em>
-                                {% if object.showcaseCode is defined and object.showcaseCode is not null %}
-                                    {{ object.showcaseCode }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex">
-                                <em>N° Etagère :&nbsp;</em>
-                                {% if object.shelf is defined and object.shelf is not null %}
-                                    {{ object.shelf }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                        </div>
 
-                        <div class="col-12 col-md-4 px-0">
-                            <div class="d-flex">
-                                <em>Mode d'acquisition :&nbsp;</em>
-                                {% if object.historicDetail is defined and object.historicDetail is not null %}
-                                    {{ object.historicDetail }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
+                            <div class="col-12 col-md-4 px-0">
+                                <div class="d-flex">
+                                    <em>Mode d'acquisition :&nbsp;</em>
+                                    {% if object.historicDetail is defined and object.historicDetail is not null %}
+                                        {{ object.historicDetail }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Date d'acquisition :&nbsp;</em>
+                                    {% if object.historicDate is defined and object.historicDate is not null %}
+                                        {{ object.historicDate|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Fiche crée le :&nbsp;</em>
+                                    {% if object.createdAt is defined and object.createdAt is not null %}
+                                        {{ object.createdAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Fiche crée par :&nbsp;</em>
+                                    {% if object.createdBy is defined and object.createdBy is not null %}
+                                        {{ object.createdBy.firstname }} {{ object.createdBy.lastname }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Dernière modif. le :&nbsp;</em>
+                                    {% if object.updatedAt is defined and object.updatedAt is not null %}
+                                        {{ object.updatedAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex">
+                                    <em>Récolé le :&nbsp;</em>
+                                    {% if object.inventoriedAt is defined and object.inventoriedAt is not null %}
+                                        <ul>
+                                            {% for inventoryDate in object.inventoriedAt %}
+                                               <li>{{ inventoryDate.inventoriedAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <em>Date d'acquisition :&nbsp;</em>
-                                {% if object.historicDate is defined and object.historicDate is not null %}
-                                    {{ object.historicDate|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex">
-                                <em>Fiche crée le :&nbsp;</em>
-                                {% if object.createdAt is defined and object.createdAt is not null %}
-                                    {{ object.createdAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex">
-                                <em>Fiche crée par :&nbsp;</em>
-                                {% if object.createdBy is defined and object.createdBy is not null %}
-                                    {{ object.createdBy.firstname }} {{ object.createdBy.lastname }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex">
-                                <em>Dernière modif. le :&nbsp;</em>
-                                {% if object.updatedAt is defined and object.updatedAt is not null %}
-                                    {{ object.updatedAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
-                                {% else %}
-                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% endif %}
+
                     </div>
                 </div>
 
@@ -293,8 +317,8 @@
                 {% endif %}
             </div>
 
-            <div class="col-4">
-                <!--Image Carousel + Modal-->
+            <!--Image Carousel + Modal-->
+            <div class="col-12 col-md-4">
                 {% include 'objects/objects/carousel_modal_objects.html.twig' %}
             </div>
         </div>
@@ -322,7 +346,11 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content" style="height: 100vh">
                 <div class="modal-header bg_main">
-                    <h5 class="modal-title px-5">{{ object.id }} - {{ object.title }}</h5>
+                    {% if object.id is not null %}
+                        <h5 class="modal-title px-5">{{ object.id }} - {{ object.vernacularName.name }}</h5>
+                    {% else %}
+                        <h5 class="modal-title">Nouvel Objet</h5>
+                    {% endif %}
                     <button type="button" class="close btn btn-vodou px-1 py-0" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" class="fs-3"><i class="fa-solid fa-xmark"></i></span>
                     </button>

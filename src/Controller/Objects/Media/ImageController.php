@@ -3,13 +3,12 @@
 namespace App\Controller\Objects\Media;
 
 use App\Entity\Objects\Media\Image;
-use App\Entity\Objects\Objects;
 use App\Entity\Site\Action;
-use App\Form\Objects\MediaFormType;
-use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\ObjectsRepository;
 use App\Repository\Site\ActionCategoryRepository;
+use App\Service\ActionService;
 use App\Service\UploadService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ImageController extends AbstractController
 {
+
+    public function __construct(
+        private ActionService $actionService,
+        private EntityManagerInterface $manager,
+        private ObjectsRepository $objectsRepository,
+    ){}
 
 //    #[Route('/objects/{id}/media', name: 'objects_medias')]
 //    #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
@@ -75,24 +80,17 @@ class ImageController extends AbstractController
 
     #[Route('/media-delete/{id}/{object}', name: 'delete_objects_img')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
-    public function mediaDelete(Image $images, ActionCategoryRepository $actionCategoryRepository, ObjectsRepository $objectsRepository, Request $request, UploadService $uploadService, ManagerRegistry $doctrine) {
+    public function mediaDelete(Image $images, Request $request) {
 
         $objId = $request->get('object');
 
         $filesystem = new Filesystem();
         $filesystem->remove($images->getAbsolutePath());
 
-        $action = new Action();
-        $action->setName('Image supprimé');
-        $action->setObject($objectsRepository->findOneBy(['id' => $objId]));
-        $action->setOthersValue($images->getSrc());
-        $action->setCreatedBy($this->getUser());
-        $action->setCategory($actionCategoryRepository->find(2));
+        $this->actionService->addAction(2, 'Image supprimé', $this->objectsRepository->findOneBy(['id' => $objId]), $this->getUser(), $images->getSrc());
 
-        $em = $doctrine->getManager();
-        $em->remove($images);
-        $em->persist($action);
-        $em->flush();
+        $this->manager->remove($images);
+        $this->manager->flush();
 
         return($this->redirectToRoute('objects',
             ['id' => $objId],

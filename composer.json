@@ -19,6 +19,7 @@
         "scienta/doctrine-json-functions": "^5.2",
         "scssphp/scssphp": "^1.10.0",
         "sensio/framework-extra-bundle": "^6.2",
+        "shuchkin/simplexlsx": "^1.0",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "^6.2",
         "symfony/console": "6.2.*",

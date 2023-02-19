@@ -3,10 +3,10 @@
 namespace App\Controller\Objects\Metadata;
 
 
-use App\Entity\Objects\Metadata\State;
+use App\Entity\Objects\Metadata\Typology;
 use App\Entity\Site\Action;
 use App\Form\Objects\MetaDataFormType;
-use App\Repository\Objects\Metadata\StateRepository;
+use App\Repository\Objects\Metadata\TypologyRepository;
 use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,43 +16,43 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class StateController extends AbstractController
+class TypologyController extends AbstractController
 {
-    const ROUTE         = 'state';
-    const METADATA_NAME = 'Etat';
+    const ROUTE         = 'typology';
+    const METADATA_NAME = 'Typologie';
 
     public function __construct(
+        private TypologyRepository $typologyRepository,
         private ActionService $actionService,
     ){}
 
-
-    #[Route('/state', name: 'state')]
-    #[IsGranted("ROLE_GUEST", message: "Seules les Invités peuvent faire ça")]
-    public function addState(StateRepository $stateRepository, Request $request, ManagerRegistry $doctrine): Response
+    #[Route('/typology', name: 'typology')]
+    #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
+    public function addFloor(Request $request, ManagerRegistry $doctrine): Response
     {
-        return $this->viewReturnMetadata(new State(), $stateRepository, $request, $doctrine);
+        return $this->viewReturnMetadata(new Typology(), $this->typologyRepository, $request, $doctrine);
     }
 
 
-    #[Route('/state-edit/{id}', name: 'state_edit')]
+    #[Route('/typology-edit/{id}', name: 'typology_edit')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function editState(State $state, StateRepository $stateRepository,Request $request, ManagerRegistry $doctrine): Response
+    public function edit(Typology $typology, Request $request, ManagerRegistry $doctrine): Response
     {
-       return $this->viewReturnMetadata($state, $stateRepository, $request, $doctrine);
+        return $this->viewReturnMetadata($typology, $this->typologyRepository, $request, $doctrine);
     }
 
 
-    #[Route('/state-delete/{id}', name: 'state_delete')]
+    #[Route('/typology-delete/{id}', name: 'typology_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function deleteState(State $state, Request $request, ManagerRegistry $doctrine): Response
+    public function deleteFloor(Typology $typology, Request $request, ManagerRegistry $doctrine): Response
     {
-        $this->actionService->addAction(3, self::METADATA_NAME . ' ajout/modif', null, $this->getUser(), $state->getName());
+        $this->actionService->addAction(3, self::METADATA_NAME . ' supprimé', null, $this->getUser(), $typology->getName());
 
         $em = $doctrine->getManager();
-        $em->remove($state);
+        $em->remove($typology);
         $em->flush();
 
-        $this->addFlash('danger', 'Vous avez supprimé '.$state->getName().' !');
+        $this->addFlash('danger', 'Vous avez supprimé '.$typology->getName().' !');
         return $this->redirectToRoute(self::ROUTE);
     }
 

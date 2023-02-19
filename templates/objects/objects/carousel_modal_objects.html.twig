@@ -4,7 +4,12 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg_main">
-                    <h5 class="modal-title">{{ object.code }} - {{ object.title }}</h5>
+                    {% if object.id is not null %}
+                        <h5 class="modal-title">{{ object.code }} - {{ object.vernacularName.name }}</h5>
+                    {% else %}
+                        <h5 class="modal-title">Nouvel Objet</h5>
+                    {% endif %}
+
                     <button type="button" class="btn btn-vodou close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
                     </button>

@@ -6,12 +6,9 @@ use App\Data\SearchData;
 use App\Entity\Objects\Media\File;
 use App\Entity\Objects\Media\Image;
 use App\Entity\Objects\Media\Video;
-use App\Entity\Objects\Media\Youtube;
 use App\Entity\Objects\Objects;
-use App\Entity\Site\Action;
-use App\Entity\Site\ActionCategory;
-use App\Form\Objects\MediaFormType;
 use App\Form\Objects\ObjectsFormType;
+use App\Form\Objects\UploadObjectFormType;
 use App\Form\SearchFieldType;
 use App\Repository\Objects\Media\FileRepository;
 use App\Repository\Objects\Media\ImageRepository;
@@ -29,6 +26,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Shuchkin\SimpleXLSX;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,7 +101,7 @@ class ObjectsController extends AbstractController
     }
 
     #[Route('/objects-add', name: 'objects_add')]
-    #[IsGranted("ROLE_ADMIN", message: "Seules les Invités peuvent faire ça")]
+    #[IsGranted("ROLE_MEMBER", message: "Seules les Membre peuvent faire ça")]
     public function create(Request $request)
     {
         return $this->renderEdit(new Objects(), $request);
@@ -129,25 +127,33 @@ class ObjectsController extends AbstractController
         $user = $this->getUser();
 
         $isAdding = false;
-        if  ($objects == null) {
+        if  ($objects->getId() == null) {
             $objects = new Objects();
             $isAdding = true;
         } else {
             //Vérification d'Objet existant
             if ($objects->getDeletedAt()) {
-                $this->addFlash('danger', $objects->getCode() . ' - ' . $objects->getTitle() . ' n \'existe plus !');
+                $this->addFlash('danger', $objects->getCode() . ' - ' . $objects->getVernacularName()->getName() . ' n \'existe plus !');
                 return $this->redirectToRoute('objects_listing');
             }
         }
         $form = $this->createForm(ObjectsFormType::class, $objects);
+
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+            $form->remove('insuranceValue');
+        }
+
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if  (!$isAdding) {
+            if  ($isAdding == false) {
                 $objects->setUpdatedAt(new \DateTimeImmutable('now'));
                 $objects->setUpdatedBy($user);
+            } else {
+                $objects->setCreatedBy($this->getUser());
             }
-
+            
             $images = $form->get('images')->getData();
             if ($images) {
                 foreach ($images as $image) {
@@ -296,7 +302,7 @@ class ObjectsController extends AbstractController
         $em->persist($objects);
         $em->flush();
 
-        $this->addFlash('success', 'Vous avez supprimé '.$objects->getTitle().' !');
+        $this->addFlash('success', 'Vous avez supprimé '.$objects->getVernacularName()->getName().' !');
         return $this->redirectToRoute('objects_listing');
     }
 
@@ -358,7 +364,7 @@ class ObjectsController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', "Objet supprimé definitivement !");
-        return $this->redirectToRoute('objects_listing');
+        return $this->redirectToRoute('deleted_objects');
     }
 
 //    #[Route('/objects-view/{id}', name: 'objects_view')]
@@ -405,7 +411,7 @@ class ObjectsController extends AbstractController
         $dompdf->render();
 
         // Output the generated PDF to Browser (force download)
-        $dompdf->stream($object->getCode() . '-' . $object->getTitle().".pdf", [
+        $dompdf->stream($object->getCode() . '-' . $object->getVernacularName()->getName().".pdf", [
             "Attachment" => true
         ]);
 
@@ -697,4 +703,6 @@ class ObjectsController extends AbstractController
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
 
     }
+
+
 }

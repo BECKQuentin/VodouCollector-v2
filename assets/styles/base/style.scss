@@ -90,6 +90,7 @@ tbody tr:last-child td
 }
 .danger-zone:after {
     content: "- Zone de Danger ! -";
+    white-space: nowrap;
     color: black;
     font-size: 23px;
     font-weight: bold;

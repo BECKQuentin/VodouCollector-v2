@@ -7,7 +7,12 @@ use App\Repository\Objects\Metadata\PopulationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Ce nom est déjà utilisé',
+)]
 #[ORM\Entity(repositoryClass: PopulationRepository::class)]
 class Population
 {
@@ -19,7 +24,7 @@ class Population
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'population', targetEntity: Objects::class)]
+    #[ORM\ManyToMany(targetEntity: Objects::class, mappedBy: 'population')]
     private Collection $objects;
 
     public function __construct()
@@ -56,7 +61,7 @@ class Population
     {
         if (!$this->objects->contains($object)) {
             $this->objects->add($object);
-            $object->setPopulation($this);
+            $object->addPopulation($this);
         }
 
         return $this;
@@ -65,10 +70,7 @@ class Population
     public function removeObject(Objects $object): self
     {
         if ($this->objects->removeElement($object)) {
-            // set the owning side to null (unless already changed)
-            if ($object->getPopulation() === $this) {
-                $object->setPopulation(null);
-            }
+            $object->removePopulation($this);
         }
 
         return $this;

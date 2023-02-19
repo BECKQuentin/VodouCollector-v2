@@ -23,14 +23,16 @@
 
         <div id="objectElementContent_identification" class="object_form_elem">
             <div class="row mb-2">
-                <div class="col-md-2">{{ form_row(form.code) }}</div>
-                <div class="col-md-10">{{ form_row(form.title) }}</div>
+                <div class="col-md-3">{{ form_row(form.code) }}</div>
+                <div class="col-md-9">{{ form_row(form.vernacularName) }}</div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-3">{{ form_row(form.gods) }}</div>
+                <div class="col-md-9">{{ form_row(form.typology) }}</div>
             </div>
             <div class="row mb-2">
                 <div class="col-md-6">{{ form_row(form.memo) }}</div>
+                <div class="col-md-6">{{ form_row(form.precisionVernacularName) }}</div>
                 {% if object is defined and object.id is not null%}
                     <div class="d-flex"><span>Fiche crée par :{{ object.createdBy.firstname|capitalize }} {{ object.createdBy.lastname|upper }} le {{ object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
                 {% endif %}
@@ -39,29 +41,36 @@
 
         <div id="objectElementContent_creation" class="object_form_elem">
             <div class="row mb-2">
-                <div class="col-md-2">{{ form_row(form.era) }}</div>
-                <div class="col-md-2">{{ form_row(form.origin) }}</div>
-                <div class="col-md-2">{{ form_row(form.population) }}</div>
+                <div class="col-md-3">{{ form_row(form.era) }}</div>
+                <div class="col-md-3">{{ form_row(form.origin) }}</div>
+                <div class="col-md-3">{{ form_row(form.population) }}</div>
             </div>
         </div>
 
         <div id="objectElementContent_utilisation" class="object_form_elem">
             <div class="row mb-4">
-                <div class="col-md-8">{{ form_row(form.usageFonction) }}</div>
+                {% if object.gods %}
+                    <div class="col-md-12 disabled opacity-75">Vodou : {{ object.gods.name }}</div>
+                {% endif %}
+                <div class="col-md-9">{{ form_row(form.usageFonction) }}</div>
 {#                <div class="col-md-8">{{ form_row(form.usageTags) }}</div>#}
-                <div class="col-md-2">{{ form_row(form.relatedGods) }}</div>
-                <div class="col-md-2">{{ form_row(form.usageUser) }}</div>
+                <div class="col-md-3">
+                    {{ form_row(form.relatedGods) }}
+                </div>
+                <div class="col-md-12">
+                    {{ form_row(form.usageUser) }}
+                </div>
             </div>
         </div>
 
         <div id="objectElementContent_etude" class="object_form_elem">
             <div class="row mb-4">
-                <div class="no_arrow col-md-2">{{ form_row(form.materials) }}</div>
-                <div class="no_arrow col-md-1 px-1">
+                <div class="no_arrow col-md-4">{{ form_row(form.materials) }}</div>
+                <div class="no_arrow col-md-2 px-1">
                     {{ form_row(form.weight) }}
                     {{ form_row(form.sizeHigh) }}
                 </div>
-                <div class="no_arrow col-md-1 px-1">
+                <div class="no_arrow col-md-2 px-1">
                     {{ form_row(form.sizeLength) }}
                     {{ form_row(form.sizeDepth) }}
                 </div>
@@ -79,34 +88,31 @@
                 <div class="col-6">{{ form_row(form.museumCatalogue) }}</div>
                 <div class="col-6">{{ form_row(form.book) }}</div>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-6">{{ form_row(form.historicDetail) }}</div>
-            </div>
         </div>
 
         <div id="objectElementContent_regie" class="object_form_elem">
             <div class="row mb-2">
-                <div class="col-2">{{ form_row(form.isBasemented) }}</div>
-                <div class="col-6">{{ form_row(form.state) }}</div>
-                <div id="expositionLocation" class="col-2">{{ form_row(form.expositionLocation) }}</div>
-            </div>
-            <div class="row mb-2">
-                <div class="d-flex flex-column justify-content-center align-items-end">
-                    <div id="form_floor" class="col-md-3 p-1">{{ form_row(form.floor) }}</div>
-                    <div id="form_showCaseCode" class="col-md-3 p-1">{{ form_row(form.showCaseCode) }}</div>
-                    <div id="form_shelf" class="col-md-3 p-1">{{ form_row(form.shelf) }}</div>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-md-8">
-                    <div class="col-12">{{ form_row(form.stateCommentary) }}</div>
-                    <div class="row">
+                <div class="col-md-6">{{ form_row(form.isBasemented) }}{{ form_row(form.basementCommentary) }}</div>
+                <div class="col-md-6">{{ form_row(form.state) }}{{ form_row(form.stateCommentary) }}</div>
 
-                        <div class="col-6"></div>
-                    </div>
+            </div>
+            <div class="row mb-2">
+                <div id="expositionLocation" class="col-md-4">{{ form_row(form.expositionLocation) }}</div>
+                <div class="col-md-4">
+                    {{ form_row(form.floor) }}
+                    {{ form_row(form.showCaseCode) }}
+                    {{ form_row(form.shelf) }}
                 </div>
             </div>
-            <div class="col-md-3">{{ form_row(form.arrivedCollection) }}</div>
+            <div class="row mb-2">
+                <div class="col-6 col-md-5">{{ form_row(form.arrivedCollection) }}</div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="col-6">{{ form_row(form.insuranceValue) }}</div>
+                {% endif %}
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-6">{{ form_row(form.historicDetail) }}</div>
+            </div>
         </div>
 
 

@@ -7,7 +7,13 @@ use App\Repository\Objects\Metadata\GodsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Ce nom est déjà utilisé',
+)]
 #[ORM\Entity(repositoryClass: GodsRepository::class)]
 class Gods
 {

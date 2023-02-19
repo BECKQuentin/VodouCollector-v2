@@ -15,6 +15,8 @@ use App\Entity\Objects\Metadata\Origin;
 use App\Entity\Objects\Metadata\Population;
 use App\Entity\Objects\Metadata\State;
 //use App\Entity\Objects\Metadata\SubCategories;
+use App\Entity\Objects\Metadata\Typology;
+use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\Objects\Objects;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -45,15 +47,29 @@ class ObjectsFormType extends AbstractType
                 'label'         => 'Numéro Inventaire *',
                 'required'      => true
             ])
-            ->add('title', TextType::class, [
-                'label'         => 'Nom Vernaculaire *',
-                'required'      => true
+            ->add('typology', EntityType::class, [
+                'class'         => Typology::class,
+                'label'         => 'Typologie *',
+                'choice_label'  => 'name',
+                'required'      => true,
+                'multiple'      => false,
+            ])
+            ->add('vernacularName', EntityType::class, [
+                'class'         => VernacularName::class,
+                'label'         => 'Nom vernaculaire *',
+                'choice_label'  => 'name',
+                'required'      => true,
+                'multiple'      => false,
+            ])
+            ->add('precisionVernacularName', TextType::class, [
+                'label'         => 'Précision Nom Vernaculaire',
+                'required'      => false
             ])
             ->add('memo', TextareaType::class, [
-                'label'         => 'Mémo',
+                'label'         => 'Mémo pour l\'équipe',
                 'required'      => false,
                 'attr' => [
-                    'class' => 'objects_memo'
+                    'class' => 'objects_memo big_textarea'
                 ]
             ])
             ->add('gods', EntityType::class, [
@@ -81,14 +97,14 @@ class ObjectsFormType extends AbstractType
                 'label'         => 'Population',
                 'choice_label'  => 'name',
                 'required'      => false,
-                'multiple'      => false,
+                'multiple'      => true,
             ])
             ->add('origin', EntityType::class, [
                 'class'         => Origin::class,
-                'label'         => 'Origine',
+                'label'         => 'Lieu de création',
                 'choice_label'  => 'name',
                 'required'      => false,
-                'multiple'      => false,
+                'multiple'      => true,
             ])
 
             ->add('relatedGods', EntityType::class, [
@@ -100,17 +116,20 @@ class ObjectsFormType extends AbstractType
             ])
             ->add('materials', EntityType::class, [
                 'class'         => Materials::class,
-                'label'         => 'Materiaux',
+                'label'         => 'Matériaux',
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
             ])
             ->add('museumCatalogue', EntityType::class, [
                 'class'         => MuseumCatalogue::class,
-                'label'         => 'Parution du Musée',
+                'label'         => 'Publications du Musée',
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
             ->add('book', EntityType::class, [
                 'class'         => Book::class,
@@ -118,6 +137,9 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'title',
                 'required'      => false,
                 'multiple'      => true,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
 //            ->add('description', TextareaType::class, [
 //                'label'         => 'Description',
@@ -141,15 +163,18 @@ class ObjectsFormType extends AbstractType
                 'required'      => false,
             ])
             ->add('usageFonction', TextareaType::class, [
-                'label'         => 'Fonction d\' usage',
-                'required'      => false
+                'label'         => 'Fonction d\' usage *',
+                'required'      => true,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
 //            ->add('usageTags', TextType::class, [
 //                'label'         => 'Mots clés sur utilisation',
 //                'required'      => false
 //            ])
             ->add('usageUser', TextType::class, [
-                'label'         => 'Utilisateurs',
+                'label'         => 'Utilisateurs (producteur/rice, propriétaire, collectionneur/euse) si connus',
                 'required'      => false
             ])
 
@@ -175,11 +200,17 @@ class ObjectsFormType extends AbstractType
 //            ])
             ->add('naturalLanguageDescription', TextAreaType::class, [
                 'label'         => 'Description en langage naturel',
-                'required'      => false,
+                'required'      => true,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
             ->add('inscriptionsEngraving', TextAreaType::class, [
-                'label'         => 'Inscriptions et Gravures',
+                'label'         => 'Inscriptions et marques',
                 'required'      => false,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
 
 
@@ -195,6 +226,10 @@ class ObjectsFormType extends AbstractType
             ])
             ->add('isBasemented', CheckboxType::class, [
                 'label'         => 'Socle',
+                'required'      => false
+            ])
+            ->add('basementCommentary', TextareaType::class, [
+                'label'         => 'Commentaire de Soclage',
                 'required'      => false
             ])
             ->add('expositionLocation', EntityType::class, [
@@ -223,6 +258,10 @@ class ObjectsFormType extends AbstractType
             ->add('shelf', TextType::class, [
                 'label'         => 'Etagère',
                 'required'      => false,
+            ])
+            ->add('insuranceValue', TextType::class, [
+                'label'     => 'Valeur d\'assurance',
+                'required'  => false,
             ])
             ->add('images', FileType::class, [
                 'label'         => false,

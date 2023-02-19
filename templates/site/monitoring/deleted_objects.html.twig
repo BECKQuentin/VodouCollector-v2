@@ -24,7 +24,7 @@
                 {% for object in objects %}
                     <tr class="table_listing_row">
                         <th scope="row">{{ loop.index }}</th>
-                        <td>{{ object.code }} - {{ object.title }}</td>
+                        <td>{{ object.code }} - {{ object.vernacularName.name }}</td>
                         <td>
                             <div class="d-flex flex-column">
                                 <span>{{ object.deletedAt|format_datetime('short', 'short', locale="FR") }}</span>
@@ -34,7 +34,7 @@
                         <td>
                             <div class="d-flex flex-column">
                                 <a href="{{ path('restore_deleted_objects', {id:object.id}) }}" class="btn btn-vodou"><i class="fa-solid fa-trash-can-arrow-up px-2"></i>Restaurer</a>
-                                <a href="{{ path('force_deleted_objects', {id:object.id}) }}" class="btn btn-vodou" onclick="alert('Vous allez supprimer définitivement l\'objet : {{ object.code }} - {{ object.title }} et tous ses composants ! Cette action est irréversible !!!')"><i class="fa-solid fa-delete-left px-2"></i></i>Suppr. Définitivement</a>
+                                <a href="{{ path('force_deleted_objects', {id:object.id}) }}" class="btn btn-vodou" onclick="alert('Vous allez supprimer définitivement l\'objet : {{ object.code }} - {{ object.vernacularName.name }} et tous ses composants ! Cette action est irréversible !!!')"><i class="fa-solid fa-delete-left px-2"></i></i>Suppr. Définitivement</a>
                             </div>
                         </td>
                     </tr>

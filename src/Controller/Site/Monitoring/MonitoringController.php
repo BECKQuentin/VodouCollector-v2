@@ -2,17 +2,14 @@
 
 namespace App\Controller\Site\Monitoring;
 
-use App\Entity\Objects\Objects;
 use App\Form\Site\ClaimFormType;
 use App\Form\Site\SiteParameterFormType;
-use App\Repository\Objects\ObjectsRepository;
 use App\Repository\Site\ActionRepository;
 use App\Repository\Site\SiteParameterRepository;
 use App\Service\EmailService;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -105,6 +102,8 @@ class MonitoringController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
 
 
 }

@@ -27,8 +27,8 @@
                         <td>{{ action.name }}</td>
                         <td>
                             {% if action.object != null %}
-                                <a class="list_tag_link" href="{{ path('objects', {id:action.object.id}) }}" title="{{ action.object.title }}">
-                                    {{ action.object.code }} - {{ action.object.title|u.truncate(20, '...') }}
+                                <a class="list_tag_link" href="{{ path('objects', {id:action.object.id}) }}" title="{{ action.object.vernacularName.name }}">
+                                    {{ action.object.code }} - {{ action.object.vernacularName.name|u.truncate(20, '...') }}
                                 </a>
                             {% endif %}
                             {% if action.user != null %}

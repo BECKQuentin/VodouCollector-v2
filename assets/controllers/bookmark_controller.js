@@ -34,7 +34,6 @@ export default class extends Controller {
         console.log(e);
     }
 
-
     saveBookmark(e) {
         let button = e.currentTarget;
         fetch(e.currentTarget.dataset.url).then( (response) => {

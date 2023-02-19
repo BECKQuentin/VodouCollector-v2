@@ -7,7 +7,12 @@ use App\Repository\Objects\Metadata\OriginRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Ce nom est déjà utilisé',
+)]
 #[ORM\Entity(repositoryClass: OriginRepository::class)]
 class Origin
 {
@@ -19,7 +24,7 @@ class Origin
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'origin', targetEntity: Objects::class)]
+    #[ORM\ManyToMany(targetEntity: Objects::class, mappedBy: 'origin')]
     private Collection $objects;
 
     public function __construct()
@@ -56,7 +61,7 @@ class Origin
     {
         if (!$this->objects->contains($object)) {
             $this->objects->add($object);
-            $object->setOrigin($this);
+            $object->addOrigin($this);
         }
 
         return $this;
@@ -65,10 +70,7 @@ class Origin
     public function removeObject(Objects $object): self
     {
         if ($this->objects->removeElement($object)) {
-            // set the owning side to null (unless already changed)
-            if ($object->getOrigin() === $this) {
-                $object->setOrigin(null);
-            }
+            $object->removeOrigin($this);
         }
 
         return $this;

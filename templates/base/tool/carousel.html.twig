@@ -5,13 +5,13 @@
 
                 {% for img in object.images %}
                     {% if loop.first %}
-                        <img class="d-block" src="{{ img.src|image }}" alt="{{ object.title }}">
+                        <img class="d-block" src="{{ img.src|image }}" alt="{{ object.vernacularName.name }}">
                     {% endif %}
                 {% endfor %}
 
                 <div class="px-2 py-1">
                     <div>
-                        <h5 class="text-center">#{{ object.code }} - {{ object.title|upper|u.truncate(20, '...') }}</h5>
+                        <h5 class="text-center">#{{ object.code }} - {{ object.vernacularName.name|upper|u.truncate(20, '...') }}</h5>
 {#                        <p class="elipsis text-wrap" style="--lines:5; height: 141px">{{ blogArticle.abstract|u.truncate(320, '...') }}</p>#}
                     </div>
                     <div>

@@ -5,8 +5,6 @@
 
 {% block body %}
 
-
-
     <div class="content_box">
         <h4 class="p-1 m-0 bg_main rounded-top">Resultats : {{ totalItemsCount ?? '' }} objets</h4>
 
@@ -15,12 +13,13 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table">
+            <table id="tableObjectsListing" class="table">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th>Image</th>
-                    <th>Titre</th>
+                    <th scope="col" style="min-width: 90px">N° INV</th>
+                    <th>Images</th>
+                    <th>Nom vernaculaire</th>
+                    <th>Typologie</th>
                     <th>Vodou</th>
                     <th>Fonction d'usage</th>
                     {% if is_granted('ROLE_MEMBER') %}
@@ -33,10 +32,10 @@
                 {% if objects is defined and objects is not empty%}
                     {% for object in objects %}
                         <tr class="table_listing_row">
-                            {#                        <th>#}
-                            {#                            <input type="checkbox" class="boxSelectObject">#}
-                            {#                        </th>#}
-                            <th scope="row">{{ object.code }}</th>
+                            <td>
+                                <input type="checkbox" class="boxSelectObject">
+                                {{ object.code }}
+                            </td>
 
                             <!--Images-->
                             <td>
@@ -57,7 +56,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header bg_main">
-                                                <h5 class="modal-title">{{ object.code }} - {{ object.title }} <span class="fs-8">({{ object.images|length }} images)</span></h5>
+                                                <h5 class="modal-title">{{ object.code }} - {{ object.vernacularName.name }} <span class="fs-8">({{ object.images|length }} images)</span></h5>
                                                 <button type="button" class="btn btn-vodou close" data-bs-dismiss="modal" aria-label="Close">
                                                     <span class="fs-3" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
                                                 </button>
@@ -85,7 +84,8 @@
                             </td>
 
                             <!--Titre-->
-                            <th title="{{ object.title }}">{{ object.title|u.truncate(10, '...') }}</th>
+                            <td title="{{ object.vernacularName.name }}">{{ object.vernacularName.name|u.truncate(25, '...') }}</td>
+                            <td>Sculpture Antrepomorphe</td>
 
                             {#                        <td>#}
                             {#                            {% if object.categories != null %}#}
@@ -157,7 +157,7 @@
                             {% endif %}
 
 
-                            <td colspan="1">
+                            <td style="width: 115px">
                                 <div class="d-flex flex-wrap">
                                     <div>
                                         <a class="btn btn-vodou btn-vodou-neumorphism" href="{{ path('objects', {id:object.id}) }}" title="Voir">

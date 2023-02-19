@@ -3,7 +3,7 @@
 namespace App\Entity\Objects\Metadata;
 
 use App\Entity\Objects\Objects;
-use App\Repository\Objects\Metadata\MaterialsRepository;
+use App\Repository\Objects\Metadata\TypologyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,8 +13,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     fields: ['name'],
     message: 'Ce nom est déjà utilisé',
 )]
-#[ORM\Entity(repositoryClass: MaterialsRepository::class)]
-class Materials
+#[ORM\Entity(repositoryClass: TypologyRepository::class)]
+class Typology
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,7 +24,7 @@ class Materials
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Objects::class, mappedBy: 'materials')]
+    #[ORM\OneToMany(mappedBy: 'typology', targetEntity: Objects::class)]
     private Collection $objects;
 
     public function __construct()
@@ -61,7 +61,7 @@ class Materials
     {
         if (!$this->objects->contains($object)) {
             $this->objects->add($object);
-            $object->addMaterial($this);
+            $object->setTypology($this);
         }
 
         return $this;
@@ -70,7 +70,10 @@ class Materials
     public function removeObject(Objects $object): self
     {
         if ($this->objects->removeElement($object)) {
-            $object->removeMaterial($this);
+            // set the owning side to null (unless already changed)
+            if ($object->getTypology() === $this) {
+                $object->setTypology(null);
+            }
         }
 
         return $this;

@@ -11,10 +11,13 @@ use App\Entity\Objects\Media\Youtube;
 use App\Entity\Objects\Metadata\ExpositionLocation;
 use App\Entity\Objects\Metadata\Floor;
 use App\Entity\Objects\Metadata\Gods;
+use App\Entity\Objects\Metadata\InventoryDate;
 use App\Entity\Objects\Metadata\Materials;
 use App\Entity\Objects\Metadata\Origin;
 use App\Entity\Objects\Metadata\Population;
 use App\Entity\Objects\Metadata\State;
+use App\Entity\Objects\Metadata\Typology;
+use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\Objects\SharedBookmarks\SharedBookmarks;
 use App\Entity\Site\Action;
 use App\Entity\User\User;
@@ -44,16 +47,25 @@ class Objects
     #[NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $code = null;
+//
+//    #[NotBlank]
+//    #[Length([
+//        'min' => 2,
+//        'max' => 255,
+//        'minMessage' => 'Le titre doit être plus long',
+//        'maxMessage' => 'Le titre ne doit pas dépasser 255 caractères.'
+//    ])]
 
-    #[NotBlank]
-    #[Length([
-        'min' => 2,
-        'max' => 255,
-        'minMessage' => 'Le titre doit être plus long',
-        'maxMessage' => 'Le titre ne doit pas dépasser 255 caractères.'
-    ])]
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    #[ORM\ManyToOne(inversedBy: 'objects')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Typology $typology = null;
+
+    #[ORM\ManyToOne(inversedBy: 'objects')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?VernacularName $vernacularName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $precisionVernacularName = null;
 
     #[ORM\ManyToOne(inversedBy: 'objects')]
     private ?Gods $gods = null;
@@ -71,11 +83,11 @@ class Objects
     #[ORM\Column(nullable: true)]
     private ?int $era = null;
 
-    #[ORM\ManyToOne(inversedBy: 'objects')]
-    private ?Origin $origin = null;
+    #[ORM\ManyToMany(targetEntity: Origin::class, inversedBy: 'objects')]
+    private Collection $origin;
 
-    #[ORM\ManyToOne(inversedBy: 'objects')]
-    private ?Population $population = null;
+    #[ORM\ManyToMany(targetEntity: Population::class, inversedBy: 'objects')]
+    private Collection $population;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $historicDetail = null;
@@ -125,6 +137,9 @@ class Objects
     #[ORM\Column(nullable: true)]
     private ?bool $isBasemented = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $basementCommentary = null;
+
     #[ORM\ManyToOne(inversedBy: 'objects')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ExpositionLocation $expositionLocation = null;
@@ -150,6 +165,9 @@ class Objects
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $arrivedCollection = null;
+
+    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: InventoryDate::class, cascade: ["persist"], orphanRemoval: true)]
+    private Collection $inventoriedAt;
 
     #[ORM\OneToMany(mappedBy: 'objects', targetEntity: Image::class, cascade: ["persist"], orphanRemoval: true)]
     private Collection $images;
@@ -191,6 +209,8 @@ class Objects
             $this->setCreatedAt(new \DateTimeImmutable('now'));
         }
         $this->relatedGods = new ArrayCollection();
+        $this->origin = new ArrayCollection();
+        $this->population = new ArrayCollection();
         $this->materials = new ArrayCollection();
         $this->museumCatalogue = new ArrayCollection();
         $this->book = new ArrayCollection();
@@ -200,6 +220,7 @@ class Objects
 //        $this->youtube = new ArrayCollection();
         $this->actions = new ArrayCollection();
         $this->sharedBookmarks = new ArrayCollection();
+        $this->inventoriedAt = new ArrayCollection();
     }
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
@@ -228,14 +249,38 @@ class Objects
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTypology(): ?Typology
     {
-        return $this->title;
+        return $this->typology;
     }
 
-    public function setTitle(string $title): self
+    public function setTypology(?Typology $typology): self
     {
-        $this->title = $title;
+        $this->typology = $typology;
+
+        return $this;
+    }
+
+    public function getVernacularName(): ?VernacularName
+    {
+        return $this->vernacularName;
+    }
+
+    public function setVernacularName(?VernacularName $vernacularName): self
+    {
+        $this->vernacularName = $vernacularName;
+
+        return $this;
+    }
+
+    public function getPrecisionVernacularName(): ?string
+    {
+        return $this->precisionVernacularName;
+    }
+
+    public function setPrecisionVernacularName(?string $precisionVernacularName): self
+    {
+        $this->precisionVernacularName = $precisionVernacularName;
 
         return $this;
     }
@@ -300,26 +345,50 @@ class Objects
         return $this;
     }
 
-    public function getOrigin(): ?Origin
+    /**
+     * @return Collection<int, Origin>
+     */
+    public function getOrigin(): Collection
     {
         return $this->origin;
     }
 
-    public function setOrigin(?Origin $origin): self
+    public function addOrigin(Origin $origin): self
     {
-        $this->origin = $origin;
+        if (!$this->origin->contains($origin)) {
+            $this->origin->add($origin);
+        }
 
         return $this;
     }
 
-    public function getPopulation(): ?Population
+    public function removeOrigin(Origin $origin): self
+    {
+        $this->origin->removeElement($origin);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Population>
+     */
+    public function getPopulation(): Collection
     {
         return $this->population;
     }
 
-    public function setPopulation(?Population $population): self
+    public function addPopulation(Population $population): self
     {
-        $this->population = $population;
+        if (!$this->population->contains($population)) {
+            $this->population->add($population);
+        }
+
+        return $this;
+    }
+
+    public function removePopulation(Population $population): self
+    {
+        $this->population->removeElement($population);
 
         return $this;
     }
@@ -564,6 +633,18 @@ class Objects
         return $this;
     }
 
+    public function getBasementCommentary(): ?string
+    {
+        return $this->basementCommentary;
+    }
+
+    public function setBasementCommentary(?string $basementCommentary): self
+    {
+        $this->basementCommentary = $basementCommentary;
+
+        return $this;
+    }
+
     public function getExpositionLocation(): ?ExpositionLocation
     {
         return $this->expositionLocation;
@@ -656,6 +737,36 @@ class Objects
     public function setArrivedCollection(?\DateTimeInterface $arrivedCollection): self
     {
         $this->arrivedCollection = $arrivedCollection;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InventoryDate>
+     */
+    public function getInventoriedAt(): Collection
+    {
+        return $this->inventoriedAt;
+    }
+
+    public function addInventoriedAt(InventoryDate $inventoriedAt): self
+    {
+        if (!$this->inventoriedAt->contains($inventoriedAt)) {
+            $this->inventoriedAt->add($inventoriedAt);
+            $inventoriedAt->setObjects($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInventoriedAt(InventoryDate $inventoriedAt): self
+    {
+        if ($this->inventoriedAt->removeElement($inventoriedAt)) {
+            // set the owning side to null (unless already changed)
+            if ($inventoriedAt->getObjects() === $this) {
+                $inventoriedAt->setObjects(null);
+            }
+        }
 
         return $this;
     }
@@ -884,4 +995,6 @@ class Objects
 
         return $this;
     }
+
+
 }
