@@ -185,10 +185,6 @@ class ObjectsFormType extends AbstractType
                 'label'         => 'Datation de l\' objet',
                 'required'      => false
             ])
-//            ->add('quantity', IntegerType::class, [
-//                'label'         => 'Quantité',
-//                'required'      => false
-//            ])
             ->add('arrivedCollection', DateType::class, [
                 'label'         => 'arrivé dans la collection le',
                 'widget' => 'single_text',
@@ -197,6 +193,9 @@ class ObjectsFormType extends AbstractType
             ->add('historicDetail', TextareaType::class, [
                 'label'         => 'Mode d\' acquisition',
                 'required'      => false,
+                'attr' => [
+                    'class' => 'big_textarea'
+                ]
             ])
             ->add('usageFonction', TextareaType::class, [
                 'label'         => 'Fonction d\' usage *',

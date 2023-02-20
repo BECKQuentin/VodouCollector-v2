@@ -368,15 +368,6 @@ class ObjectsController extends AbstractController
         return $this->redirectToRoute('deleted_objects');
     }
 
-//    #[Route('/objects-view/{id}', name: 'objects_view')]
-//    public function viewObjects(Objects $object, ManagerRegistry $doctrine): Response
-//    {
-//        return $this->render('objects/objects/view.html.twig', [
-//            'object'    => $object,
-//            'bookmarks'      => $this->getUser()->getBookmark(),
-//        ]);
-//    }
-
     /*Extraction de PDF*/
     #[Route('/objects-pdf/{id}', name: 'object_pdf')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les ADMINS peuvent faire ça")]
@@ -397,25 +388,24 @@ class ObjectsController extends AbstractController
             'object' => $object,
         ]);
 
-
         // Load HTML to Dompdf
         $dompdf->loadHtml($html);
-
-
 
         // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
         $dompdf->setPaper('A4', 'portrait');
 
-
-
         // Render the HTML as PDF
         $dompdf->render();
 
+
+
         // Output the generated PDF to Browser (force download)
-        $dompdf->stream($object->getCode() . '-' . $object->getVernacularName()->getName().".pdf", [
+        $filename = trim($object->getCode() . '-' . strtolower(  $object->getVernacularName()->getName()));
+        $dompdf->stream($filename.".pdf", [
             "Attachment" => true
         ]);
 
+//        dd($dompdf);
 
         return new Response();
     }
@@ -461,7 +451,6 @@ class ObjectsController extends AbstractController
             }
 
             $data = array(
-//                $obj->getQuantity(),
                 $obj->getCode(),
                 $obj->getTitle(),
 //                $categories,

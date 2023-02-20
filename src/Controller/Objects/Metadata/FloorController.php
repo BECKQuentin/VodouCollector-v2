@@ -11,6 +11,7 @@ use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,7 @@ class FloorController extends AbstractController
         private FloorRepository $floorRepository,
         private ActionService $actionService,
         private EntityManagerInterface $manager,
+        private PaginatorInterface $paginator,
     ){}
 
 
@@ -119,9 +121,17 @@ class FloorController extends AbstractController
                 }
                 return $this->redirectToRoute(self::ROUTE);
             }
+
+            $objPaginate = $this->paginator->paginate(
+                $metadata->getObjects(),
+                $request->get('page', 1),
+                25
+            );
+
             // Afficher le formulaire de confirmation
             return $this->render('objects/metadata/deleteMetadataConfirmationForm.html.twig', [
                 'metadata' => $metadata,
+                'objects' => $objPaginate,
                 'className'     => self::METADATA_NAME,
                 'confirmForm' => $confirmForm->createView(),
             ]);

@@ -8,8 +8,8 @@
     <hr>
 
         <div class="d-flex flex-column m-2">
-            <p>Voulez-vous vraiment supprimer {{ className }} <span class="fs-5 fw-bold">"{{ metadata.name }}"</span>, des objets lui sont liés.</p>
-            <p>Cela remplacera {{ className }} des objets liés par '???'.</p>
+            <p>Voulez-vous vraiment supprimer <span class="fs-5 fw-bold">"{{ user.firstname|capitalize }} {{ user.lastname|upper }}"</span>, des objets lui sont liés.</p>
+            <p>Forçer la suppression enlevera les champs 'crée par, modifié par, ...' et les remplaçera par 'Inconnu'.</p>
         </div>
 
         <div class="d-flex flex-column align-items-center">

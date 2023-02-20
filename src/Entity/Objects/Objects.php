@@ -77,7 +77,7 @@ class Objects
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'objects')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     private ?User $createdBy = null;
 
     #[ORM\Column(nullable: true)]

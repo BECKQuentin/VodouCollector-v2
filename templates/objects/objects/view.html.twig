@@ -142,7 +142,7 @@
                                 {% if object.museumCatalogue is defined and object.museumCatalogue is not null %}
                                     {% for museumCatalogue in object.museumCatalogue%}
                                         <li style="list-style: none">
-                                            {{ museumCatalogue.name|u.truncate(20, '...') }}
+                                            <span title="{{ museumCatalogue.name }}">{{ museumCatalogue.name|u.truncate(38, '...') }}</span>
                                             <span class="badge_vodou" title="Nombre d'objets dans la parution">{{ museumCatalogue.objects|length }}</span>
                                         </li>
                                     {% endfor %}

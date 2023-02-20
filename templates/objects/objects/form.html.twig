@@ -33,8 +33,8 @@
             <div class="row mb-2">
                 <div class="col-md-6">{{ form_row(form.memo) }}</div>
                 <div class="col-md-6">{{ form_row(form.precisionVernacularName) }}</div>
-                {% if object is defined and object.id is not null%}
-                    <div class="d-flex"><span>Fiche crée par :{{ object.createdBy.firstname|capitalize }} {{ object.createdBy.lastname|upper }} le {{ object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
+                {% if object is defined and object.id is not null %}
+                    <div class="d-flex"><span>Fiche crée par : {{ object.createdBy ? object.createdBy.firstname|capitalize : 'Inconnu' }} {{ object.createdBy ? object.createdBy.lastname|upper }} le {{ object.createdAt ? object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
                 {% endif %}
             </div>
         </div>
@@ -57,6 +57,7 @@
                 <div class="col-md-3">
                     {{ form_row(form.relatedGods) }}
                 </div>
+                <hr class="my-3">
                 <div class="col-md-12">
                     {{ form_row(form.usageUser) }}
                 </div>
@@ -95,26 +96,37 @@
 
         <div id="objectElementContent_regie" class="object_form_elem">
             <div class="row mb-2">
-                <div class="col-md-6">{{ form_row(form.isBasemented) }}{{ form_row(form.basementCommentary) }}</div>
-                <div class="col-md-6">{{ form_row(form.state) }}{{ form_row(form.stateCommentary) }}</div>
-
-            </div>
-            <div class="row mb-2">
-                <div id="expositionLocation" class="col-md-4">{{ form_row(form.expositionLocation) }}</div>
+                <div class="col-md-4">{{ form_row(form.state) }}{{ form_row(form.stateCommentary) }}</div>
                 <div class="col-md-4">
                     {{ form_row(form.floor) }}
                     {{ form_row(form.showCaseCode) }}
                     {{ form_row(form.shelf) }}
                 </div>
+                <div id="expositionLocation" class="col-md-4 d-flex flex-column justify-content-center">
+                    {{ form_row(form.expositionLocation) }}
+                </div>
             </div>
             <div class="row mb-2">
-                <div class="col-6 col-md-5">{{ form_row(form.arrivedCollection) }}</div>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="col-6">{{ form_row(form.insuranceValue) }}</div>
-                {% endif %}
+                <div class="col-12">
+                    {{ form_row(form.isBasemented) }}
+                    {{ form_row(form.basementCommentary) }}
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row mb-2">
+                <div class="col-6">
+                    {{ form_row(form.arrivedCollection) }}
+                </div>
+                <div class="col-6">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        {{ form_row(form.insuranceValue) }}
+                    {% endif %}
+                </div>
             </div>
             <div class="row mb-4">
-                <div class="col-md-6">{{ form_row(form.historicDetail) }}</div>
+                <div class="col-md-12">{{ form_row(form.historicDetail) }}</div>
             </div>
         </div>
 
