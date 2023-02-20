@@ -1,0 +1,13 @@
+<div class="card_object">
+{#    {{ dump(object.images) }}#}
+    {% if object.images is not empty %}
+        {% for img in object.images %}
+            {% if loop.first %}
+                    <img src="{{ img.src|image }}" alt="">
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <img src="{{ asset('img/base/logos/cropped-logo-musee-vodou.png') }}" alt="">
+    {% endif %}
+    <a href="{{ path('objects', {id:object.id}) }}"><h5>{{ object.code }} - {{ object.vernacularName.name }}</h5></a>
+</div>

@@ -20,7 +20,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for item in items %}
+                    {% if isNoSort is defined and isNoSort is same as true %}
+                        {% set sorted_items = items %}
+                    {% else %}
+{#                        Trier par ordre alphabétique et mettre '???' en premier#}
+                        {% set sorted_items = items|sort((a, b) => (a.name == '???') ? -1 : (b.name == '???') ? 1 : (a.name <=> b.name)) %}
+                    {% endif %}
+
+                    {% for item in sorted_items %}
                         <tr>
                             <th scope="row">{{ loop.index }}</th>
                             <th>{{ item.name }}</th>
@@ -65,5 +72,4 @@
 
         </div>
     </div>
-
 {% endblock %}

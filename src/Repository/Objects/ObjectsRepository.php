@@ -120,18 +120,22 @@ class ObjectsRepository extends ServiceEntityRepository
         $query = $this
             ->createQueryBuilder('o')
 //            ->select('c', 'o')
+            ->leftjoin('o.vernacularName', 'vernacularName')
+            ->leftjoin('o.typology', 'typology')
 //            ->leftjoin('o.categories', 'cat')
 //            ->leftjoin('o.subCategories', 'subCat')
             ->leftjoin('o.population', 'pop')
             ->leftjoin('o.origin', 'ori')
             ->leftjoin('o.gods', 'g')
+
         ;
         if(!empty($searchData->q)) {
             $query = $query
                 ->orWhere('o.code LIKE :q')
-                ->orWhere('o.title LIKE :q')
 //                ->orWhere('cat.name LIKE :q')
 //                ->orWhere('subCat.name LIKE :q')
+                ->orWhere('vernacularName.name LIKE :q')
+                ->orWhere('typology.name LIKE :q')
                 ->orWhere('pop.name LIKE :q')
                 ->orWhere('ori.name LIKE :q')
                 ->orWhere('g.name LIKE :q')
@@ -248,11 +252,11 @@ class ObjectsRepository extends ServiceEntityRepository
         //SORT
         if(!empty($searchData->isSortAlpha)) {
             $query = $query
-                ->orderBy('o.title', 'ASC');
+                ->orderBy('o.vernacularName', 'ASC');
         }
         if(!empty($searchData->isSortAlphaReverse)) {
             $query = $query
-                ->orderBy('o.title', 'DESC');
+                ->orderBy('o.vernacularName', 'DESC');
         }
         if(!empty($searchData->isSortNumeric)) {
             $query = $query

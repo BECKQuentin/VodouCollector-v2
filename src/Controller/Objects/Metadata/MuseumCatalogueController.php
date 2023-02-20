@@ -4,9 +4,12 @@ namespace App\Controller\Objects\Metadata;
 
 use App\Entity\Libraries\MuseumCatalogue;
 use App\Entity\Site\Action;
+use App\Form\ConfirmationFormType;
 use App\Form\Objects\MetaDataFormType;
 use App\Repository\Libraries\MuseumCatalogueRepository;
 use App\Repository\Site\ActionCategoryRepository;
+use App\Service\ActionService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +22,11 @@ class MuseumCatalogueController extends AbstractController
     const ROUTE         = 'museumCatalogue';
     const METADATA_NAME = 'Catalogues du Musée';
 
+    public function __construct(
+        private MuseumCatalogueRepository $museumCatalogueRepository,
+        private ActionService $actionService,
+        private EntityManagerInterface $manager,
+    ){}
 
     #[Route('/museumCatalogue', name: 'museumCatalogue')]
     #[IsGranted("ROLE_GUEST", message: "Seules les Invités peuvent faire ça")]
@@ -38,21 +46,9 @@ class MuseumCatalogueController extends AbstractController
 
     #[Route('/museumCatalogue-delete/{id}', name: 'museumCatalogue_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function deleteMuseumCatalogue(MuseumCatalogue $museumCatalogue, ActionCategoryRepository $actionCategoryRepository, Request $request, ManagerRegistry $doctrine): Response
+    public function deleteMuseumCatalogue(MuseumCatalogue $metadata, Request $request): Response
     {
-        $action = new Action();
-        $action->setName(self::METADATA_NAME . ' supprimé');
-        $action->setOthersValue($museumCatalogue->getName());
-        $action->setCreatedBy($this->getUser());
-        $action->setCategory($actionCategoryRepository->find(3));
-
-        $em = $doctrine->getManager();
-        $em->remove($museumCatalogue);
-        $em->persist($action);
-        $em->flush();
-
-        $this->addFlash('danger', 'Vous avez supprimé '.$museumCatalogue->getName().' !');
-        return $this->redirectToRoute(self::ROUTE);
+        return $this->deleteMetadata($metadata, $request);
     }
 
 
@@ -88,5 +84,53 @@ class MuseumCatalogueController extends AbstractController
             'items'         => $allMetadata,
             'form'          => $form->createView(),
         ]);
+    }
+
+    private function deleteMetadata($metadata, $request)
+    {
+        // Empecher la supression de l'ID 1 soit '???'
+        if ( $metadata->getId() === 1) {
+            $this->addFlash('danger', "Impossible de supprimer le premier element qui vaut '???' Contacter l'Admin si vous pensez que c'est anormal");
+            return $this->redirectToRoute(self::ROUTE);
+        }
+
+        $objects = $metadata->getObjects();
+        if ($objects->count() > 0) {
+            $confirmForm = $this->createForm(ConfirmationFormType::class);
+
+            $confirmForm->handleRequest($request);
+            if ($confirmForm->isSubmitted() && $confirmForm->isValid()) {
+                if ($confirmForm->get('confirm')->isClicked()) {
+                    foreach ($objects as $object) {
+                        //mettre celui avec id 1 soit ???
+                        if  ($this->museumCatalogueRepository->find(1)) {
+                            $object->setTypology($this->museumCatalogueRepository->find(1));
+                        } else {
+                            $this->addFlash('danger', 'Désolé mais ' . self::METADATA_NAME . ' avec l\'ID 1 qui vaut ??? est inexistant vérifier bien en base de données ou contacté l\'Admin.');
+                            return $this->redirectToRoute(self::ROUTE);
+                        }
+                    }
+
+                    $this->manager->remove($metadata);
+                    $this->manager->flush();
+                    $this->addFlash('success', self::METADATA_NAME . '"' . $metadata->getName() . '"' .' a été supprimée avec succès.');
+                    $this->actionService->addAction(3, self::METADATA_NAME . ' supprimé', null, $this->getUser(), $metadata->getName());
+                }
+                return $this->redirectToRoute(self::ROUTE);
+            }
+            // Afficher le formulaire de confirmation
+            return $this->render('objects/metadata/deleteMetadataConfirmationForm.html.twig', [
+                'metadata' => $metadata,
+                'className'     => self::METADATA_NAME,
+                'confirmForm' => $confirmForm->createView(),
+            ]);
+        }
+
+
+        // Si l'entité n'est pas associée à une entité Objet, la supprimer directement
+        $this->manager->remove($metadata);
+        $this->manager->flush();
+        $this->addFlash('success', 'Vous avez supprimé '.$metadata->getName().' !');
+        return $this->redirectToRoute(self::ROUTE);
     }
 }

@@ -31,16 +31,9 @@
 
     </div>
 
-    <div class="content_box d-flex">
+    <div class="d-flex flex-wrap">
         {% for object in objects %}
-            <div class="card_object">
-                {% for img in object.images %}
-                    {% if loop.first %}
-                        <img src="{{ img.src|image }}" alt="">
-                    {% endif %}
-                {% endfor %}
-                <h5>#{{ object.code }} - {{ object.vernacularName.name }}</h5>
-            </div>
+            {% include 'objects/objects/card_object.html.twig' %}
         {% endfor %}
     </div>
 

@@ -13,6 +13,7 @@ use App\Form\SearchFieldType;
 use App\Repository\Objects\Media\FileRepository;
 use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\Media\VideoRepository;
+use App\Repository\Objects\Metadata\VernacularNameRepository;
 use App\Repository\Objects\ObjectsRepository;
 use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;

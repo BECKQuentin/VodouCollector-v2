@@ -128,6 +128,9 @@ class Objects
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $inscriptionsEngraving = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $documentationCommentary = null;
+
     #[ORM\ManyToMany(targetEntity: MuseumCatalogue::class, inversedBy: 'objects')]
     private Collection $museumCatalogue;
 
@@ -573,6 +576,18 @@ class Objects
         return $this;
     }
 
+    public function getDocumentationCommentary(): ?string
+    {
+        return $this->documentationCommentary;
+    }
+
+    public function setDocumentationCommentary(?string $documentationCommentary): self
+    {
+        $this->documentationCommentary = $documentationCommentary;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, MuseumCatalogue>
      */
@@ -995,6 +1010,5 @@ class Objects
 
         return $this;
     }
-
 
 }

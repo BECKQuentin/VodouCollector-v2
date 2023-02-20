@@ -5,10 +5,12 @@ namespace App\Controller\Objects\Metadata;
 
 use App\Entity\Objects\Metadata\State;
 use App\Entity\Site\Action;
+use App\Form\ConfirmationFormType;
 use App\Form\Objects\MetaDataFormType;
 use App\Repository\Objects\Metadata\StateRepository;
 use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +24,9 @@ class StateController extends AbstractController
     const METADATA_NAME = 'Etat';
 
     public function __construct(
+        private StateRepository $stateRepository,
         private ActionService $actionService,
+        private EntityManagerInterface $manager,
     ){}
 
 
@@ -44,16 +48,9 @@ class StateController extends AbstractController
 
     #[Route('/state-delete/{id}', name: 'state_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function deleteState(State $state, Request $request, ManagerRegistry $doctrine): Response
+    public function deleteState(State $metadata, Request $request): Response
     {
-        $this->actionService->addAction(3, self::METADATA_NAME . ' ajout/modif', null, $this->getUser(), $state->getName());
-
-        $em = $doctrine->getManager();
-        $em->remove($state);
-        $em->flush();
-
-        $this->addFlash('danger', 'Vous avez supprimé '.$state->getName().' !');
-        return $this->redirectToRoute(self::ROUTE);
+        return $this->deleteMetadata($metadata, $request);
     }
 
     //////////////* GLOBAL METADATAS (CRU)*///////////////////
@@ -81,6 +78,55 @@ class StateController extends AbstractController
             'className'     => self::METADATA_NAME,
             'items'         => $allMetadata,
             'form'          => $form->createView(),
+            'isNoSort'      => true,
         ]);
+    }
+
+    private function deleteMetadata($metadata, $request)
+    {
+        // Empecher la supression de l'ID 1 soit '???'
+        if ( $metadata->getId() === 1) {
+            $this->addFlash('danger', "Impossible de supprimer le premier element qui vaut '???' Contacter l'Admin si vous pensez que c'est anormal");
+            return $this->redirectToRoute(self::ROUTE);
+        }
+
+        $objects = $metadata->getObjects();
+        if ($objects->count() > 0) {
+            $confirmForm = $this->createForm(ConfirmationFormType::class);
+
+            $confirmForm->handleRequest($request);
+            if ($confirmForm->isSubmitted() && $confirmForm->isValid()) {
+                if ($confirmForm->get('confirm')->isClicked()) {
+                    foreach ($objects as $object) {
+                        //mettre celui avec id 1 soit ???
+                        if  ($this->stateRepository->find(1)) {
+                            $object->setTypology($this->stateRepository->find(1));
+                        } else {
+                            $this->addFlash('danger', 'Désolé mais ' . self::METADATA_NAME . ' avec l\'ID 1 qui vaut ??? est inexistant vérifier bien en base de données ou contacté l\'Admin.');
+                            return $this->redirectToRoute(self::ROUTE);
+                        }
+                    }
+
+                    $this->manager->remove($metadata);
+                    $this->manager->flush();
+                    $this->addFlash('success', self::METADATA_NAME . '"' . $metadata->getName() . '"' .' a été supprimée avec succès.');
+                    $this->actionService->addAction(3, self::METADATA_NAME . ' supprimé', null, $this->getUser(), $metadata->getName());
+                }
+                return $this->redirectToRoute(self::ROUTE);
+            }
+            // Afficher le formulaire de confirmation
+            return $this->render('objects/metadata/deleteMetadataConfirmationForm.html.twig', [
+                'metadata' => $metadata,
+                'className'     => self::METADATA_NAME,
+                'confirmForm' => $confirmForm->createView(),
+            ]);
+        }
+
+
+        // Si l'entité n'est pas associée à une entité Objet, la supprimer directement
+        $this->manager->remove($metadata);
+        $this->manager->flush();
+        $this->addFlash('success', 'Vous avez supprimé '.$metadata->getName().' !');
+        return $this->redirectToRoute(self::ROUTE);
     }
 }

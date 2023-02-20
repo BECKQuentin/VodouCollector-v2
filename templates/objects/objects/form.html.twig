@@ -85,6 +85,9 @@
 
         <div id="objectElementContent_documentation" class="object_form_elem">
             <div class="row mb-4">
+                <div class="col-12">{{ form_row(form.documentationCommentary) }}</div>
+            </div>
+            <div class="row mb-4">
                 <div class="col-6">{{ form_row(form.museumCatalogue) }}</div>
                 <div class="col-6">{{ form_row(form.book) }}</div>
             </div>
@@ -147,7 +150,7 @@
                                         <a href="{{ img.src|image }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
                                     {% endif %}
                                     {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('delete_objects_img', {id:img.id, object:object.id}) }}" title="Supprimer" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                        <a href="{{ path('delete_objects_img', {id:img.id, object:object.id}) }}" title="Supprimer" onclick="return confirm('Supprimer cette image ?')" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
                                     {% endif %}
                                 </div>
                             </div>

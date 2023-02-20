@@ -1,0 +1,31 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+
+    <div class="content_box">
+    <h2 class="mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Confirmation de suppression</h2>
+    <hr>
+
+        <div class="d-flex flex-column m-2">
+            <p>Voulez-vous vraiment supprimer {{ className }} <span class="fs-5 fw-bold">"{{ metadata.name }}"</span>, des objets lui sont liés.</p>
+        </div>
+
+        <div class="d-flex flex-column align-items-center">
+            <h5>Voulez-vous forcer la suppression ?</h5>
+            {{ form_start(confirmForm) }}
+            {{ form_widget(confirmForm.confirm) }}
+            {{ form_widget(confirmForm.cancel) }}
+            {{ form_end(confirmForm) }}
+        </div>
+
+        <p class="m-0 p-0">Objet(s) liés :</p>
+        <div class="d-flex">
+            {% for object in metadata.objects %}
+                {% include 'objects/objects/card_object.html.twig' %}
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock %}

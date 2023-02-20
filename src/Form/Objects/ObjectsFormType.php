@@ -3,9 +3,6 @@
 namespace App\Form\Objects;
 
 use App\Entity\Libraries\Book;
-//use App\Entity\Objects\Metadata\Categories;
-use App\Entity\Objects\Media\Image;
-use App\Entity\Objects\Media\Youtube;
 use App\Entity\Objects\Metadata\ExpositionLocation;
 use App\Entity\Objects\Metadata\Floor;
 use App\Entity\Objects\Metadata\Gods;
@@ -14,14 +11,19 @@ use App\Entity\Libraries\MuseumCatalogue;
 use App\Entity\Objects\Metadata\Origin;
 use App\Entity\Objects\Metadata\Population;
 use App\Entity\Objects\Metadata\State;
-//use App\Entity\Objects\Metadata\SubCategories;
 use App\Entity\Objects\Metadata\Typology;
 use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\Objects\Objects;
+use App\Repository\Libraries\MuseumCatalogueRepository;
+use App\Repository\Objects\Metadata\GodsRepository;
+use App\Repository\Objects\Metadata\MaterialsRepository;
+use App\Repository\Objects\Metadata\OriginRepository;
+use App\Repository\Objects\Metadata\PopulationRepository;
+use App\Repository\Objects\Metadata\TypologyRepository;
+use App\Repository\Objects\Metadata\VernacularNameRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -30,9 +32,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 
@@ -53,6 +53,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => true,
                 'multiple'      => false,
+                'query_builder' => function(TypologyRepository $typologyRepository) {
+                    return $typologyRepository->createQueryBuilder('t')
+                        ->orderBy('t.name', 'ASC');
+                },
             ])
             ->add('vernacularName', EntityType::class, [
                 'class'         => VernacularName::class,
@@ -60,6 +64,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => true,
                 'multiple'      => false,
+                'query_builder' => function(VernacularNameRepository $vernacularNameRepository) {
+                    return $vernacularNameRepository->createQueryBuilder('v')
+                        ->orderBy('v.name', 'ASC');
+                },
             ])
             ->add('precisionVernacularName', TextType::class, [
                 'label'         => 'Précision Nom Vernaculaire',
@@ -78,6 +86,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => false,
+                'query_builder' => function(GodsRepository $godsRepository) {
+                    return $godsRepository->createQueryBuilder('g')
+                        ->orderBy('g.name', 'ASC');
+                },
             ])
 //            ->add('categories', EntityType::class, [
 //                'class'         => Categories::class,
@@ -98,6 +110,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'query_builder' => function(PopulationRepository $populationRepository) {
+                    return $populationRepository->createQueryBuilder('p')
+                        ->orderBy('p.name', 'ASC');
+                },
             ])
             ->add('origin', EntityType::class, [
                 'class'         => Origin::class,
@@ -105,6 +121,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'query_builder' => function(OriginRepository $originRepository) {
+                    return $originRepository->createQueryBuilder('o')
+                        ->orderBy('o.name', 'ASC');
+                },
             ])
 
             ->add('relatedGods', EntityType::class, [
@@ -113,6 +133,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'query_builder' => function(GodsRepository $godsRepository) {
+                    return $godsRepository->createQueryBuilder('g')
+                        ->orderBy('g.name', 'ASC');
+                },
             ])
             ->add('materials', EntityType::class, [
                 'class'         => Materials::class,
@@ -120,6 +144,14 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'query_builder' => function(MaterialsRepository $materialsRepository) {
+                    return $materialsRepository->createQueryBuilder('m')
+                        ->orderBy('m.name', 'ASC');
+                },
+            ])
+            ->add('documentationCommentary', TextareaType::class, [
+                'label' => 'Commentaire de Documentation',
+                'required' => false,
             ])
             ->add('museumCatalogue', EntityType::class, [
                 'class'         => MuseumCatalogue::class,
@@ -127,6 +159,10 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'query_builder' => function(MuseumCatalogueRepository $museumCatalogueRepository) {
+                    return $museumCatalogueRepository->createQueryBuilder('m')
+                        ->orderBy('m.name', 'ASC');
+                },
                 'attr' => [
                     'class' => 'big_textarea'
                 ]

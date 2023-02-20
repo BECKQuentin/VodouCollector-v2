@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller\Objects;
+use App\Entity\Libraries\MuseumCatalogue;
 use App\Entity\Objects\Metadata\Gods;
 use App\Entity\Objects\Metadata\InventoryDate;
 use App\Entity\Objects\Metadata\Materials;
@@ -10,6 +11,7 @@ use App\Entity\Objects\Metadata\State;
 use App\Entity\Objects\Metadata\Typology;
 use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\Objects\Objects;
+use App\Repository\Libraries\MuseumCatalogueRepository;
 use App\Repository\Objects\Metadata\ExpositionLocationRepository;
 use App\Repository\Objects\Metadata\FloorRepository;
 use App\Repository\Objects\Metadata\GodsRepository;
@@ -39,6 +41,7 @@ class UploadObjectController extends AbstractController
         private GodsRepository $godsRepository,
         private MaterialsRepository $materialsRepository,
         private PopulationRepository $populationRepository,
+        private MuseumCatalogueRepository $museumCatalogueRepository,
         private ExpositionLocationRepository $expositionLocationRepository,
         private EntityManagerInterface $manager,
     ){}
@@ -85,6 +88,8 @@ class UploadObjectController extends AbstractController
             $idxRelatedGods = 0;
             $idxGods = 0;
             $idxBasement = 0;
+            $idxDocumentationCommentary = 0;
+            $idxMuseumCatalogue = 0;
 
 
 
@@ -153,6 +158,12 @@ class UploadObjectController extends AbstractController
                     }
                     if ($col === "Type soclage") {
                         $idxBasement = $keyCol;
+                    }
+                    if ($col === "Biblio et Expographie") {
+                        $idxDocumentationCommentary = $keyCol;
+                    }
+                    if ($col === "Historique") {
+                        $idxMuseumCatalogue = $keyCol;
                     }
 
                 }
@@ -538,6 +549,32 @@ class UploadObjectController extends AbstractController
 
                         }
 
+                        if($keyCol === $idxDocumentationCommentary) {
+                            $object->setDocumentationCommentary($value);
+                        }
+
+                        if($keyCol === $idxMuseumCatalogue) {
+                            $museumCatalogue = $this->museumCatalogueRepository->findAll();
+
+                            $match = false;
+                            foreach ($museumCatalogue as $m) {
+                                if ($m->getName() == $value) {
+                                    $object->addMuseumCatalogue($m);
+                                    $match = true;
+                                    break; // on sort de la boucle interne car on a trouvé une correspondance
+                                }
+                            }
+                            // si on n'a pas trouvé de correspondance, on crée une nouvelle instance de Origin
+                            if (!$match) {
+                                $newMuseumCatalogue = new MuseumCatalogue();
+                                $newMuseumCatalogue->setName($value);
+                                $this->manager->persist($newMuseumCatalogue);
+                                $this->manager->flush();
+                                $object->addMuseumCatalogue($newMuseumCatalogue);
+                            }
+
+                        }
+
                     }
                     $arrObjects[] = $object;
                 }
@@ -563,7 +600,7 @@ class UploadObjectController extends AbstractController
             }
 //
 //            dd($count);
-            dd($arrObjects);
+//            dd($arrObjects);
 
 //            dd($object);
 //            dd($xlsx->rows());
@@ -607,7 +644,7 @@ class UploadObjectController extends AbstractController
             echo SimpleXLSX::parseError();
         }
 
-        dd('Fin');
+//        dd('Fin');
 
         return $this->render('objects/objects/others/import_objects.html.twig', [
 //            'form'      => $form->createView(),
