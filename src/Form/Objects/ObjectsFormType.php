@@ -91,19 +91,6 @@ class ObjectsFormType extends AbstractType
                         ->orderBy('g.name', 'ASC');
                 },
             ])
-//            ->add('categories', EntityType::class, [
-//                'class'         => Categories::class,
-//                'label'         => 'Categories',
-//                'choice_label'  => 'name',
-//                'required'      => false,
-//                'multiple'      => false,
-//            ])->add('subCategories', EntityType::class, [
-//                'class'         => SubCategories::class,
-//                'label'         => 'Sous-Categories',
-//                'choice_label'  => 'name',
-//                'required'      => false,
-//                'multiple'      => false,
-//            ])
             ->add('population', EntityType::class, [
                 'class'         => Population::class,
                 'label'         => 'Population',
@@ -117,7 +104,7 @@ class ObjectsFormType extends AbstractType
             ])
             ->add('origin', EntityType::class, [
                 'class'         => Origin::class,
-                'label'         => 'Lieu de création',
+                'label'         => 'Origine',
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
@@ -177,10 +164,6 @@ class ObjectsFormType extends AbstractType
                     'class' => 'big_textarea'
                 ]
             ])
-//            ->add('description', TextareaType::class, [
-//                'label'         => 'Description',
-//                'required'      => false
-//            ])
             ->add('era', TextType::class, [
                 'label'         => 'Datation de l\' objet',
                 'required'      => false
@@ -234,7 +217,7 @@ class ObjectsFormType extends AbstractType
 //                'required'      => false
 //            ])
             ->add('naturalLanguageDescription', TextAreaType::class, [
-                'label'         => 'Description en langage naturel',
+                'label'         => 'Description en langage naturel *',
                 'required'      => true,
                 'attr' => [
                     'class' => 'big_textarea'

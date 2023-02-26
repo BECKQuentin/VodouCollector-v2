@@ -8,18 +8,15 @@ use App\Entity\Objects\Media\Image;
 use App\Entity\Objects\Media\Video;
 use App\Entity\Objects\Objects;
 use App\Form\Objects\ObjectsFormType;
-use App\Form\Objects\UploadObjectFormType;
 use App\Form\SearchFieldType;
 use App\Repository\Objects\Media\FileRepository;
 use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\Media\VideoRepository;
-use App\Repository\Objects\Metadata\VernacularNameRepository;
 use App\Repository\Objects\ObjectsRepository;
 use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;
 use App\Service\UploadService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -27,7 +24,6 @@ use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Shuchkin\SimpleXLSX;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -291,7 +287,7 @@ class ObjectsController extends AbstractController
     //SOFT DELETE
     #[Route('/objects-delete/{id}', name: 'objects_delete')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les ADMINS peuvent faire ça")]
-    public function deleteObjects(Objects $objects, ActionCategoryRepository $actionCategoryRepository,  ManagerRegistry $doctrine): Response
+    public function deleteObjects(Objects $objects, ActionCategoryRepository $actionCategoryRepository, ManagerRegistry $doctrine): Response
     {
 
         $objects->setDeletedAt(new \DateTimeImmutable('now'));
@@ -368,58 +364,106 @@ class ObjectsController extends AbstractController
         return $this->redirectToRoute('deleted_objects');
     }
 
+
+
+
+
+
+
     /*Extraction de PDF*/
-    #[Route('/objects-pdf/{id}', name: 'object_pdf')]
+    #[Route('/objects-extract/pdf/{idsSearchObjs}', name: 'object_extract_pdf')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les ADMINS peuvent faire ça")]
-    public function pdfObjects(Objects $object, ManagerRegistry $doctrine): Response
+    public function pdfObjects($idsSearchObjs, ObjectsRepository $objectsRepository, Request $request): Response
     {
 
-        // Configure Dompdf according to your needs
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
+        if ($idsSearchObjs !== 'null') {
+            $arrIdSearchObj = explode(',', $idsSearchObjs);
+            if (count($arrIdSearchObj) > 2500) {
+                $this->addFlash('danger', "Trop d'objets à extraire limité à 2500! Contactez l'Admin sinon");
+                return $this->redirectToRoute('objects_listing');
+            }
+        } else {
+            $this->addFlash('danger', 'Aucun objet dans votre recherche (extraction impossible)');
+            return $this->redirectToRoute('objects_listing');
+        }
 
-        // Instantiate Dompdf with our options
-        $dompdf = new Dompdf($pdfOptions);
-
-        $dompdf->setOptions($pdfOptions->setIsRemoteEnabled(true));
-
-        // Retrieve the HTML generated in our twig file
-        $html = $this->renderView('objects/objects/others/object_pdf.html.twig', [
-            'object' => $object,
-        ]);
-
-        // Load HTML to Dompdf
-        $dompdf->loadHtml($html);
-
-        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Render the HTML as PDF
-        $dompdf->render();
+        $arrPdf = [];
+        $arrSearchObjs = [];
+        foreach ($arrIdSearchObj as $idObj) {
+            $arrSearchObjs[] = $objectsRepository->find($idObj);
+        }
 
 
+        foreach ($arrSearchObjs as $obj) {
 
-        // Output the generated PDF to Browser (force download)
-        $filename = trim($object->getCode() . '-' . strtolower(  $object->getVernacularName()->getName()));
-        $dompdf->stream($filename.".pdf", [
-            "Attachment" => true
-        ]);
+            // Configure Dompdf according to your needs
+            $pdfOptions = new Options();
+            $pdfOptions->set('defaultFont', 'Arial');
 
-//        dd($dompdf);
+            // Instantiate Dompdf with our options
+            $dompdf = new Dompdf($pdfOptions);
 
-        return new Response();
+            $dompdf->setOptions($pdfOptions->setIsRemoteEnabled(true));
+
+            // Retrieve the HTML generated in our twig file
+            $html = $this->renderView('objects/objects/others/object_pdf.html.twig', [
+                'object' => $obj,
+            ]);
+
+            // Load HTML to Dompdf
+            $dompdf->loadHtml($html);
+
+            // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+            $dompdf->setPaper('A4', 'portrait');
+
+            // Render the HTML as PDF
+            $dompdf->render();
+
+            // Output the generated PDF to Browser (force download)
+            $filename = str_replace(' ', '-', $obj->getCode() . '-' . strtolower(  $obj->getVernacularName()->getName() . '-' . $obj->getTypology()->getName() ));
+            $arrPdf[$filename] = $dompdf->output();
+        }
+
+        if (count($arrPdf) > 1) {
+            $zip = new \ZipArchive();
+            $filename = count($arrPdf) . "-objets.zip";
+
+            if ($zip->open($filename, \ZipArchive::CREATE) !== TRUE) {
+                exit("Cannot open <$filename>\n");
+            }
+            foreach ($arrPdf as $k => $file) {
+                $zip->addFromString($k.".pdf", $file);
+            }
+            $zip->close();
+
+            header("Content-Type: application/zip");
+            header("Content-Disposition: attachment; filename=\"$filename\"");
+            header("Content-Length: " . filesize($filename));
+            readfile($filename);
+            exit();
+        } else {
+            // Output the generated PDF to Browser (force download)
+            $dompdf->stream(array_key_first($arrPdf).".pdf", [
+                "Attachment" => true
+            ]);
+            return new Response();
+        }
     }
 
 
-    #[Route('/objects-extract-csv/{idsSearchObjs}', name: 'objects_extract_csv', requirements: ['name' => '.+'])]
+    #[Route('/objects-extract/csv/{idsSearchObjs}', name: 'objects_extract_csv', requirements: ['name' => '.+'])]
     #[IsGranted("ROLE_MEMBER", message: "Seules les ADMINS peuvent faire ça")]
     public function extractObjectsCSV($idsSearchObjs, ObjectsRepository $objectsRepository, Request $request): Response
     {
         if ($idsSearchObjs !== 'null') {
             $arrIdSearchObj = explode(',', $idsSearchObjs);
+            if (count($arrIdSearchObj) > 2500) {
+                $this->addFlash('danger', "Trop d'objets à extraire limité à 2500! Contactez l'Admin sinon");
+                return $this->redirectToRoute('objects_listing');
+            }
         } else {
             $this->addFlash('danger', 'Aucun objet dans votre recherche (extraction impossible)');
-            return $this->redirectToRoute('objects');
+            return $this->redirectToRoute('objects_listing');
         }
 
         $arrSearchObjs = [];
@@ -427,39 +471,50 @@ class ObjectsController extends AbstractController
             $arrSearchObjs[] = $objectsRepository->find($idObj);
         }
 
-        $headersCSV = array('QUANTITE', 'CODE', 'TITRE', 'CATEGORIES', 'SOUS-CATEGORIES', 'DIVINITES', 'DIVINITES ASSOCIES', 'DESCRIPTION');
+        $headersCSV = $arrSearchObjs[0]::OBJ_PUBLIC_LABELS;
         $rows[] = implode(';', $headersCSV);
 
         foreach ($arrSearchObjs as $obj) {
 
-//            $description = '';
-//            $categories = '';
-            $gods = '';
-//            $subCategories = '';
-            $relatedGods = [];
+            $data = [
+                $obj->getCode() ?? "",
+                $obj->getVernacularName()->getName() ?? "",
+                $obj->getTypology()->getName() ?? "",
+                $obj->getPrecisionVernacularName() ?? "",
+                $obj->getGods()->getName() ?? "",
+                $this->implodeArrayMap($obj->getRelatedGods()),
+                $this->implodeArrayMap($obj->getOrigin()),
+                $this->implodeArrayMap($obj->getPopulation()),
+                $obj->getHistoricDetail() ?? "",
+                $obj->getUsageFonction() ?? "",
+                $obj->getUsageUser() ?? "",
+                $obj->getNaturalLanguageDescription() ?? "",
+                $obj->getInscriptionsEngraving() ?? "",
+                $this->implodeArrayMap($obj->getMaterials()),
+                $obj->getDocumentationCommentary() ?? "",
+                $this->implodeArrayMap($obj->getMuseumCatalogue()),
+                $this->implodeArrayMap($obj->getBook()),
+                $obj->getState()->getName() ?? "",
+                $obj->getStateCommentary() ?? "",
+                $obj->getWeight() ?? "",
+                $obj->getSizeHigh() ?? "",
+                $obj->getSizeLength() ?? "",
+                $obj->getSizeDepth() ?? "",
+                $obj->isIsBasemented() ? 'Oui' : 'Non',
+                $obj->getBasementCommentary() ?? "",
+                $obj->getExpositionLocation()->getNameFR() ?? "",
+                $obj->getFloor()->getName() ?? "",
+                $obj->getShowcaseCode() ?? "",
+                $obj->getShelf() ?? "",
+                $obj->getCreatedAt()->format('Y:d:m') ?? "",
+                $obj->getCreatedBy() ? $obj->getCreatedBy()->getFullName() : "",
+            ];
 
-//            if ($obj->getDescription() != null ) $description = $obj->getDescription();
-//            if ($obj->getCategories() != null ) $categories = $obj->getCategories()->getName();
-//            if ($obj->getSubCategories() != null ) $subCategories = $obj->getSubCategories()->getName();
-            if ($obj->getGods() != null ) $gods = $obj->getGods()->getName();
-            if ($obj->getRelatedGods() != null ) {
-                $arrRelatedGods = $obj->getRelatedGods();
-                foreach ($arrRelatedGods as $god) {
-                    $relatedGods[] = $god->getName();
-                }
-                $relatedGods = implode(',', $relatedGods);
+            $newData = [];
+            foreach ($data as $d) {
+                $newData[] = str_replace(["\n", "\r"], '', $d);
             }
-
-            $data = array(
-                $obj->getCode(),
-                $obj->getTitle(),
-//                $categories,
-//                $subCategories,
-                $gods,
-                $relatedGods,
-//                $description
-            );
-            $rows[] = implode(';', $data);
+            $rows[] = implode(';', $newData);
         }
 
         $content = implode("\n", $rows);
@@ -473,12 +528,11 @@ class ObjectsController extends AbstractController
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', $dispositionHeader);
 
-
         return $response;
     }
 
 
-    #[Route('/objects-extract-xls/{idsSearchObjs}', name: 'objects_extract_xls', requirements: ['name' => '.+'])]
+    #[Route('/objects-extract/xls/{idsSearchObjs}', name: 'objects_extract_xls', requirements: ['name' => '.+'])]
     #[IsGranted("ROLE_MEMBER", message: "Seules les ADMINS peuvent faire ça")]
     public function extractObjectsXLS($idsSearchObjs, ObjectsRepository $objectsRepository): Response
     {
@@ -486,10 +540,15 @@ class ObjectsController extends AbstractController
         //vérification de la recherche
         if ($idsSearchObjs !== 'null') {
             $arrIdSearchObj = explode(',', $idsSearchObjs);
+            if (count($arrIdSearchObj) > 2500) {
+                $this->addFlash('danger', "Trop d'objets à extraire, limité à 2500! Contactez l'Admin");
+                return $this->redirectToRoute('objects_listing');
+            }
         } else {
             $this->addFlash('danger', 'Aucun objet dans votre recherche (extraction impossible)');
-            return $this->redirectToRoute('objects');
+            return $this->redirectToRoute('objects_listing');
         }
+
 
         $arrSearchObjs = [];
         foreach ($arrIdSearchObj as $idObj) {
@@ -498,186 +557,112 @@ class ObjectsController extends AbstractController
 
         //création du fichier excel
         $spreadsheet = new Spreadsheet();
-
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle(count($arrIdSearchObj) . ' - Objets');
-        $sheet->setCellValue('A1', 'QTÉ');
-        $sheet->getColumnDimension('A')->setWidth(5);
-        $sheet->setCellValue('B1', 'CODE');
+        $newObj = new Objects();
+
+        $sheet->setCellValue('A1', $newObj::LABEL_CODE);
+        $sheet->getColumnDimension('A')->setWidth(8);
+        $sheet->setCellValue('B1', $newObj::LABEL_VERNACULAR_NAME);
         $sheet->getColumnDimension('B')->setAutoSize(true);
-        $sheet->setCellValue('C1', 'TITRE');
+        $sheet->setCellValue('C1', $newObj::LABEL_TYPOLOGY);
         $sheet->getColumnDimension('C')->setAutoSize(true);
-        $sheet->setCellValue('D1', 'CATEGORIES');
+        $sheet->setCellValue('D1', $newObj::LABEL_PRECISION_VERNACULAR_NAME);
         $sheet->getColumnDimension('D')->setAutoSize(true);
-        $sheet->setCellValue('E1', 'SOUS-CATEGORIES');
+        $sheet->setCellValue('E1', $newObj::LABEL_GODS);
         $sheet->getColumnDimension('E')->setAutoSize(true);
-        $sheet->setCellValue('F1', 'DIVINITES');
+        $sheet->setCellValue('F1', $newObj::LABEL_RELATED_GODS);
         $sheet->getColumnDimension('F')->setAutoSize(true);
-        $sheet->setCellValue('G1', 'DIVINITES ASSOCIES');
+        $sheet->setCellValue('G1', $newObj::LABEL_ORIGIN);
         $sheet->getColumnDimension('G')->setWidth(11);
-        $sheet->setCellValue('H1', 'POPULATION');
+        $sheet->setCellValue('H1', $newObj::LABEL_POPULATION);
         $sheet->getColumnDimension('H')->setAutoSize(true);
-        $sheet->setCellValue('I1', 'ORIGINE');
+        $sheet->setCellValue('I1', $newObj::LABEL_HISTORICAL_DETAIL);
         $sheet->getColumnDimension('I')->setAutoSize(true);
-        $sheet->setCellValue('J1', 'DESCRIPTION');
+        $sheet->setCellValue('J1', $newObj::LABEL_USAGE_FONCTION);
         $sheet->getColumnDimension('J')->setWidth(30);
-        $sheet->setCellValue('K1', 'MODE ACQUIS.');
+        $sheet->setCellValue('K1', $newObj::LABEL_USAGE_USER);
         $sheet->getColumnDimension('K')->setAutoSize(true);
-        $sheet->setCellValue('L1', 'DATE ACQUIS.');
+        $sheet->setCellValue('L1', $newObj::LABEL_NATURAL_LANGUAGE_DESCRIPTION);
         $sheet->getColumnDimension('L')->setAutoSize(true);
-        $sheet->setCellValue('M1', 'DATATION');
+        $sheet->setCellValue('M1', $newObj::LABEL_INSCRIPTIONS_ENGRAVINGS);
         $sheet->getColumnDimension('M')->setAutoSize(true);
-        $sheet->setCellValue('N1', 'MATERIAUX');
+        $sheet->setCellValue('N1', $newObj::LABEL_MATERIALS);
         $sheet->getColumnDimension('N')->setWidth(20);
-        $sheet->setCellValue('O1', 'POIDS');
+        $sheet->setCellValue('O1', $newObj::LABEL_DOCUMENTATION_COMMENTARY);
         $sheet->getColumnDimension('O')->setAutoSize(true);
-        $sheet->setCellValue('P1', 'HAUTEUR');
+        $sheet->setCellValue('P1', $newObj::LABEL_MUSEUM_CATALOGUE);
         $sheet->getColumnDimension('P')->setAutoSize(true);
-        $sheet->setCellValue('Q1', 'LONGUEUR');
+        $sheet->setCellValue('Q1', $newObj::LABEL_BOOKS);
         $sheet->getColumnDimension('Q')->setAutoSize(true);
-        $sheet->setCellValue('R1', 'PROFONDEUR');
+        $sheet->setCellValue('R1', $newObj::LABEL_STATE);
         $sheet->getColumnDimension('R')->setAutoSize(true);
-        $sheet->setCellValue('S1', 'REMARQUE ETAT');
+        $sheet->setCellValue('S1', $newObj::LABEL_STATE_COMMENTARY);
         $sheet->getColumnDimension('S')->setWidth(20);
-        $sheet->setCellValue('T1', 'ETAT');
+        $sheet->setCellValue('T1', $newObj::LABEL_WEIGHT);
         $sheet->getColumnDimension('T')->setAutoSize(true);
-        $sheet->setCellValue('U1', 'AVEC SOCLE');
+        $sheet->setCellValue('U1', $newObj::LABEL_SIZE_HIGH);
         $sheet->getColumnDimension('U')->setAutoSize(true);
-        $sheet->setCellValue('V1', 'CATALOGUE');
+        $sheet->setCellValue('V1', $newObj::LABEL_SIZE_LENGTH);
         $sheet->getColumnDimension('V')->setWidth(50);
-        $sheet->getStyle('V')->getAlignment()->setHorizontal('fill');
-
-
-
-//        $sheet->setCellValue('W1', 'EST EXPOSÉ TEMPORAIRE');
-//        $sheet->getColumnDimension('W')->setAutoSize(true);
-//        $sheet->setCellValue('X1', 'EST EXPOSÉ PERMANENT');
-//        $sheet->getColumnDimension('X')->setAutoSize(true);
-
-
-        $sheet->setCellValue('Y1', 'LOCATION');
+        $sheet->setCellValue('W1', $newObj::LABEL_SIZE_DEPTH);
+        $sheet->getColumnDimension('W')->setAutoSize(true);
+        $sheet->setCellValue('X1', $newObj::LABEL_IS_BASEMENTED);
+        $sheet->getColumnDimension('X')->setAutoSize(true);
+        $sheet->setCellValue('Y1', $newObj::LABEL_BASEMENT_COMMENTARY);
         $sheet->getColumnDimension('Y')->setAutoSize(true);
-        $sheet->setCellValue('Z1', 'ETAGE');
+        $sheet->setCellValue('Z1', $newObj::LABEL_EXPOSITION_LOCATION);
         $sheet->getColumnDimension('Z')->setAutoSize(true);
-        $sheet->setCellValue('AA1', 'N° VITRINE');
+        $sheet->setCellValue('AA1', $newObj::LABEL_FLOOR);
         $sheet->getColumnDimension('AA')->setAutoSize(true);
-        $sheet->setCellValue('AB1', 'ETAGERE');
+        $sheet->setCellValue('AB1', $newObj::LABEL_SHOWCASE_CODE);
         $sheet->getColumnDimension('AB')->setAutoSize(true);
+        $sheet->setCellValue('AC1', $newObj::LABEL_SHELF);
+        $sheet->getColumnDimension('AC')->setAutoSize(true);
+        $sheet->setCellValue('AD1', $newObj::LABEL_CREATED_AT);
+        $sheet->getColumnDimension('AD')->setAutoSize(true);
+        $sheet->setCellValue('AE1', $newObj::LABEL_CREATED_BY);
+        $sheet->getColumnDimension('AE')->setAutoSize(true);
 
 
 
         foreach ($arrSearchObjs as $key => $obj) {
 
             $key += 2;
-//            $categories = '';
-//            $subCategories = '';
-            $gods = '';
-            $relatedGods = [];
-            $description = '';
-            $population = '';
-            $origin = '';
-            $historicDetail = '';
-            $historicDate = '';
-            $era = '';
-            $materials = [];
-            $weight = '';
-            $sizeHigh = '';
-            $sizeLength = '';
-            $sizeDepth = '';
-            $stateCommentary = '';
-            $state = '';
-            $isBasemented = '';
-            $museumCatalogues = [];
-
-            $location = '';
-            $floor = '';
-            $showcaseCode = '';
-            $shelf = '';
-
-
-            //Vérifiaction des données existantes
-//            if ($obj->getCategories() != null ) $categories = $obj->getCategories()->getName();
-//            if ($obj->getSubCategories() != null ) $subCategories = $obj->getSubCategories()->getName();
-            if ($obj->getGods() != null ) $gods = $obj->getGods()->getName();
-            if ($obj->getRelatedGods() != null ) {
-                $arrRelatedGods = $obj->getRelatedGods();
-                foreach ($arrRelatedGods as $god) {
-                    $relatedGods[] = $god->getName();
-                }
-                $relatedGods = implode(',', $relatedGods);
-            }
-            if ($obj->getPopulation() != null ) $population = $obj->getPopulation();
-            if ($obj->getOrigin() != null ) $origin = $obj->getOrigin();
-            if ($obj->getDescription() != null ) $description = $obj->getDescription();
-            if ($obj->getHistoricDetail() != null ) $historicDetail = $obj->getHistoricDetail();
-            if ($obj->getHistoricDate() != null ) $historicDate = $obj->getHistoricDate()->format('d/m/y');
-            if ($obj->getEra() != null ) $era = $obj->getEra();
-            if ($obj->getMaterials() != null ) {
-                $arrMaterials = $obj->getMaterials();
-                foreach ($arrMaterials as $material) {
-                    $materials[] = $material->getName();
-                }
-                $materials = implode(',', $materials);
-            }
-            if ($obj->getWeight() != null ) $weight = $obj->getWeight();
-            if ($obj->getSizeHigh() != null ) $sizeHigh = $obj->getSizeHigh();
-            if ($obj->getSizeLength() != null ) $sizeLength = $obj->getSizeLength();
-            if ($obj->getSizeDepth() != null ) $sizeDepth = $obj->getSizeDepth();
-            if ($obj->getStateCommentary() != null ) $stateCommentary = $obj->getStateCommentary();
-            if ($obj->getState() != null ) $state = $obj->getState();
-            if ($obj->getIsBasemented() != null ) $isBasemented = $obj->getIsBasemented();
-
-            if ($obj->getMuseumCatalogue() != null ) {
-                $arrMuseumCatalogue = $obj->getMuseumCatalogue();
-                foreach ($arrMuseumCatalogue as $museumCatalogue) {
-                    $museumCatalogues[] = $museumCatalogue->getName();
-                }
-                $museumCatalogues = implode(',', $museumCatalogues);
-            }
-
-
-
-            if ($obj->getExpositionLocation() != null ) $location = $obj->getExpositionLocation()->getNameFR();
-            if ($obj->getFloor() != null ) $floor = $obj->getFloor()->getName();
-            if ($obj->getShowcaseCode() != null ) $showcaseCode = $obj->getShowcaseCode();
-            if ($obj->getShelf() != null ) $shelf = $obj->getShelf();
-
-
 
             //Application des données dans les cellules
-//            $sheet->setCellValue('A'.$key, $obj->getQuantity());
-            $sheet->setCellValue('B'.$key, $obj->getCode());
-            $sheet->setCellValue('C'.$key, $obj->getTitle());
-//            $sheet->setCellValue('D'.$key, $categories);
-//            $sheet->setCellValue('E'.$key, $subCategories);
-            $sheet->setCellValue('F'.$key, $gods);
-            $sheet->setCellValue('G'.$key, $relatedGods);
-            $sheet->setCellValue('H'.$key, $population);
-            $sheet->setCellValue('I'.$key, $origin);
-            $sheet->setCellValue('J'.$key, $description);
-            $sheet->setCellValue('K'.$key, $historicDetail);
-            $sheet->setCellValue('L'.$key, $historicDate);
-            $sheet->setCellValue('M'.$key, $era);
-            $sheet->setCellValue('N'.$key, $materials);
-            $sheet->setCellValue('O'.$key, $weight);
-            $sheet->setCellValue('P'.$key, $sizeHigh);
-            $sheet->setCellValue('Q'.$key, $sizeLength);
-            $sheet->setCellValue('R'.$key, $sizeDepth);
-            $sheet->setCellValue('S'.$key, $stateCommentary);
-            $sheet->setCellValue('T'.$key, $state);
-            $sheet->setCellValue('U'.$key, $isBasemented);
-            $sheet->setCellValue('V'.$key, $museumCatalogues);
-
-//            $sheet->setCellValue('W'.$key, $isExposedTemp);
-//            $sheet->setCellValue('X'.$key, $isExposedPerm);
-//            $sheet->setCellValue('Y'.$key, $isExposedStock);
-
-            $sheet->setCellValue('Y'.$key, $location);
-            $sheet->setCellValue('Z'.$key, $floor);
-            $sheet->setCellValue('AA'.$key, $showcaseCode);
-            $sheet->setCellValue('AB'.$key, $shelf);
+            $sheet->setCellValue('A'.$key, $obj->getCode() ?? "");
+            $sheet->setCellValue('B'.$key, $obj->getVernacularName()->getName() ?? "");
+            $sheet->setCellValue('C'.$key, $obj->getTypology()->getName() ?? "");
+            $sheet->setCellValue('D'.$key, $obj->getPrecisionVernacularName() ?? "");
+            $sheet->setCellValue('E'.$key, $obj->getGods()->getName() ?? "");
+            $sheet->setCellValue('F'.$key, $this->implodeArrayMap($obj->getRelatedGods()));
+            $sheet->setCellValue('G'.$key, $this->implodeArrayMap($obj->getOrigin()));
+            $sheet->setCellValue('H'.$key, $this->implodeArrayMap($obj->getPopulation()));
+            $sheet->setCellValue('I'.$key, $obj->getHistoricDetail() ?? "");
+            $sheet->setCellValue('J'.$key, $obj->getUsageFonction() ?? "");
+            $sheet->setCellValue('K'.$key, $obj->getUsageUser() ?? "");
+            $sheet->setCellValue('L'.$key, $obj->getNaturalLanguageDescription() ?? "");
+            $sheet->setCellValue('M'.$key, $obj->getInscriptionsEngraving() ?? "");
+            $sheet->setCellValue('N'.$key, $this->implodeArrayMap($obj->getMaterials()));
+            $sheet->setCellValue('O'.$key, $obj->getDocumentationCommentary() ?? "");
+            $sheet->setCellValue('P'.$key, $this->implodeArrayMap($obj->getMuseumCatalogue()));
+            $sheet->setCellValue('Q'.$key, $this->implodeArrayMap($obj->getBook()));
+            $sheet->setCellValue('R'.$key, $obj->getState()->getName() ?? "");
+            $sheet->setCellValue('S'.$key, $obj->getStateCommentary() ?? "");
+            $sheet->setCellValue('T'.$key, $obj->getWeight() ?? "");
+            $sheet->setCellValue('U'.$key, $obj->getSizeHigh() ?? "");
+            $sheet->setCellValue('V'.$key, $obj->getSizeLength() ?? "");
+            $sheet->setCellValue('W'.$key, $obj->getSizeDepth() ?? "");
+            $sheet->setCellValue('X'.$key, $obj->isIsBasemented() ? 'Oui' : 'Non');
+            $sheet->setCellValue('Y'.$key, $obj->getBasementCommentary() ?? "");
+            $sheet->setCellValue('Z'.$key, $obj->getExpositionLocation()->getNameFR() ?? "");
+            $sheet->setCellValue('AA'.$key, $obj->getFloor()->getName() ?? "");
+            $sheet->setCellValue('AB'.$key,$obj->getShowcaseCode() ?? "");
+            $sheet->setCellValue('AC'.$key,$obj->getShelf() ?? "");
+            $sheet->setCellValue('AD'.$key,$obj->getCreatedAt()->format('Y:d:m') ?? "");
+            $sheet->setCellValue('AE'.$key,$obj->getCreatedBy() ? $obj->getCreatedBy()->getFullName() : "");
         }
-
 
 
         $writer = new Xlsx($spreadsheet);
@@ -691,7 +676,14 @@ class ObjectsController extends AbstractController
 
         // Return the excel file as an attachment
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    }
 
+    private function implodeArrayMap($field): string {
+        $res = [];
+        foreach ($field as $f) {
+            $res[] =$f->getName();
+        }
+        return implode(',', $res);
     }
 
 

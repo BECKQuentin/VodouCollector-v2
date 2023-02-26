@@ -81,6 +81,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: SharedBookmarks::class, mappedBy: 'users')]
     private Collection $sharedBookmarks;
 
+    public function getFullName(): string
+    {
+        return ucfirst($this->firstname) . ' ' . strtoupper($this->lastname);
+    }
+
     public function __construct()
     {
         if ($this->getCreatedAt() === null) {

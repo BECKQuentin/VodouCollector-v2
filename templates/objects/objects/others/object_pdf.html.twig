@@ -107,16 +107,6 @@
             </div>
         </div>
 
-
-        <div>
-            {% if object.description is defined and object.description is not null %}
-                <em>Description : <br></em>
-                {{ object.description }}
-            {% else %}
-                Pas de description
-            {% endif %}
-        </div>
-
         <div>
             <em>Fonction d'usage :&nbsp;</em>
             {% if object.usageFonction is defined and object.usageFonction is not null %}
@@ -125,11 +115,23 @@
                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
             {% endif %}
         </div>
+        <div>
+            <em>Utilisateurs (producteur/rice, propriétaire, collectionneur/euse) : </em>
+            {% if object.usageUser is defined and object.usageUser is not null %}
+                {{ object.usageUser }}
+            {% else %}
+                <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+            {% endif %}
+        </div>
+
+
 
         <div>
             <em>Catalogue :&nbsp;</em>
-            {% if object.isCatalogue is defined and object.isCatalogue is not null %}
-                {{ object.isCatalogue ? 'Oui' : 'Non' }}
+            {% if object.museumCatalogue is defined and object.museumCatalogue is not null %}
+                {% for museumCatalogue in object.museumCatalogue %}
+                    {{ museumCatalogue.name }}
+                {% endfor %}
             {% else %}
                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
             {% endif %}
@@ -150,8 +152,18 @@
                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
             {% endif %}
         </div>
+        <div>
+            <em>Matériaux :&nbsp;</em>
+            {% if object.materials is defined and object.materials is not null %}
+                {% for materials in object.materials %}
+                    {{ materials.name }},
+                {% endfor %}
+            {% else %}
+                <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+            {% endif %}
+        </div>
 
-        <hr style="background-color: #">
+        <div style="height: 2px; width: 100%; background-color: #8a2a2d; margin: 8px 0"></div>
 
         <div class="row">
             <div style="float: right; border-left: 1px solid #8a2a2d; margin: 0 5px; padding: 5px;">
@@ -217,6 +229,14 @@
                         {{ object.shelf }}
                     {% else %}
                         <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                    {% endif %}
+                </div>
+                <div class="d-flex align-items-center">
+                    <em>Avec socle :&nbsp;</em>
+                    {% if object.isBasemented is defined and object.isBasemented is not null %}
+                        Oui
+                    {% else %}
+                        Non
                     {% endif %}
                 </div>
             </div>

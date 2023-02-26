@@ -37,26 +37,26 @@ if (idObject.dataset) {
 }
 
 
-//Message POPUP pour avertir lorsqu'un utilisateur quitte le form Object sans sauvegarder
-let formModified = false;
-let inputObjectForm = document.querySelectorAll('input');
-
-inputObjectForm.forEach((input) => {
-    input.addEventListener('change', () => {
-        formModified = true;
-    })
-})
-
-window.addEventListener('beforeunload', (event) => {
-    // Cancel the event as stated by the standard.
-    event.preventDefault();
-
-    if (formModified) {
-        // Chrome requires returnValue to be set.
-        event.returnValue = '';
-    }
-
-});
+// //Message POPUP pour avertir lorsqu'un utilisateur quitte le form Object sans sauvegarder
+// let formModified = false;
+// let inputObjectForm = document.querySelectorAll('input');
+//
+// inputObjectForm.forEach((input) => {
+//     input.addEventListener('change', () => {
+//         formModified = true;
+//     })
+// })
+//
+// window.addEventListener('beforeunload', (event) => {
+//     // Cancel the event as stated by the standard.
+//     event.preventDefault();
+//
+//     if (formModified) {
+//         // Chrome requires returnValue to be set.
+//         event.returnValue = '';
+//     }
+//
+// });
 
 
 //Affichage des images selon leur format

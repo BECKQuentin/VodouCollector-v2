@@ -39,6 +39,46 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 #[ORM\Entity(repositoryClass: ObjectsRepository::class)]
 class Objects
 {
+    const LABEL_CODE = "N°Inventaire";
+    const LABEL_VERNACULAR_NAME = "Nom vernaculaire";
+    const LABEL_TYPOLOGY = "Typologie";
+    const LABEL_PRECISION_VERNACULAR_NAME = "Précision nom vernaculaire";
+    const LABEL_GODS = "Divinités";
+    const LABEL_RELATED_GODS = "Divinités associées";
+    const LABEL_ORIGIN = "Origine";
+    const LABEL_POPULATION = "Population";
+    const LABEL_HISTORICAL_DETAIL = "Mode d'acquisition";
+    const LABEL_USAGE_FONCTION = "Fonction d'usage";
+    const LABEL_USAGE_USER = "Utilisateurs";
+    const LABEL_NATURAL_LANGUAGE_DESCRIPTION = "Description en langage naturel";
+    const LABEL_INSCRIPTIONS_ENGRAVINGS = "Inscriptions et marques";
+    const LABEL_MATERIALS = "Matériaux";
+    const LABEL_DOCUMENTATION_COMMENTARY = "Commentaire de documentation";
+    const LABEL_MUSEUM_CATALOGUE = "Publication du musée";
+    const LABEL_BOOKS = "Ouvrages";
+    const LABEL_STATE = "État";
+    const LABEL_STATE_COMMENTARY = "Remarque sur l' état";
+    const LABEL_WEIGHT = "Poids";
+    const LABEL_SIZE_HIGH = "Hauteur";
+    const LABEL_SIZE_LENGTH = "Longueur";
+    const LABEL_SIZE_DEPTH = "Profondeur";
+    const LABEL_IS_BASEMENTED = "Avec socle";
+    const LABEL_BASEMENT_COMMENTARY = "Commentaire de Soclage";
+    const LABEL_EXPOSITION_LOCATION = "Lieu d'exposition";
+    const LABEL_FLOOR = "Etage";
+    const LABEL_SHOWCASE_CODE = "N° de vitrine";
+    const LABEL_SHELF = "N° étagère";
+    const LABEL_CREATED_AT = "Fiche créee le";
+    const LABEL_CREATED_BY = "Fiche créee par";
+
+    //Labels qui peuvent être diffusé publiquement(extraction csv, excel, pdf) => Aucune donnée sensible(insuranceValue)
+    const OBJ_PUBLIC_LABELS = [self::LABEL_CODE, self::LABEL_VERNACULAR_NAME, self::LABEL_TYPOLOGY, self::LABEL_PRECISION_VERNACULAR_NAME, self::LABEL_GODS, self::LABEL_RELATED_GODS, self::LABEL_ORIGIN,
+        self::LABEL_POPULATION, self::LABEL_HISTORICAL_DETAIL, self::LABEL_USAGE_FONCTION, self::LABEL_USAGE_USER, self::LABEL_NATURAL_LANGUAGE_DESCRIPTION, self::LABEL_INSCRIPTIONS_ENGRAVINGS, self::LABEL_MATERIALS, self::LABEL_DOCUMENTATION_COMMENTARY,
+        self::LABEL_MUSEUM_CATALOGUE, self::LABEL_BOOKS, self::LABEL_STATE, self::LABEL_STATE_COMMENTARY, self::LABEL_WEIGHT, self::LABEL_SIZE_HIGH, self::LABEL_SIZE_LENGTH, self::LABEL_SIZE_DEPTH, self::LABEL_IS_BASEMENTED, self::LABEL_BASEMENT_COMMENTARY,
+        self::LABEL_EXPOSITION_LOCATION, self::LABEL_FLOOR, self::LABEL_SHOWCASE_CODE, self::LABEL_SHELF, self::LABEL_CREATED_AT, self::LABEL_CREATED_BY];
+
+
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -47,14 +87,6 @@ class Objects
     #[NotBlank]
     #[ORM\Column(length: 255)]
     private ?string $code = null;
-//
-//    #[NotBlank]
-//    #[Length([
-//        'min' => 2,
-//        'max' => 255,
-//        'minMessage' => 'Le titre doit être plus long',
-//        'maxMessage' => 'Le titre ne doit pas dépasser 255 caractères.'
-//    ])]
 
     #[ORM\ManyToOne(inversedBy: 'objects')]
     #[ORM\JoinColumn(nullable: false)]
@@ -83,10 +115,10 @@ class Objects
     #[ORM\Column(nullable: true)]
     private ?int $era = null;
 
-    #[ORM\ManyToMany(targetEntity: Origin::class, inversedBy: 'objects')]
+    #[ORM\ManyToMany(targetEntity: Origin::class, inversedBy: 'objects', cascade: ["persist", "remove"])]
     private Collection $origin;
 
-    #[ORM\ManyToMany(targetEntity: Population::class, inversedBy: 'objects')]
+    #[ORM\ManyToMany(targetEntity: Population::class, inversedBy: 'objects', cascade: ["persist", "remove"])]
     private Collection $population;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -98,13 +130,13 @@ class Objects
 //    #[ORM\Column(type: Types::ARRAY, nullable: true)]
 //    private array $usageTags = [];
 
-    #[ORM\ManyToMany(targetEntity: Gods::class, inversedBy: 'objectsRelated')]
+    #[ORM\ManyToMany(targetEntity: Gods::class, inversedBy: 'objectsRelated', cascade: ["persist", "remove"])]
     private Collection $relatedGods;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $usageUser = null;
 
-    #[ORM\ManyToMany(targetEntity: Materials::class, inversedBy: 'objects')]
+    #[ORM\ManyToMany(targetEntity: Materials::class, inversedBy: 'objects', cascade: ["persist", "remove"])]
     private Collection $materials;
 
     #[ORM\Column(nullable: true)]
@@ -169,7 +201,7 @@ class Objects
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $arrivedCollection = null;
 
-    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: InventoryDate::class, cascade: ["persist"], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: InventoryDate::class, cascade: ["persist", "remove"], orphanRemoval: true)]
     private Collection $inventoriedAt;
 
     #[ORM\OneToMany(mappedBy: 'objects', targetEntity: Image::class, cascade: ["persist"], orphanRemoval: true)]

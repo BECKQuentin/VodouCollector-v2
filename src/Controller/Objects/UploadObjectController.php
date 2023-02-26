@@ -51,7 +51,7 @@ class UploadObjectController extends AbstractController
      */
     #[Route('/objects-import', name:'import_objects')]
     #[IsGranted("ROLE_ADMIN", message: "Seules les Admins peuvent faire ça")]
-    public function importObjects(Request $request)
+    public function importObjects(Request $request): \Symfony\Component\HttpFoundation\Response
     {
 
         $error = [];
@@ -90,6 +90,7 @@ class UploadObjectController extends AbstractController
             $idxBasement = 0;
             $idxDocumentationCommentary = 0;
             $idxMuseumCatalogue = 0;
+            $idxDescription = 0;
 
 
 
@@ -153,7 +154,7 @@ class UploadObjectController extends AbstractController
                     if ($col === "Divinité ou force associée") {
                         $idxRelatedGods = $keyCol;
                     }
-                    if ($col === "Article") {
+                    if ($col === "Divinités") {
                         $idxGods = $keyCol;
                     }
                     if ($col === "Type soclage") {
@@ -164,6 +165,9 @@ class UploadObjectController extends AbstractController
                     }
                     if ($col === "Historique") {
                         $idxMuseumCatalogue = $keyCol;
+                    }
+                    if ($col === "DESCRIPTION") {
+                        $idxDescription = $keyCol;
                     }
 
                 }
@@ -541,10 +545,11 @@ class UploadObjectController extends AbstractController
                                 str_contains($value, 'soclé') ||
                                 str_contains($value, 'socle en métal') ||
                                 str_contains($value, 'socle noir') ||
-                                str_contains($value, 'socle rectangle') ||
                                 str_contains($value, 'socle rectangle')
                             ) {
                                 $object->setIsBasemented(true);
+                            } else {
+                                $object->setIsBasemented(false);
                             }
 
                         }
@@ -575,6 +580,10 @@ class UploadObjectController extends AbstractController
 
                         }
 
+                        if($keyCol === $idxDescription) {
+                            $object->setNaturalLanguageDescription($value);
+                        }
+
                     }
                     $arrObjects[] = $object;
                 }
@@ -582,59 +591,10 @@ class UploadObjectController extends AbstractController
 
             }//foreach rows
 
-
-//            $count = 0;
-
-
             foreach ($arrObjects as $obj) {
-
-//                if ($obj->getExpositionLocation() == null) {
-//                    dd($obj);
-//                }
-
                 $this->manager->persist($obj);
-                $this->manager->flush();
-//                if ($obj->isIsBasemented()) {
-//                    $count += 1;
-//                }
             }
-//
-//            dd($count);
-//            dd($arrObjects);
-
-//            dd($object);
-//            dd($xlsx->rows());
-
-
-
-
-
-
-
-
-
-
-//                foreach ($row as $col) {
-//                    if ($col === 'Typologie') {
-//                        dump($col);
-//                    }
-//                }
-
-
-//                //Isoler la première ligne (Titre des colonnes)
-//                if ($key = 0) {
-//                    dd($row);
-//
-//                    if ($value === 'Typologie') {
-//
-//                    }
-//                } else {
-//
-//                }
-//                dd($key);
-//            }
-
-
+            $this->manager->flush();
 
 
 
@@ -644,11 +604,7 @@ class UploadObjectController extends AbstractController
             echo SimpleXLSX::parseError();
         }
 
-//        dd('Fin');
-
-        return $this->render('objects/objects/others/import_objects.html.twig', [
-//            'form'      => $form->createView(),
-        ]);
+        return $this->redirectToRoute('objects_listing');
 
     }
 }

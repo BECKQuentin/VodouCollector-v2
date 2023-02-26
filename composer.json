@@ -45,7 +45,8 @@
         "symfonycasts/verify-email-bundle": "^1.11",
         "twig/extra-bundle": "^3.4",
         "twig/intl-extra": "^3.4",
-        "twig/string-extra": "^3.4"
+        "twig/string-extra": "^3.4",
+        "ext-zip": "*"
     },
     "config": {
         "allow-plugins": {

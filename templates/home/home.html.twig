@@ -64,8 +64,8 @@
                     <span class="fs-5 p-2">{{ countIsExposedPermObjects }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':3}) }}">Exposition permanente</a></span>
                     <span class="fs-5 p-2">{{ countIsExposedTempObjects }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':2}) }}">Exposition temporaire</a></span>
                     <span class="fs-5 p-2">{{ countIsExposedStock }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]':4}) }}">En réserve</a></span>
-                    <span class="fs-5 p-2">{{ countIsRent }} - <a class="link_underline" href="{{ path('objects_listing', {'state[]':5, 'state[]':4}) }}">En prêt ou location</a></span>
-                    <span class="fs-5 p-2">{{ countToFix}} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]': 1}) }}">En restauration</a></span>
+                    <span class="fs-5 p-2">{{ countIsRent }} - <a class="link_underline" href="{{ path('objects_listing', {'expositionLocation[]': 1}) }}">En prêt ou location</a></span>
+                    <span class="fs-5 p-2">{{ countToFix }} - <a class="link_underline" href="{{ path('objects_listing', {'state[]':5, 'state[]':4}) }}">En restauration</a></span>
                     <span class="fs-5 p-2"><a class="link_underline" href="{{ path('objects_listing') }}">Total : {{ countObjects }}</a></span>
 
                     {% if is_granted('ROLE_MEMBER') %}
