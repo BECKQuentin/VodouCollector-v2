@@ -27,14 +27,14 @@
 
                     <div class="d-flex">
                         <h4>
-                            {% if object.categories is defined and object.categories is not null %}
-                                {{ object.categories.name }}
+                            {% if object.typology is defined and object.typology is not null %}
+                                {{ object.typology.name }}
                             {% else %}
                                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                             {% endif %}
-                            {% if object.subCategories is defined and object.subCategories is not null %}
+                            {% if object.precisionVernacularName is defined and object.precisionVernacularName is not null %}
                                 -
-                                {{ object.subCategories.name }}
+                                {{ object.precisionVernacularName.name }}
                             {% endif %}
                         </h4>
                     </div>
@@ -86,14 +86,6 @@
                             {% endif %}
                         </div>
                         <div class="d-flex">
-                            <em>Remarques :&nbsp;</em>
-                            {% if object.remarks is defined and object.remarks is not null %}
-                                {{ object.remarks }}
-                            {% else %}
-                                <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex">
                             <em>Etat :&nbsp;</em>
                             {% if object.state is defined and object.state is not null %}
                                 {{ object.state.name }}
@@ -109,28 +101,46 @@
                                 <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                             {% endif %}
                         </div>
-
                     </div>
-{#                    <div class="row">#}
-{#                        <div class="col-12 p-4">#}
-{#                            {% if object.description is defined and object.description is not null %}#}
-{#                                <em>Description : <br></em>#}
-{#                                {{ object.description }}#}
-{#                            {% else %}#}
-{#                                Pas de description#}
-{#                            {% endif %}#}
-{#                        </div>#}
-{#                    </div>#}
-                    <div class="col-12 p-4">
-                        <em>Fonction d'usage :&nbsp;</em>
+                    <div class="col-12 py-2">
+                        <em><u>Fonction d'usage :</u></em>
                         {% if object.usageFonction is defined and object.usageFonction is not null %}
                             {{ object.usageFonction }}
                         {% else %}
                             <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                         {% endif %}
                     </div>
-                    <div class="row">
-
+                    <div class="col-12 py-2">
+                        <em><u>Description en langage naturel :</u></em>
+                        {% if object.naturalLanguageDescription is defined and object.naturalLanguageDescription is not null %}
+                            {{ object.naturalLanguageDescription }}
+                        {% else %}
+                            <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 py-2">
+                        <em><u>Inscriptions et marques :</u></em>
+                        {% if object.inscriptionsEngraving is defined and object.inscriptionsEngraving is not null %}
+                            {{ object.inscriptionsEngraving }}
+                        {% else %}
+                            <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 py-2">
+                        <em><u>Commentaire de documentation :</u></em>
+                        {% if object.documentationCommentary is defined and object.documentationCommentary is not null %}
+                            {{ object.documentationCommentary }}
+                        {% else %}
+                            <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 py-2">
+                        <em><u>Utilisateurs (producteur/rice, propriétaire, collectionneur/euse) si connus</u></em>
+                        {% if object.usageUser is defined and object.usageUser is not null %}
+                            {{ object.usageUser }}
+                        {% else %}
+                            <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                        {% endif %}
                     </div>
 
                     <hr>
@@ -216,13 +226,29 @@
                                     <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                                 {% endif %}
                             </div>
+                            <div class="d-flex">
+                                <em>Avec socle :&nbsp;</em>
+                                {% if object.isBasemented is defined and object.isBasemented is not null %}
+                                    {{ object.isBasemented ? 'Oui' : 'Non' }}
+                                {% else %}
+                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <em>Commentaire de Soclage :</em>
+                                {% if object.basementCommentary is defined and object.basementCommentary is not null %}
+                                    {{ object.basementCommentary }}
+                                {% else %}
+                                    <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                                {% endif %}
+                            </div>
                         </div>
                         {% if is_granted('ROLE_MEMBER') %}
                             <div class="col-12 col-md-4 px-0">
                                 <div class="d-flex">
                                     <em>Exposition :&nbsp;</em>
-                                    {% if object.location is defined and object.location is not null %}
-                                        {{ object.location.nameFR }}
+                                    {% if object.expositionLocation is defined and object.expositionLocation is not null %}
+                                        {{ object.expositionLocation.nameFR }}
                                     {% else %}
                                         <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                                     {% endif %}
@@ -236,7 +262,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex">
-                                    <em>N° Virtrine :&nbsp;</em>
+                                    <em>N° Vitrine :&nbsp;</em>
                                     {% if object.showcaseCode is defined and object.showcaseCode is not null %}
                                         {{ object.showcaseCode }}
                                     {% else %}
@@ -254,8 +280,8 @@
                             </div>
 
                             <div class="col-12 col-md-4 px-0">
-                                <div class="d-flex">
-                                    <em>Mode d'acquisition :&nbsp;</em>
+                                <div>
+                                    <em>Mode d'acquisition :</em>
                                     {% if object.historicDetail is defined and object.historicDetail is not null %}
                                         {{ object.historicDetail }}
                                     {% else %}
@@ -264,14 +290,14 @@
                                 </div>
                                 <div class="d-flex">
                                     <em>Date d'acquisition :&nbsp;</em>
-                                    {% if object.historicDate is defined and object.historicDate is not null %}
-                                        {{ object.historicDate|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
+                                    {% if object.arrivedCollection is defined and object.arrivedCollection is not null %}
+                                        {{ object.arrivedCollection|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
                                     {% else %}
                                         <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex">
-                                    <em>Fiche crée le :&nbsp;</em>
+                                    <em>Fiche créee le :&nbsp;</em>
                                     {% if object.createdAt is defined and object.createdAt is not null %}
                                         {{ object.createdAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
                                     {% else %}
@@ -279,7 +305,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="d-flex">
-                                    <em>Fiche crée par :&nbsp;</em>
+                                    <em>Fiche créee par :&nbsp;</em>
                                     {% if object.createdBy is defined and object.createdBy is not null %}
                                         {{ object.createdBy.firstname }} {{ object.createdBy.lastname }}
                                     {% else %}

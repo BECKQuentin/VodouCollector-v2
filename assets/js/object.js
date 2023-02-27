@@ -71,3 +71,27 @@ for (let i = 0; i < images.length; i++) {
 }
 
 
+
+
+// Ajouter une liste déroulante sur les checkboxes des objets
+// let checkboxesField = document.querySelectorAll('.select_checkboxes');
+//
+// checkboxesField.forEach((form) => {
+//
+//     let select = document.createElement('select');
+//     select.classList.add('form-control');
+//     select.multiple = true;
+//
+//     let checkboxes = form.querySelectorAll('.form-check-input');
+//
+//     checkboxes.forEach((checkbox) => {
+//         console.log(checkbox);
+//         let option = document.createElement('option');
+//         option.appendChild(checkbox);
+//         select.appendChild(option);
+//     })
+//     form.innerHTML = "";
+//     form.appendChild(select);
+// })
+
+

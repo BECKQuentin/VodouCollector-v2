@@ -24,6 +24,8 @@ use App\Repository\Objects\Metadata\VernacularNameRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -39,8 +41,12 @@ use Symfony\Component\Validator\Constraints\NotNull;
 class ObjectsFormType extends AbstractType
 {
 
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
+        $years = range(date('Y')-100, date('Y')); // plage d'années
+        $yearsChoices = array_combine($years, $years); // convertir en tableau de choix
 
         $builder
             ->add('code', TextType::class, [
@@ -97,10 +103,12 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'      => true,
                 'query_builder' => function(PopulationRepository $populationRepository) {
                     return $populationRepository->createQueryBuilder('p')
                         ->orderBy('p.name', 'ASC');
                 },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('origin', EntityType::class, [
                 'class'         => Origin::class,
@@ -108,10 +116,12 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'        => true,
                 'query_builder' => function(OriginRepository $originRepository) {
                     return $originRepository->createQueryBuilder('o')
                         ->orderBy('o.name', 'ASC');
                 },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
 
             ->add('relatedGods', EntityType::class, [
@@ -120,10 +130,12 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'      => true,
                 'query_builder' => function(GodsRepository $godsRepository) {
                     return $godsRepository->createQueryBuilder('g')
                         ->orderBy('g.name', 'ASC');
                 },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('materials', EntityType::class, [
                 'class'         => Materials::class,
@@ -131,10 +143,12 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'      => true,
                 'query_builder' => function(MaterialsRepository $materialsRepository) {
                     return $materialsRepository->createQueryBuilder('m')
                         ->orderBy('m.name', 'ASC');
                 },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('documentationCommentary', TextareaType::class, [
                 'label' => 'Commentaire de Documentation',
@@ -146,30 +160,44 @@ class ObjectsFormType extends AbstractType
                 'choice_label'  => 'name',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'      => true,
                 'query_builder' => function(MuseumCatalogueRepository $museumCatalogueRepository) {
                     return $museumCatalogueRepository->createQueryBuilder('m')
                         ->orderBy('m.name', 'ASC');
                 },
                 'attr' => [
-                    'class' => 'big_textarea'
+                    'class' => 'big_checkboxes form-control'
                 ]
             ])
             ->add('book', EntityType::class, [
                 'class'         => Book::class,
-                'label'         => 'Ouvrages',
+                'label'         => 'Littérature qui se refère à l\'objet',
                 'choice_label'  => 'title',
                 'required'      => false,
                 'multiple'      => true,
+                'expanded'      => true,
                 'attr' => [
-                    'class' => 'big_textarea'
+                    'class' => 'big_checkboxes form-control'
                 ]
             ])
-            ->add('era', TextType::class, [
-                'label'         => 'Datation de l\' objet',
-                'required'      => false
+            ->add('antequemDatation', DateTimeType::class, [
+                'widget' => 'single_text',
+                'input' => 'datetime',
+                'required' => false,
             ])
+            ->add('preciseDatation', DateTimeType::class, [
+                'widget' => 'single_text',
+                'input' => 'datetime',
+                'required' => false,
+            ])
+            ->add('postequemDatation', DateTimeType::class, [
+                'widget' => 'single_text',
+                'input' => 'datetime',
+                'required' => false,
+            ])
+
             ->add('arrivedCollection', DateType::class, [
-                'label'         => 'arrivé dans la collection le',
+                'label'         => 'date d’acquisition',
                 'widget' => 'single_text',
                 'required'      => false
             ])
@@ -230,8 +258,6 @@ class ObjectsFormType extends AbstractType
                     'class' => 'big_textarea'
                 ]
             ])
-
-
             ->add('stateCommentary', TextAreaType::class, [
                 'label'         => 'Remarque sur l\' état',
                 'required'      => false

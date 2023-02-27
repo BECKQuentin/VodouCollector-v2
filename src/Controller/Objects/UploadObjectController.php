@@ -91,6 +91,7 @@ class UploadObjectController extends AbstractController
             $idxDocumentationCommentary = 0;
             $idxMuseumCatalogue = 0;
             $idxDescription = 0;
+            $idxDatation = 0;
 
 
 
@@ -169,6 +170,9 @@ class UploadObjectController extends AbstractController
                     if ($col === "DESCRIPTION") {
                         $idxDescription = $keyCol;
                     }
+                    if ($col === "DATATION") {
+                        $idxDatation = $keyCol;
+                    }
 
                 }
 
@@ -214,22 +218,29 @@ class UploadObjectController extends AbstractController
                             $value = trim(strtolower($value));
                             if ($value === 'rdc') {
                                 $object->setFloor($this->floorRepository->find(2));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(2));
                             }elseif ($value === 'mezzanine') {
                                 $object->setFloor($this->floorRepository->find(3));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(4));
                             } elseif ($value === '1') {
                                 $object->setFloor($this->floorRepository->find(4));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(3));
                             } elseif ($value === '2') {
                                 $object->setFloor($this->floorRepository->find(5));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(3));
                             } elseif ($value === '3') {
                                 $object->setFloor($this->floorRepository->find(6));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(3));
                             } elseif ($value === 'container') {
                                 $object->setFloor($this->floorRepository->find(7));
                             } elseif ($value === 'arbogast') {
                                 $object->setFloor($this->floorRepository->find(8));
                             } elseif ($value === 'escaliers') {
                                 $object->setFloor($this->floorRepository->find(9));
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(3));
                             } else {
                                 $object->setFloor($this->floorRepository->find(1));//???
+                                $object->setExpositionLocation($this->expositionLocationRepository->find(4));
                             }
                         }
                         if($keyCol === $createdAt) {
@@ -476,8 +487,6 @@ class UploadObjectController extends AbstractController
                                 $object->setStateCommentary($value);
                             }
 
-
-
                         }
 
 
@@ -583,6 +592,8 @@ class UploadObjectController extends AbstractController
                         if($keyCol === $idxDescription) {
                             $object->setNaturalLanguageDescription($value);
                         }
+
+                        //Datation
 
                     }
                     $arrObjects[] = $object;

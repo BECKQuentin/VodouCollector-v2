@@ -150,7 +150,7 @@ class ObjectsController extends AbstractController
             } else {
                 $objects->setCreatedBy($this->getUser());
             }
-            
+
             $images = $form->get('images')->getData();
             if ($images) {
                 foreach ($images as $image) {
@@ -373,13 +373,19 @@ class ObjectsController extends AbstractController
     /*Extraction de PDF*/
     #[Route('/objects-extract/pdf/{idsSearchObjs}', name: 'object_extract_pdf')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les ADMINS peuvent faire ça")]
-    public function pdfObjects($idsSearchObjs, ObjectsRepository $objectsRepository, Request $request): Response
+    public function pdfObjects($idsSearchObjs, ObjectsRepository $objectsRepository, Request $request)
     {
 
+
+        $maxExtract = 300;
         if ($idsSearchObjs !== 'null') {
             $arrIdSearchObj = explode(',', $idsSearchObjs);
-            if (count($arrIdSearchObj) > 2500) {
-                $this->addFlash('danger', "Trop d'objets à extraire limité à 2500! Contactez l'Admin sinon");
+            if (count($arrIdSearchObj) > $maxExtract) {
+                $this->addFlash('danger', "Trop d'objets à extraire limité à ".$maxExtract." pour le moment! Contactez l'Admin");
+                return $this->redirectToRoute('objects_listing');
+            }
+            if (!$this->isGranted('ROLE_MEMBER') && count($arrIdSearchObj) >= 2) {
+                $this->addFlash('danger', "Extraction impossible");
                 return $this->redirectToRoute('objects_listing');
             }
         } else {
@@ -420,7 +426,7 @@ class ObjectsController extends AbstractController
             $dompdf->render();
 
             // Output the generated PDF to Browser (force download)
-            $filename = str_replace(' ', '-', $obj->getCode() . '-' . strtolower(  $obj->getVernacularName()->getName() . '-' . $obj->getTypology()->getName() ));
+            $filename = str_replace([' ', '/'], '-', $obj->getCode() . '-' . strtolower(  $obj->getVernacularName()->getName() . '-' . $obj->getTypology()->getName() ));
             $arrPdf[$filename] = $dompdf->output();
         }
 
@@ -442,12 +448,16 @@ class ObjectsController extends AbstractController
             readfile($filename);
             exit();
         } else {
-            // Output the generated PDF to Browser (force download)
-            $dompdf->stream(array_key_first($arrPdf).".pdf", [
-                "Attachment" => true
-            ]);
-            return new Response();
+            //Forcer le telechargement de l'Objet unique
+            $filename = array_key_first($arrPdf) . ".pdf";
+            $pdf_content = $arrPdf[array_key_first($arrPdf)];
+            header('Content-Type: application/pdf');
+            header("Content-Disposition: attachment; filename=\"$filename\"");
+            header('Content-Length: ' . strlen($pdf_content));
+            echo $pdf_content;
+            exit();
         }
+
     }
 
 
@@ -458,7 +468,7 @@ class ObjectsController extends AbstractController
         if ($idsSearchObjs !== 'null') {
             $arrIdSearchObj = explode(',', $idsSearchObjs);
             if (count($arrIdSearchObj) > 2500) {
-                $this->addFlash('danger', "Trop d'objets à extraire limité à 2500! Contactez l'Admin sinon");
+                $this->addFlash('danger', "Trop d'objets à extraire limité à 2500! Contactez l'Admin");
                 return $this->redirectToRoute('objects_listing');
             }
         } else {
@@ -506,9 +516,12 @@ class ObjectsController extends AbstractController
                 $obj->getFloor()->getName() ?? "",
                 $obj->getShowcaseCode() ?? "",
                 $obj->getShelf() ?? "",
-                $obj->getCreatedAt()->format('Y:d:m') ?? "",
+                $obj->getArrivedCollection()->format('Y/d/m') ?? "",
+                $obj->getCreatedAt()->format('Y/d/m') ?? "",
                 $obj->getCreatedBy() ? $obj->getCreatedBy()->getFullName() : "",
+                $this->implodeArrayMap($obj->getInventoriedAt()),
             ];
+
 
             $newData = [];
             foreach ($data as $d) {
@@ -619,10 +632,14 @@ class ObjectsController extends AbstractController
         $sheet->getColumnDimension('AB')->setAutoSize(true);
         $sheet->setCellValue('AC1', $newObj::LABEL_SHELF);
         $sheet->getColumnDimension('AC')->setAutoSize(true);
-        $sheet->setCellValue('AD1', $newObj::LABEL_CREATED_AT);
+        $sheet->setCellValue('AD1', $newObj::LABEL_ARRIVED_COLLECTION);
         $sheet->getColumnDimension('AD')->setAutoSize(true);
-        $sheet->setCellValue('AE1', $newObj::LABEL_CREATED_BY);
+        $sheet->setCellValue('AE1', $newObj::LABEL_CREATED_AT);
         $sheet->getColumnDimension('AE')->setAutoSize(true);
+        $sheet->setCellValue('AF1', $newObj::LABEL_CREATED_BY);
+        $sheet->getColumnDimension('AF')->setAutoSize(true);
+        $sheet->setCellValue('AG1', $newObj::LABEL_INVENTORIED_AT);
+        $sheet->getColumnDimension('AG')->setAutoSize(true);
 
 
 
@@ -660,8 +677,10 @@ class ObjectsController extends AbstractController
             $sheet->setCellValue('AA'.$key, $obj->getFloor()->getName() ?? "");
             $sheet->setCellValue('AB'.$key,$obj->getShowcaseCode() ?? "");
             $sheet->setCellValue('AC'.$key,$obj->getShelf() ?? "");
-            $sheet->setCellValue('AD'.$key,$obj->getCreatedAt()->format('Y:d:m') ?? "");
-            $sheet->setCellValue('AE'.$key,$obj->getCreatedBy() ? $obj->getCreatedBy()->getFullName() : "");
+            $sheet->setCellValue('AD'.$key,$obj->getArrivedCollection() ? $obj->getArrivedCollection()->format('Y/d/m') : "");
+            $sheet->setCellValue('AE'.$key,$obj->getCreatedAt()->format('Y/d/m') ?? "");
+            $sheet->setCellValue('AF'.$key,$obj->getCreatedBy() ? $obj->getCreatedBy()->getFullName() : "");
+            $sheet->setCellValue('AG'.$key, $this->implodeArrayMap($obj->getInventoriedAt()));
         }
 
 
@@ -678,10 +697,15 @@ class ObjectsController extends AbstractController
         return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
+
     private function implodeArrayMap($field): string {
         $res = [];
         foreach ($field as $f) {
-            $res[] =$f->getName();
+            if (method_exists($f, 'getName')) {
+                $res[] = $f->getName();
+            } elseif (method_exists($f, 'getInventoriedAt')) {
+               $res[] = $f->getInventoriedAt()->format('Y/d/m');
+            }
         }
         return implode(',', $res);
     }

@@ -68,15 +68,16 @@ class Objects
     const LABEL_FLOOR = "Etage";
     const LABEL_SHOWCASE_CODE = "N° de vitrine";
     const LABEL_SHELF = "N° étagère";
+    const LABEL_ARRIVED_COLLECTION = "Date d'acquisition";
     const LABEL_CREATED_AT = "Fiche créee le";
     const LABEL_CREATED_BY = "Fiche créee par";
+    const LABEL_INVENTORIED_AT = "Recolé le";
 
     //Labels qui peuvent être diffusé publiquement(extraction csv, excel, pdf) => Aucune donnée sensible(insuranceValue)
     const OBJ_PUBLIC_LABELS = [self::LABEL_CODE, self::LABEL_VERNACULAR_NAME, self::LABEL_TYPOLOGY, self::LABEL_PRECISION_VERNACULAR_NAME, self::LABEL_GODS, self::LABEL_RELATED_GODS, self::LABEL_ORIGIN,
         self::LABEL_POPULATION, self::LABEL_HISTORICAL_DETAIL, self::LABEL_USAGE_FONCTION, self::LABEL_USAGE_USER, self::LABEL_NATURAL_LANGUAGE_DESCRIPTION, self::LABEL_INSCRIPTIONS_ENGRAVINGS, self::LABEL_MATERIALS, self::LABEL_DOCUMENTATION_COMMENTARY,
         self::LABEL_MUSEUM_CATALOGUE, self::LABEL_BOOKS, self::LABEL_STATE, self::LABEL_STATE_COMMENTARY, self::LABEL_WEIGHT, self::LABEL_SIZE_HIGH, self::LABEL_SIZE_LENGTH, self::LABEL_SIZE_DEPTH, self::LABEL_IS_BASEMENTED, self::LABEL_BASEMENT_COMMENTARY,
-        self::LABEL_EXPOSITION_LOCATION, self::LABEL_FLOOR, self::LABEL_SHOWCASE_CODE, self::LABEL_SHELF, self::LABEL_CREATED_AT, self::LABEL_CREATED_BY];
-
+        self::LABEL_EXPOSITION_LOCATION, self::LABEL_FLOOR, self::LABEL_SHOWCASE_CODE, self::LABEL_SHELF, self::LABEL_ARRIVED_COLLECTION, self::LABEL_CREATED_AT, self::LABEL_CREATED_BY, self::LABEL_INVENTORIED_AT];
 
 
     #[ORM\Id]
@@ -112,8 +113,14 @@ class Objects
     #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     private ?User $createdBy = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $era = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $antequemDatation = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $preciseDatation = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $postequemDatation = null;
 
     #[ORM\ManyToMany(targetEntity: Origin::class, inversedBy: 'objects', cascade: ["persist", "remove"])]
     private Collection $origin;
@@ -368,14 +375,38 @@ class Objects
         return $this;
     }
 
-    public function getEra(): ?int
+    public function getAntequemDatation(): ?\DateTimeInterface
     {
-        return $this->era;
+        return $this->antequemDatation;
     }
 
-    public function setEra(?int $era): self
+    public function setAntequemDatation(?\DateTimeInterface $antequemDatation): self
     {
-        $this->era = $era;
+        $this->antequemDatation = $antequemDatation;
+
+        return $this;
+    }
+
+    public function getPreciseDatation(): ?\DateTimeInterface
+    {
+        return $this->preciseDatation;
+    }
+
+    public function setPreciseDatation(?\DateTimeInterface $preciseDatation): self
+    {
+        $this->preciseDatation = $preciseDatation;
+
+        return $this;
+    }
+
+    public function getPostequemDatation(): ?\DateTimeInterface
+    {
+        return $this->postequemDatation;
+    }
+
+    public function setPostequemDatation(?\DateTimeInterface $postequemDatation): self
+    {
+        $this->postequemDatation = $postequemDatation;
 
         return $this;
     }

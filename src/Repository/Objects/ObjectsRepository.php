@@ -58,7 +58,7 @@ class ObjectsRepository extends ServiceEntityRepository
     public function countWhereIsLocated($expositionLocation) {
         return $this->createQueryBuilder('o')
             ->where('o.expositionLocation = :expositionLocation')
-            ->where('o.deletedAt IS NULL')
+            ->andWhere('o.deletedAt IS NULL')
             ->select('count(o.expositionLocation)')
             ->setParameter('expositionLocation', $expositionLocation)
             ->getQuery()
@@ -71,7 +71,7 @@ class ObjectsRepository extends ServiceEntityRepository
     public function countToFix() {
         return $this->createQueryBuilder('o')
             ->where('o.deletedAt IS NULL')
-            ->where('o.state = 4')
+            ->andWhere('o.state = 4')
             ->select('count(o.state)')
             ->getQuery()
             ->getSingleScalarResult();

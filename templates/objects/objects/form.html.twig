@@ -32,7 +32,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-6">{{ form_row(form.memo) }}</div>
-                <div class="col-md-6">{{ form_row(form.precisionVernacularName) }}</div>
+                <div class="col-md-6">{{ form_row(form.precisionVernacularName) }}{{ form_row(form.relatedGods) }}</div>
                 {% if object is defined and object.id is not null %}
                     <div class="d-flex"><span>Fiche crée par : {{ object.createdBy ? object.createdBy.firstname|capitalize : 'Inconnu' }} {{ object.createdBy ? object.createdBy.lastname|upper }} le {{ object.createdAt ? object.createdAt|format_datetime('short', 'none', locale='fr') }}</span></div>
                 {% endif %}
@@ -41,9 +41,13 @@
 
         <div id="objectElementContent_creation" class="object_form_elem">
             <div class="row mb-2">
-                <div class="col-md-3">{{ form_row(form.era) }}</div>
-                <div class="col-md-3">{{ form_row(form.origin) }}</div>
-                <div class="col-md-3">{{ form_row(form.population) }}</div>
+                <div class="col-md-3">{{ form_row(form.antequemDatation) }}</div>
+                <div class="col-md-3">{{ form_row(form.preciseDatation) }}</div>
+                <div class="col-md-3">{{ form_row(form.postequemDatation) }}</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">{{ form_row(form.origin) }}</div>
+                <div class="col-md-6">{{ form_row(form.population) }}</div>
             </div>
         </div>
 
@@ -52,11 +56,8 @@
                 {% if object.gods %}
                     <div class="col-md-12 disabled opacity-75">Vodou : {{ object.gods.name }}</div>
                 {% endif %}
-                <div class="col-md-9">{{ form_row(form.usageFonction) }}</div>
+                <div class="col-md-8">{{ form_row(form.usageFonction) }}</div>
 {#                <div class="col-md-8">{{ form_row(form.usageTags) }}</div>#}
-                <div class="col-md-3">
-                    {{ form_row(form.relatedGods) }}
-                </div>
                 <hr class="my-3">
                 <div class="col-md-12">
                     {{ form_row(form.usageUser) }}
@@ -66,7 +67,7 @@
 
         <div id="objectElementContent_etude" class="object_form_elem">
             <div class="row mb-4">
-                <div class="no_arrow col-md-4">{{ form_row(form.materials) }}</div>
+                <div class="no_arrow col-md-8">{{ form_row(form.materials) }}</div>
                 <div class="no_arrow col-md-2 px-1">
                     {{ form_row(form.weight) }}
                     {{ form_row(form.sizeHigh) }}
@@ -89,8 +90,10 @@
                 <div class="col-12">{{ form_row(form.documentationCommentary) }}</div>
             </div>
             <div class="row mb-4">
-                <div class="col-6">{{ form_row(form.museumCatalogue) }}</div>
-                <div class="col-6">{{ form_row(form.book) }}</div>
+                <div class="col-12">{{ form_row(form.museumCatalogue) }}</div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12">{{ form_row(form.book) }}</div>
             </div>
         </div>
 

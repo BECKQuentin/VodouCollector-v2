@@ -13,6 +13,10 @@
 form .big_textarea {
     min-height: calc(15em) !important;
 }
+form .big_checkboxes {
+    height: 250px !important;
+    overflow-y: scroll;
+}
 
 /*Listing*/
 .table_listing_row {
@@ -169,6 +173,7 @@ form .big_textarea {
     .tab-active {
         height: 40px;
         margin: 0 1px;
+        color: white;
         background: #8a2a2d;
         //box-shadow: inset 8px 8px 16px #732325;
         //inset -8px -8px 16px #a13135;
