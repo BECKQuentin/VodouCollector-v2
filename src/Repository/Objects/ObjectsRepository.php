@@ -123,8 +123,6 @@ class ObjectsRepository extends ServiceEntityRepository
 //            ->select('c', 'o')
             ->leftjoin('o.vernacularName', 'vernacularName')
             ->leftjoin('o.typology', 'typology')
-//            ->leftjoin('o.categories', 'cat')
-//            ->leftjoin('o.subCategories', 'subCat')
             ->leftjoin('o.population', 'pop')
             ->leftjoin('o.origin', 'ori')
             ->leftjoin('o.gods', 'g')

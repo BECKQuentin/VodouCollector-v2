@@ -13,14 +13,18 @@ class SearchData
      */
     public null|string|int $q = '';
 
-    public null|array $categories = [];
-    public null|array $subCategories = [];
+    public null|object $vernacularName;
+    public null|object $typology;
 
     public null|array $gods = [];
     public null|array $relatedGods = [];
 
     public null|object $population;
     public null|object $origin;
+
+    public int $antequemDatation;
+    public int $preciseDatation;
+    public int $postequemDatation;
 
     public null|array $materials = [];
     public null|array $state = [];
@@ -40,5 +44,5 @@ class SearchData
     public bool $isSortNumeric = false;
     public bool $isSortNumericReverse = false;
     public bool $sortDateUpdate = false;
-//    public null|array $updatedBy = [];
+    public null|array $updatedBy = [];
 }

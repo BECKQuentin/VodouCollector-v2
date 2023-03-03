@@ -64,11 +64,13 @@ class ObjectsController extends AbstractController
         $data->page = $request->get('page', 1);
 
         $searchForm = $this->createForm(SearchFieldType::class, $data);
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
-            $searchForm->remove('updatedBy');
-        }
+//        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+//            $searchForm->remove('updatedBy');
+//        }
         $searchForm->handleRequest($request);
         $searchObjects = $this->objectsRepository->searchObjects($data);
+
+
 
         //array des ID de la recherche
         $arrIdSearchObj = [];
@@ -163,6 +165,7 @@ class ObjectsController extends AbstractController
                         $img->setSrc($fileName);
                         $img->setCode($fileNameCode);
                         $img->setObjects($objects);
+                        dd($img);
                         $objects->addImage($img);
 
                         $this->actionService->addAction(2, 'Image ajouté', $objects, $this->getUser(), $img->getSrc());

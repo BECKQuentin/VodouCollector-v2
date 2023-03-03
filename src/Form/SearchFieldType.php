@@ -12,7 +12,16 @@ use App\Entity\Objects\Metadata\Origin;
 use App\Entity\Objects\Metadata\Population;
 use App\Entity\Objects\Metadata\State;
 //use App\Entity\Objects\Metadata\SubCategories;
+use App\Entity\Objects\Metadata\Typology;
+use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\User\User;
+use App\Repository\Objects\Metadata\GodsRepository;
+use App\Repository\Objects\Metadata\MaterialsRepository;
+use App\Repository\Objects\Metadata\OriginRepository;
+use App\Repository\Objects\Metadata\PopulationRepository;
+use App\Repository\Objects\Metadata\TypologyRepository;
+use App\Repository\Objects\Metadata\VernacularNameRepository;
+use App\Repository\User\UserRepository;
 use Svg\Tag\Text;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -23,11 +32,15 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\LessThan;
+use Symfony\Component\Validator\Constraints\Type;
 
 class SearchFieldType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
         $builder
             ->add('q', TextType::class, [
                 'label' => false,
@@ -42,57 +55,122 @@ class SearchFieldType extends AbstractType
                 'required' => false,
             ])
             ->add('expositionLocation', EntityType::class, [
-                'class'     => ExpositionLocation::class,
+                'class'         => ExpositionLocation::class,
                 'label'         => false,
                 'choice_label'  => 'nameFR',
                 'required'      => false,
                 'expanded'      => true,
-                'multiple'      => true
+                'multiple'      => true,
             ])
-//            ->add('categories', EntityType::class, [
-//                'label' => 'Catégories',
-//                'required' => false,
-//                'class' => Categories::class,
-//                'multiple'  => true,
-//            ])
-//            ->add('subCategories', EntityType::class, [
-//                'label' => 'Sous-Catégories',
-//                'required' => false,
-//                'class' => SubCategories::class,
-//                'multiple'  => true,
-//            ])
-            ->add('gods', EntityType::class, [
-                'label' => 'Divinités',
-                'required' => false,
-                'class' => Gods::class,
+            ->add('typology', EntityType::class, [
+                'label'         => 'Typologie',
+                'class'         => Typology::class,
                 'choice_label'  => 'name',
+                'required'      => false,
+                'multiple'      => false,
+                'query_builder' => function(TypologyRepository $typologyRepository) {
+                    return $typologyRepository->createQueryBuilder('t')
+                        ->orderBy('t.name', 'ASC');
+                },
+            ])
+            ->add('vernacularName', EntityType::class, [
+                'class'         => VernacularName::class,
+                'label'         => 'Nom vernaculaire',
+                'choice_label'  => 'name',
+                'required'      => false,
+                'multiple'      => false,
+                'query_builder' => function(VernacularNameRepository $vernacularNameRepository) {
+                    return $vernacularNameRepository->createQueryBuilder('v')
+                        ->orderBy('v.name', 'ASC');
+                },
+            ])
+            ->add('gods', EntityType::class, [
+                'class' => Gods::class,
+                'label' => 'Divinités',
+                'choice_label'  => 'name',
+                'required' => false,
                 'multiple'  => true,
+                'query_builder' => function(GodsRepository $godsRepository) {
+                    return $godsRepository->createQueryBuilder('g')
+                        ->orderBy('g.name', 'ASC');
+                },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('relatedGods', EntityType::class, [
-                'label' => 'Dieux associés',
-                'required' => false,
-                'class' => Gods::class,
+                'class'         => Gods::class,
+                'label'         => 'Divinités Associées',
                 'choice_label'  => 'name',
-                'multiple'  => true,
+                'required'      => false,
+                'multiple'      => true,
+                'expanded'      => true,
+                'query_builder' => function(GodsRepository $godsRepository) {
+                    return $godsRepository->createQueryBuilder('g')
+                        ->orderBy('g.name', 'ASC');
+                },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('population', EntityType::class, [
-                'label' => 'Population',
-                'required' => false,
-                'class' => Population::class,
+                'class'         => Population::class,
+                'label'         => 'Population',
                 'choice_label'  => 'name',
+                'required'      => false,
+                'multiple'      => true,
+                'expanded'      => true,
+                'query_builder' => function(PopulationRepository $populationRepository) {
+                    return $populationRepository->createQueryBuilder('p')
+                        ->orderBy('p.name', 'ASC');
+                },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('origin', EntityType::class, [
-                'label' => 'Origine',
-                'required' => false,
-                'class' => Origin::class,
+                'class'         => Origin::class,
+                'label'         => 'Origine',
                 'choice_label'  => 'name',
+                'required'      => false,
+                'multiple'      => true,
+                'expanded'        => true,
+                'query_builder' => function(OriginRepository $originRepository) {
+                    return $originRepository->createQueryBuilder('o')
+                        ->orderBy('o.name', 'ASC');
+                },
+                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('materials', EntityType::class, [
-                'label' => 'Matériaux',
-                'required' => false,
-                'class' => Materials::class,
+                'class'         => Materials::class,
+                'label'         => 'Matériaux',
                 'choice_label'  => 'name',
-                'multiple'  => true,
+                'required'      => false,
+                'multiple'      => true,
+                'expanded'      => true,
+                'query_builder' => function(MaterialsRepository $materialsRepository) {
+                    return $materialsRepository->createQueryBuilder('m')
+                        ->orderBy('m.name', 'ASC');
+                },
+                'attr' => ['class' => 'big_checkboxes form-control']
+            ])
+            ->add('antequemDatation', TextType::class, [
+                'label'         => 'Antequem',
+                'required'      => false,
+//                'constraints' => [
+//                    new Type('numeric', 'Seulement des chiffres'),
+//                    new Count(4, 4, 4, null, 'Doit être un année de 4 chiffres'),
+//                ]
+            ])
+            ->add('preciseDatation', TextType::class, [
+                'label'         => 'Antequem',
+                'required'      => false,
+//                'constraints' => [
+//                    new Type('numeric', 'Seulement des chiffres'),
+//                    new LessThan(5, 4, 'Doit être un année de 4 chiffres'),
+//                ]
+            ])
+            ->add('postequemDatation', TextType::class, [
+                'label'         => 'Antequem',
+                'required'      => false,
+//                'constraints' => [
+//                    new Type('numeric', 'Seulement des chiffres'),
+//                    new Count(4, 4, 4, null, 'Doit être un année de 4 chiffres'),
+//                ]
             ])
             ->add('state', EntityType::class, [
                 'label' => 'Etat',
@@ -116,46 +194,47 @@ class SearchFieldType extends AbstractType
                 'label' => 'Etagère',
                 'required' => false,
             ])
-
-
             //SORT
             ->add('isSortAlpha', CheckboxType::class, [
-                'label' => false,
-                'label_attr' => ['class' => 'fa-solid fa-arrow-down-a-z'],
-                'required' => false,
-                'data' => true,
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-a-z'],
+                'required'      => false,
+                'data'          => true,
             ])
             ->add('isSortAlphaReverse', CheckboxType::class, [
-                'label' => false,
-                'label_attr' => ['class' => 'fa-solid fa-arrow-down-z-a'],
-                'required' => false,
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-z-a'],
+                'required'      => false,
             ])
             ->add('isSortNumeric', CheckboxType::class, [
-                'label' => false,
-                'label_attr' => ['class' => 'fa-solid fa-arrow-down-1-9'],
-                'required' => false,
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-1-9'],
+                'required'      => false,
             ])
             ->add('isSortNumericReverse', CheckboxType::class, [
-                'label' => false,
-                'label_attr' => ['class' => 'fa-solid fa-arrow-down-9-1'],
-                'required' => false,
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-9-1'],
+                'required'      => false,
             ])
             ->add('sortDateUpdate', CheckboxType::class, [
-                'label' => false,
-                'label_attr' => ['class' => 'fa-solid fa-clock-rotate-left'],
-                'required' => false,
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-clock-rotate-left'],
+                'required'      => false,
             ])
-
-
 //            ->add('updatedBy', EntityType::class, [
-//                'label' => 'Modifié par',
-//                'required' => false,
-//                'class' => User::class,
-//                'choice_label'  => 'firstname',
-//                'multiple'  => true,
+//                'label'         => 'Modifié par',
+//                'required'      => false,
+//                'class'         => User::class,
+//                'choice_label'  => 'fullName',
+//                'multiple'      => true,
+//                'expanded'      => true,
+//                'query_builder' => function(UserRepository $userRepository) {
+//                    return $userRepository->createQueryBuilder('u')
+//                        ->where("u.roles = 'ROLE_ADMIN'")
+//                        ->setParameter("role", '%"ROLE_ADMIN"%');
+//                },
+//                'attr' => ['class' => 'big_checkboxes form-control']
 //            ])
-
-
             ->add('submit', SubmitType::class, [
                 'label' => 'Filtrer',
                 'attr' => [

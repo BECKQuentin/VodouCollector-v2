@@ -165,7 +165,7 @@
                                         <a href="{{ img.src|image }}" download class="btn btn-vodou"><i class="fa-solid fa-download"></i></a>
                                     {% endif %}
                                     {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('delete_objects_img', {id:img.id, object:object.id}) }}" title="Supprimer" onclick="return confirm('Supprimer cette image ?')" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
+                                        <a href="{{ path('delete_objects_img', {id:img.id}) }}" title="Supprimer" onclick="return confirm('Supprimer cette image ?')" class="btn btn-vodou"><i class="fa-solid fa-trash"></i></a>
                                     {% endif %}
                                 </div>
                             </div>

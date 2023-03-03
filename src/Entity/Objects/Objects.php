@@ -244,6 +244,9 @@ class Objects
     #[ORM\ManyToMany(targetEntity: SharedBookmarks::class, mappedBy: 'objects')]
     private Collection $sharedBookmarks;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $remarks = null;
+
     public function __construct()
     {
         $this->setUpdatedAt(new \DateTimeImmutable('now'));
@@ -1070,6 +1073,18 @@ class Objects
         if ($this->sharedBookmarks->removeElement($sharedBookmark)) {
             $sharedBookmark->removeObject($this);
         }
+
+        return $this;
+    }
+
+    public function getRemarks(): ?string
+    {
+        return $this->remarks;
+    }
+
+    public function setRemarks(?string $remarks): self
+    {
+        $this->remarks = $remarks;
 
         return $this;
     }

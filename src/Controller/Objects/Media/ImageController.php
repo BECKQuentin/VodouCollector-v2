@@ -3,13 +3,11 @@
 namespace App\Controller\Objects\Media;
 
 use App\Entity\Objects\Media\Image;
-use App\Entity\Site\Action;
+use App\Entity\Objects\Objects;
+use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\ObjectsRepository;
-use App\Repository\Site\ActionCategoryRepository;
 use App\Service\ActionService;
-use App\Service\UploadService;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -24,6 +22,7 @@ class ImageController extends AbstractController
         private ActionService $actionService,
         private EntityManagerInterface $manager,
         private ObjectsRepository $objectsRepository,
+        private ImageRepository $imageRepository,
     ){}
 
 //    #[Route('/objects/{id}/media', name: 'objects_medias')]
@@ -78,22 +77,22 @@ class ImageController extends AbstractController
 //    }
 
 
-    #[Route('/media-delete/{id}/{object}', name: 'delete_objects_img')]
+    #[Route('/media-delete/{id}', name: 'delete_objects_img')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
-    public function mediaDelete(Image $images, Request $request) {
-
-        $objId = $request->get('object');
+    public function mediaDelete(Image $image, Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    {
+        $object = $image->getObjects();
 
         $filesystem = new Filesystem();
-        $filesystem->remove($images->getAbsolutePath());
+        $filesystem->remove($image->getAbsolutePath());
 
-        $this->actionService->addAction(2, 'Image supprimé', $this->objectsRepository->findOneBy(['id' => $objId]), $this->getUser(), $images->getSrc());
+        $this->actionService->addAction(2, 'Image supprimé', $this->objectsRepository->findOneBy(['id' => $object->getId()]), $this->getUser(), $image->getSrc());
 
-        $this->manager->remove($images);
+        $this->manager->remove($image);
         $this->manager->flush();
 
         return($this->redirectToRoute('objects',
-            ['id' => $objId],
+            ['id' => $object->getId()],
         ));
 
     }
