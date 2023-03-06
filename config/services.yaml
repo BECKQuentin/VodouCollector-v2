@@ -7,6 +7,8 @@ parameters:
     app_env: '%env(APP_ENV)%'
     email_admin: '%env(EMAIL_ADMIN)%'
     email_developer: '%env(EMAIL_DEVELOPER)%'
+    public_directory: "%kernel.project_dir%/public/"
+
 
 services:
     # default configuration for services in *this* file
@@ -46,6 +48,7 @@ services:
 
     App\Service\UploadService:
         arguments:
-            $uploadImagesDirectory: 'upload/images/objects'
-            $uploadVideosDirectory: 'upload/videos/objects'
-            $uploadFilesDirectory: 'upload/files/objects'
+            $publicDirectory: '%public_directory%'
+    App\Twig\AppExtension:
+        arguments:
+            $publicDirectory: '%public_directory%'

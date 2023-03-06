@@ -15,6 +15,7 @@ use App\Entity\Objects\Metadata\State;
 use App\Entity\Objects\Metadata\Typology;
 use App\Entity\Objects\Metadata\VernacularName;
 use App\Entity\User\User;
+use App\Form\Objects\AbstractObjectsType;
 use App\Repository\Objects\Metadata\GodsRepository;
 use App\Repository\Objects\Metadata\MaterialsRepository;
 use App\Repository\Objects\Metadata\OriginRepository;
@@ -26,8 +27,10 @@ use Svg\Tag\Text;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,7 +39,7 @@ use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\LessThan;
 use Symfony\Component\Validator\Constraints\Type;
 
-class SearchFieldType extends AbstractType
+class SearchFieldType extends AbstractObjectsType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -49,12 +52,10 @@ class SearchFieldType extends AbstractType
                     'placeholder' => 'Rechercher',
                     'autofocus' => true
                 ]
-            ])
-            ->add('isBasemented', CheckboxType::class, [
-                'label' => 'Socle',
-                'required' => false,
-            ])
-            ->add('expositionLocation', EntityType::class, [
+            ]);
+            $this->addIsBasemented($builder);
+            $builder
+                ->add('expositionLocation', EntityType::class, [
                 'class'         => ExpositionLocation::class,
                 'label'         => false,
                 'choice_label'  => 'nameFR',
@@ -89,12 +90,11 @@ class SearchFieldType extends AbstractType
                 'label' => 'Divinités',
                 'choice_label'  => 'name',
                 'required' => false,
-                'multiple'  => true,
+                'multiple' => false,
                 'query_builder' => function(GodsRepository $godsRepository) {
                     return $godsRepository->createQueryBuilder('g')
                         ->orderBy('g.name', 'ASC');
                 },
-                'attr' => ['class' => 'big_checkboxes form-control']
             ])
             ->add('relatedGods', EntityType::class, [
                 'class'         => Gods::class,
@@ -147,31 +147,11 @@ class SearchFieldType extends AbstractType
                         ->orderBy('m.name', 'ASC');
                 },
                 'attr' => ['class' => 'big_checkboxes form-control']
-            ])
-            ->add('antequemDatation', TextType::class, [
-                'label'         => 'Antequem',
-                'required'      => false,
-//                'constraints' => [
-//                    new Type('numeric', 'Seulement des chiffres'),
-//                    new Count(4, 4, 4, null, 'Doit être un année de 4 chiffres'),
-//                ]
-            ])
-            ->add('preciseDatation', TextType::class, [
-                'label'         => 'Antequem',
-                'required'      => false,
-//                'constraints' => [
-//                    new Type('numeric', 'Seulement des chiffres'),
-//                    new LessThan(5, 4, 'Doit être un année de 4 chiffres'),
-//                ]
-            ])
-            ->add('postequemDatation', TextType::class, [
-                'label'         => 'Antequem',
-                'required'      => false,
-//                'constraints' => [
-//                    new Type('numeric', 'Seulement des chiffres'),
-//                    new Count(4, 4, 4, null, 'Doit être un année de 4 chiffres'),
-//                ]
-            ])
+            ]);
+            $this->addAntequemDatation($builder);
+            $this->addPreciseDatation($builder);
+            $this->addPostquemDatation($builder);
+            $builder
             ->add('state', EntityType::class, [
                 'label' => 'Etat',
                 'required' => false,
@@ -185,38 +165,33 @@ class SearchFieldType extends AbstractType
                 'class' => Floor::class,
                 'choice_label'  => 'name',
                 'multiple'  => true,
-            ])
-            ->add('showcaseCode', TextType::class, [
-                'label' => 'Numéro de vitrine',
-                'required' => false,
-            ])
-            ->add('shelf', TextType::class, [
-                'label' => 'Etagère',
-                'required' => false,
-            ])
+            ]);
+            $this->addShowcaseCode($builder);
+            $this->addShelf($builder);
+            $builder
             //SORT
-            ->add('isSortAlpha', CheckboxType::class, [
-                'label'         => false,
-                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-a-z'],
-                'required'      => false,
-                'data'          => true,
-            ])
-            ->add('isSortAlphaReverse', CheckboxType::class, [
-                'label'         => false,
-                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-z-a'],
-                'required'      => false,
-            ])
-            ->add('isSortNumeric', CheckboxType::class, [
+            ->add('isSortNumeric', RadioType::class, [
                 'label'         => false,
                 'label_attr'    => ['class' => 'fa-solid fa-arrow-down-1-9'],
                 'required'      => false,
+                'data'          => true,
             ])
-            ->add('isSortNumericReverse', CheckboxType::class, [
+            ->add('isSortNumericReverse', RadioType::class, [
                 'label'         => false,
                 'label_attr'    => ['class' => 'fa-solid fa-arrow-down-9-1'],
                 'required'      => false,
             ])
-            ->add('sortDateUpdate', CheckboxType::class, [
+            ->add('isSortAlpha', RadioType::class, [
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-a-z'],
+                'required'      => false,
+            ])
+            ->add('isSortAlphaReverse', RadioType::class, [
+                'label'         => false,
+                'label_attr'    => ['class' => 'fa-solid fa-arrow-down-z-a'],
+                'required'      => false,
+            ])
+            ->add('sortDateUpdate', RadioType::class, [
                 'label'         => false,
                 'label_attr'    => ['class' => 'fa-solid fa-clock-rotate-left'],
                 'required'      => false,
@@ -253,9 +228,9 @@ class SearchFieldType extends AbstractType
             'csrf_protection' => false,
         ]);
     }
-
-    public function getBlockPrefix(): string
-    {
-        return '';
-    }
+//
+//    public function getBlockPrefix(): string
+//    {
+//        return '';
+//    }
 }

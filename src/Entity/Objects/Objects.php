@@ -27,8 +27,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints\AtLeastOneOf;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -113,14 +111,14 @@ class Objects
     #[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
     private ?User $createdBy = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $antequemDatation = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $antequemDatation = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $preciseDatation = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $preciseDatation = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $postequemDatation = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $postquemDatation = null;
 
     #[ORM\ManyToMany(targetEntity: Origin::class, inversedBy: 'objects', cascade: ["persist", "remove"])]
     private Collection $origin;
@@ -220,8 +218,11 @@ class Objects
     #[ORM\OneToMany(mappedBy: 'objects', targetEntity: File::class, cascade: ["persist"], orphanRemoval: true)]
     private Collection $files;
 
-//    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: Youtube::class, cascade: ["persist"], orphanRemoval: true)]
-//    private Collection $youtube;
+    #[ORM\OneToMany(mappedBy: 'objects', targetEntity: Youtube::class, cascade: ["persist"], orphanRemoval: true)]
+    private Collection $youtube;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $youtubeLink = null;
 
     #[ORM\OneToMany(mappedBy: 'object', targetEntity: Action::class)]
     #[ORM\JoinColumn(onDelete: "SET NULL")]
@@ -245,7 +246,7 @@ class Objects
     private Collection $sharedBookmarks;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $remarks = null;
+    private ?string $expositionRemarks = null;
 
     public function __construct()
     {
@@ -262,7 +263,7 @@ class Objects
         $this->images = new ArrayCollection();
         $this->videos = new ArrayCollection();
         $this->files = new ArrayCollection();
-//        $this->youtube = new ArrayCollection();
+        $this->youtube = new ArrayCollection();
         $this->actions = new ArrayCollection();
         $this->sharedBookmarks = new ArrayCollection();
         $this->inventoriedAt = new ArrayCollection();
@@ -378,38 +379,38 @@ class Objects
         return $this;
     }
 
-    public function getAntequemDatation(): ?\DateTimeInterface
+    public function getAntequemDatation(): ?int
     {
         return $this->antequemDatation;
     }
 
-    public function setAntequemDatation(?\DateTimeInterface $antequemDatation): self
+    public function setAntequemDatation(int $antequemDatation): self
     {
         $this->antequemDatation = $antequemDatation;
 
         return $this;
     }
 
-    public function getPreciseDatation(): ?\DateTimeInterface
+    public function getPreciseDatation(): ?int
     {
         return $this->preciseDatation;
     }
 
-    public function setPreciseDatation(?\DateTimeInterface $preciseDatation): self
+    public function setPreciseDatation(?int $preciseDatation): self
     {
         $this->preciseDatation = $preciseDatation;
 
         return $this;
     }
 
-    public function getPostequemDatation(): ?\DateTimeInterface
+    public function getPostquemDatation(): ?int
     {
-        return $this->postequemDatation;
+        return $this->postquemDatation;
     }
 
-    public function setPostequemDatation(?\DateTimeInterface $postequemDatation): self
+    public function setPostquemDatation(?int $postquemDatation): self
     {
-        $this->postequemDatation = $postequemDatation;
+        $this->postquemDatation = $postquemDatation;
 
         return $this;
     }
@@ -942,13 +943,25 @@ class Objects
         return $this;
     }
 
-//    /**
-//     * @return Collection<int, Youtube>
-//     */
-//    public function getYoutube(): Collection
-//    {
-//        return $this->youtube;
-//    }
+    public function getYoutubeLink(): ?string
+    {
+        return $this->youtubeLink;
+    }
+
+    public function setYoutubeLink(?string $youtubeLink): self
+    {
+        $this->youtubeLink = $youtubeLink;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Youtube>
+     */
+    public function getYoutube(): Collection
+    {
+        return $this->youtube;
+    }
 //
 //    public function addYoutube(Youtube $youtube): self
 //    {
@@ -1077,14 +1090,14 @@ class Objects
         return $this;
     }
 
-    public function getRemarks(): ?string
+    public function getExpositionRemarks(): ?string
     {
-        return $this->remarks;
+        return $this->expositionRemarks;
     }
 
-    public function setRemarks(?string $remarks): self
+    public function setExpositionRemarks(?string $expositionRemarks): self
     {
-        $this->remarks = $remarks;
+        $this->expositionRemarks = $expositionRemarks;
 
         return $this;
     }

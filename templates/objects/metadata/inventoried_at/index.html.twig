@@ -1,0 +1,18 @@
+<div id="InventoriedAtItems">
+        <h4>Récolé le :</h4>
+        <ul>
+                {% for inventoryDate in object.inventoriedAt %}
+                        <li>
+                            {{ inventoryDate.inventoriedAt|format_datetime(locale='fr',pattern="dd MMMM YYYY") }}
+                            <div data-action="click->inventoriedAt#removeInventoriedAt"
+                                 data-url-remove="{{ path('inventoried_at_remove', {'id': inventoryDate.id }) }}"
+                                 onclick="return confirm('Etes vous sûr de vouloir supprimer cette date de recolage')"
+                                 title="Supprimer"
+                                 class="btn btn-vodou">
+                                <i class="fa-solid fa-trash"></i>
+                            </div>
+                        </li>
+
+                {% endfor %}
+        </ul>
+</div>

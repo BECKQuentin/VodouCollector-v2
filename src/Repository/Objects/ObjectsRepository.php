@@ -120,36 +120,32 @@ class ObjectsRepository extends ServiceEntityRepository
     {
         $query = $this
             ->createQueryBuilder('o')
-//            ->select('c', 'o')
-            ->leftjoin('o.vernacularName', 'vernacularName')
-            ->leftjoin('o.typology', 'typology')
+            ->leftjoin('o.vernacularName', 'vernaName')
+            ->leftjoin('o.typology', 'typo')
+            ->leftjoin('o.gods', 'g')
             ->leftjoin('o.population', 'pop')
             ->leftjoin('o.origin', 'ori')
-            ->leftjoin('o.gods', 'g')
+            ->leftjoin('o.materials', 'mat')
 
         ;
-        if(!empty($searchData->q)) {
-            $query = $query
-                ->orWhere('o.code LIKE :q')
-//                ->orWhere('cat.name LIKE :q')
-//                ->orWhere('subCat.name LIKE :q')
-                ->orWhere('vernacularName.name LIKE :q')
-                ->orWhere('typology.name LIKE :q')
-                ->orWhere('pop.name LIKE :q')
-                ->orWhere('ori.name LIKE :q')
-                ->orWhere('g.name LIKE :q')
-//                ->orWhere('o.relatedGods LIKE :q')
-//                ->orWhere('o.materials LIKE :q')
-                ->orWhere('o.usageFonction LIKE :q')
-                ->orWhere('o.era LIKE :q')
+
+        $query = $query
+            ->orWhere('o.code LIKE :q')
+            ->orWhere('vernaName.name LIKE :q')
+            ->orWhere('typo.name LIKE :q')
+            ->orWhere('g.name LIKE :q')
+            ->orWhere('pop.name LIKE :q')
+            ->orWhere('ori.name LIKE :q')
+            ->orWhere('mat.name LIKE :q')
+//                ->orWhere('o.usageFonction LIKE :q')
 //                ->orWhere('o.historicDate = :q')
-                ->orWhere('o.historicDetail LIKE :q')
-                ->orWhere('o.usageFonction LIKE :q')
-                ->orWhere('o.stateCommentary LIKE :q')
+//                ->orWhere('o.historicDetail LIKE :q')
+//                ->orWhere('o.usageFonction LIKE :q')
+//                ->orWhere('o.stateCommentary LIKE :q')
 //                ->orWhere('o.state LIKE :q')
-                ->orWhere('o.memo LIKE :q')
-                ->setParameter('q', "%{$searchData->q}%");
-        }
+//                ->orWhere('o.memo LIKE :q')
+            ->setParameter('q', "%{$searchData->q}%");
+
 
 //        if(!empty($searchData->updatedBy)) {
 //            $query = $query
@@ -158,8 +154,7 @@ class ObjectsRepository extends ServiceEntityRepository
 //                ->andWhere('u.updatedBy == o.updatedBy')
 //                ->setParameter('updatedBy', "%{$searchData->updatedBy}%");
 //        }
-
-
+//
         if(!empty($searchData->isBasemented)) {
             $query = $query
                 ->andWhere('o.isBasemented = 1');
@@ -171,22 +166,20 @@ class ObjectsRepository extends ServiceEntityRepository
                 ->andWhere('expositionLocation.id IN (:expositionLocation)')
                 ->setParameter('expositionLocation', $searchData->expositionLocation);
         }
-
-
-//        if(!empty($searchData->categories)) {
-//            $query = $query
-//                ->select('categories', 'o')
-//                ->join('o.categories', 'categories')
-//                ->andWhere('categories.id IN (:categories)')
-//                ->setParameter('categories', $searchData->categories);
-//        }
-//        if(!empty($searchData->subCategories)) {
-//            $query = $query
-//                ->select('subCategories', 'o')
-//                ->join('o.subCategories', 'subCategories')
-//                ->andWhere('subCategories.id IN (:subCategories)')
-//                ->setParameter('subCategories', $searchData->subCategories);
-//        }
+        if(!empty($searchData->vernacularName)) {
+            $query = $query
+                ->select('vernacularName', 'o')
+                ->join('o.vernacularName', 'vernacularName')
+                ->andWhere('vernacularName.id IN (:vernacularName)')
+                ->setParameter('vernacularName', $searchData->vernacularName);
+        }
+        if(!empty($searchData->typology)) {
+            $query = $query
+                ->select('typology', 'o')
+                ->join('o.typology', 'typology')
+                ->andWhere('typology.id IN (:typology)')
+                ->setParameter('typology', $searchData->typology);
+        }
         if(!empty($searchData->gods)) {
             $query = $query
                 ->select('gods', 'o')
@@ -198,65 +191,57 @@ class ObjectsRepository extends ServiceEntityRepository
             $query = $query
                 ->select('relatedGods', 'o')
                 ->join('o.relatedGods', 'relatedGods')
-                ->andWhere('relatedGods.id IN (:relatedGods)')
+                ->orWhere('relatedGods.id IN (:relatedGods)')
                 ->setParameter('relatedGods', $searchData->relatedGods);
-        }
-        if(!empty($searchData->population)) {
-            $query = $query
-                ->select('population', 'o')
-                ->join('o.population', 'population')
-                ->andWhere('population.id IN (:population)')
-                ->setParameter('population', $searchData->population);
         }
         if(!empty($searchData->origin)) {
             $query = $query
                 ->select('origin', 'o')
                 ->join('o.origin', 'origin')
-                ->andWhere('origin.id IN (:origin)')
+                ->orWhere('origin.id IN (:origin)')
                 ->setParameter('origin', $searchData->origin);
+        }
+        if(!empty($searchData->population)) {
+            $query = $query
+                ->select('population', 'o')
+                ->join('o.population', 'population')
+                ->orWhere('population.id IN (:population)')
+                ->setParameter('population', $searchData->population);
         }
         if(!empty($searchData->materials)) {
             $query = $query
                 ->select('materials', 'o')
                 ->join('o.materials', 'materials')
-                ->andWhere('materials.id IN (:materials)')
+                ->orWhere('materials.id IN (:materials)')
                 ->setParameter('materials', $searchData->materials);
         }
-        if(!empty($searchData->state)) {
-            $query = $query
-                ->select('state', 'o')
-                ->join('o.state', 'state')
-                ->andWhere('state.id IN (:state)')
-                ->setParameter('state', $searchData->state);
-        }
-        if(!empty($searchData->floor)) {
-            $query = $query
-                ->select('floor', 'o')
-                ->join('o.floor', 'floor')
-                ->andWhere('floor.id IN (:floor)')
-                ->setParameter('floor', $searchData->floor);
-        }
-        if(!empty($searchData->showcaseCode)) {
-            $query = $query
-                ->andWhere('o.showcaseCode LIKE :showcaseCode')
-                ->setParameter('showcaseCode', $searchData->showcaseCode);
-        }
-        if(!empty($searchData->shelf)) {
-            $query = $query
-                ->andWhere('o.shelf LIKE :shelf')
-                ->setParameter('shelf', $searchData->shelf);
-        }
+//        if(!empty($searchData->state)) {
+//            $query = $query
+//                ->select('state', 'o')
+//                ->join('o.state', 'state')
+//                ->andWhere('state.id IN (:state)')
+//                ->setParameter('state', $searchData->state);
+//        }
+//        if(!empty($searchData->floor)) {
+//            $query = $query
+//                ->select('floor', 'o')
+//                ->join('o.floor', 'floor')
+//                ->andWhere('floor.id IN (:floor)')
+//                ->setParameter('floor', $searchData->floor);
+//        }
+//        if(!empty($searchData->showcaseCode)) {
+//            $query = $query
+//                ->andWhere('o.showcaseCode LIKE :showcaseCode')
+//                ->setParameter('showcaseCode', $searchData->showcaseCode);
+//        }
+//        if(!empty($searchData->shelf)) {
+//            $query = $query
+//                ->andWhere('o.shelf LIKE :shelf')
+//                ->setParameter('shelf', $searchData->shelf);
+//        }
 
 
         //SORT
-        if(!empty($searchData->isSortAlpha)) {
-            $query = $query
-                ->orderBy('o.vernacularName', 'ASC');
-        }
-        if(!empty($searchData->isSortAlphaReverse)) {
-            $query = $query
-                ->orderBy('o.vernacularName', 'DESC');
-        }
         if(!empty($searchData->isSortNumeric)) {
             $query = $query
                 ->orderBy('o.code', 'ASC');
@@ -264,6 +249,14 @@ class ObjectsRepository extends ServiceEntityRepository
         if(!empty($searchData->isSortNumericReverse)) {
             $query = $query
                 ->orderBy('o.code', 'DESC');
+        }
+        if(!empty($searchData->isSortAlpha)) {
+            $query = $query
+                ->orderBy('o.vernacularName', 'ASC');
+        }
+        if(!empty($searchData->isSortAlphaReverse)) {
+            $query = $query
+                ->orderBy('o.vernacularName', 'DESC');
         }
         if(!empty($searchData->sortDateUpdate)) {
             $query = $query

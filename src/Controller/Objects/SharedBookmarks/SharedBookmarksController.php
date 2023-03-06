@@ -105,14 +105,8 @@ class SharedBookmarksController extends AbstractController
             'sharedBookmarks'   => $sharedBookmarks,
             'objects'           => $sharedBookmarks->getObjects(),
         ]);
-//        return $this->renderEdit($sharedBookmarks, $request);
     }
 
-
-//    public function renderEdit(SharedBookmarks $sharedBookmarks, Request $request): Response
-//    {
-//
-//    }
 
     //Inscription aux favoris partagés
     //http://127.0.0.1:8000/shared-bookmarks/register/1

@@ -4,8 +4,8 @@
 
 
     <div class="content_box">
-    <h2 class="mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Confirmation de suppression</h2>
-    <hr>
+        <h2 class="mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Confirmation de suppression</h2>
+        <hr>
 
         <div class="d-flex flex-column m-2">
             <p>Voulez-vous vraiment supprimer {{ className }} <span class="fs-5 fw-bold">"{{ metadata.name }}"</span>, des objets lui sont liés.</p>
@@ -20,7 +20,7 @@
             {{ form_end(confirmForm) }}
         </div>
 
-        <p class="m-0 p-0">Objet(s) liés :</p>
+        <p class="m-0 p-0"><span class="fs-5">{{ objects|length }}</span> Objet(s) liés :</p>
         {{ knp_pagination_render(objects) }}
         <div class="d-flex justify-content-center flex-wrap">
             {% for object in objects %}

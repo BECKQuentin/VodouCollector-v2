@@ -3,6 +3,7 @@
 namespace App\Form\Objects;
 
 use App\Entity\Libraries\Book;
+use App\Entity\Objects\Media\Youtube;
 use App\Entity\Objects\Metadata\ExpositionLocation;
 use App\Entity\Objects\Metadata\Floor;
 use App\Entity\Objects\Metadata\Gods;
@@ -38,7 +39,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 
-class ObjectsFormType extends AbstractType
+class ObjectsFormType extends AbstractObjectsType
 {
 
 
@@ -179,23 +180,11 @@ class ObjectsFormType extends AbstractType
                 'attr' => [
                     'class' => 'big_checkboxes form-control'
                 ]
-            ])
-            ->add('antequemDatation', DateTimeType::class, [
-                'widget' => 'single_text',
-                'input' => 'datetime',
-                'required' => false,
-            ])
-            ->add('preciseDatation', DateTimeType::class, [
-                'widget' => 'single_text',
-                'input' => 'datetime',
-                'required' => false,
-            ])
-            ->add('postequemDatation', DateTimeType::class, [
-                'widget' => 'single_text',
-                'input' => 'datetime',
-                'required' => false,
-            ])
-
+            ]);
+            $this->addAntequemDatation($builder);
+            $this->addPreciseDatation($builder);
+            $this->addPostquemDatation($builder);
+            $builder
             ->add('arrivedCollection', DateType::class, [
                 'label'         => 'date d’acquisition',
                 'widget' => 'single_text',
@@ -267,11 +256,9 @@ class ObjectsFormType extends AbstractType
                 'label'         => 'Etat',
                 'choice_label'  => 'name',
                 'required'      => false,
-            ])
-            ->add('isBasemented', CheckboxType::class, [
-                'label'         => 'Socle',
-                'required'      => false
-            ])
+            ]);
+            $this->addIsBasemented($builder);
+            $builder
             ->add('basementCommentary', TextareaType::class, [
                 'label'         => 'Commentaire de Soclage',
                 'required'      => false
@@ -288,27 +275,25 @@ class ObjectsFormType extends AbstractType
                     new NotBlank()
                 ],
             ])
-
+            ->add('expositionRemarks', TextareaType::class, [
+                'label'         => 'Remarques emplacement',
+                'required'      => false,
+            ])
             ->add('floor', EntityType::class, [
                 'class'         => Floor::class,
                 'label'         => 'Etage',
                 'choice_label'  => 'name',
                 'required'      => true,
-            ])
-            ->add('showCaseCode', TextType::class, [
-                'label'         => 'Numéro de vitrine',
-                'required'      => false,
-            ])
-            ->add('shelf', TextType::class, [
-                'label'         => 'Etagère',
-                'required'      => false,
-            ])
+            ]);
+            $this->addShowcaseCode($builder);
+            $this->addShelf($builder);
+            $builder
             ->add('insuranceValue', TextType::class, [
                 'label'     => 'Valeur d\'assurance',
                 'required'  => false,
             ])
             ->add('images', FileType::class, [
-                'label'         => false,
+                'label'         => 'Images',
                 'multiple'      => true,
                 'mapped'        => false,
                 'required'      => false,
@@ -316,7 +301,7 @@ class ObjectsFormType extends AbstractType
                 'label_attr'    => ['class' => 'CUSTOM_LABEL_CLASS'],
             ])
             ->add('videos', FileType::class, [
-                'label'         => false,
+                'label'         => 'Videos',
                 'multiple'      => true,
                 'mapped'        => false,
                 'required'      => false,
@@ -324,20 +309,18 @@ class ObjectsFormType extends AbstractType
                 'label_attr'    => ['class' => 'CUSTOM_LABEL_CLASS'],
             ])
             ->add('files', FileType::class, [
-                'label'         => false,
+                'label'         => 'Fichiers Annexes',
                 'multiple'      => true,
                 'mapped'        => false,
                 'required'      => false,
                 'attr'          => ['class' => 'btn'],
                 'label_attr'    => ['class' => 'CUSTOM_LABEL_CLASS'],
             ])
-//            ->add('youtube', CollectionType::class, [
-//                'entry_type' => Youtube::class,
-//                'label'         => false,
-//                'required'      => false,
-//                'attr'          => ['class' => 'btn'],
-//                'label_attr'    => ['class' => 'CUSTOM_LABEL_CLASS'],
-//            ])
+            ->add('youtube_link', TextType::class, [
+                'label'         => 'Lien Youtube',
+                'data'          => null,
+                'required'      => false,
+            ])
 
             ->add('submit', SubmitType::class, [
                 'label' => 'Sauvegarder',
@@ -354,10 +337,12 @@ class ObjectsFormType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => Objects::class,
-        ]);
-    }
+
+
+//    public function configureOptions(OptionsResolver $resolver): void
+//    {
+//        $resolver->setDefaults([
+//            'data_class' => Objects::class,
+//        ]);
+//    }
 }

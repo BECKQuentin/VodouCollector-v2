@@ -3,16 +3,13 @@
 namespace App\Controller\Objects\Media;
 
 use App\Entity\Objects\Media\Image;
-use App\Entity\Objects\Objects;
-use App\Repository\Objects\Media\ImageRepository;
 use App\Repository\Objects\ObjectsRepository;
 use App\Service\ActionService;
+use App\Service\UploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ImageController extends AbstractController
@@ -22,7 +19,7 @@ class ImageController extends AbstractController
         private ActionService $actionService,
         private EntityManagerInterface $manager,
         private ObjectsRepository $objectsRepository,
-        private ImageRepository $imageRepository,
+        private UploadService $uploadService,
     ){}
 
 //    #[Route('/objects/{id}/media', name: 'objects_medias')]
@@ -81,15 +78,17 @@ class ImageController extends AbstractController
     #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
     public function mediaDelete(Image $image, Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
+
         $object = $image->getObjects();
 
-        $filesystem = new Filesystem();
-        $filesystem->remove($image->getAbsolutePath());
+        $this->uploadService->deleteFile($image);
 
         $this->actionService->addAction(2, 'Image supprimé', $this->objectsRepository->findOneBy(['id' => $object->getId()]), $this->getUser(), $image->getSrc());
 
         $this->manager->remove($image);
         $this->manager->flush();
+
+        $this->addFlash('success', 'Image supprimé avec succès');
 
         return($this->redirectToRoute('objects',
             ['id' => $object->getId()],

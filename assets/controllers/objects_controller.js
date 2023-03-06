@@ -156,6 +156,21 @@ export default class extends Controller {
             }, 200)
         }
 
+
+        function addInventiryDate(e) {
+            let button = e.currentTarget;
+            fetch(e.currentTarget.dataset.url).then( (response) => {
+                button.querySelector('i').classList.toggle('fa-regular')
+                button.querySelector('i').classList.toggle('fa-solid')
+                if (button.querySelector('i').classList.contains('fa-regular')) {
+                    button.title = 'Ajouter aux favoris';
+                } else {
+                    button.title = 'Retirer des favoris';
+                }
+                return response.blob();
+            })
+        }
+
     }
 
 

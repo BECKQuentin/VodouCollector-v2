@@ -40,8 +40,8 @@ form .big_checkboxes {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: fit-content;
     margin: 8px;
+    white-space: nowrap;
     span {
         padding: 0 8px;
     }

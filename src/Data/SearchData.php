@@ -16,7 +16,7 @@ class SearchData
     public null|object $vernacularName;
     public null|object $typology;
 
-    public null|array $gods = [];
+    public null|object $gods;
     public null|array $relatedGods = [];
 
     public null|object $population;
@@ -24,7 +24,7 @@ class SearchData
 
     public int $antequemDatation;
     public int $preciseDatation;
-    public int $postequemDatation;
+    public int $postquemDatation;
 
     public null|array $materials = [];
     public null|array $state = [];

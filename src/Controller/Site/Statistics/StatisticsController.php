@@ -94,6 +94,7 @@ class StatisticsController extends AbstractController
         //Origine
         $arrDatasOrigins = [];
         $arrLabelsOrigins = [];
+
         foreach ($this->originRepository->findAll() as $origin) {
             $arrDatasOrigins[] = count($origin->getObjects());
             $arrLabelsOrigins[] = $origin->getName().' - '.count($origin->getObjects());

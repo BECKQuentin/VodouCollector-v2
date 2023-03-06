@@ -2,14 +2,16 @@
 
 namespace App\Service;
 
+use App\Entity\Objects\Media\Image;
+use App\Entity\Objects\Media\Video;
+use JetBrains\PhpStorm\NoReturn;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadService
 {
     public function __construct(
-        private string $uploadImagesDirectory,
-        private string $uploadVideosDirectory,
-        private string $uploadFilesDirectory
+        private string $publicDirectory,
     ){}
 
     public function isImage($file): bool
@@ -54,13 +56,13 @@ class UploadService
         $fileName = $fileNameCode.'.'.$file->getClientOriginalExtension();
 
         if ($this->isImage($file)) {
-            $path = $this->uploadImagesDirectory . "/";
+            $path = $this->publicDirectory . Image::UPLOAD_DIR;
             $file->move($path, $fileName);
         } elseif ($this->isVideo($file)) {
-            $path = $this->uploadVideosDirectory . "/";
+            $path = $this->publicDirectory . Video::UPLOAD_DIR;
             $file->move($path, $fileName);
         } elseif ($this->isFile($file)) {
-            $path = $this->uploadFilesDirectory . "/";
+            $path = $this->publicDirectory . Video::UPLOAD_DIR;
             $file->move($path, $fileName);
         }
 
@@ -114,8 +116,7 @@ class UploadService
             foreach ($alphas as $a) {
                 $res = in_array($a, $arrLetter );
                 if ($res == false) {
-                    $fileNameCode = $entity->getCode().'_video_'.$a;
-                    return $fileNameCode;
+                    return $entity->getCode().'_video_'.$a;
                 }
             }
             return $entity->getCode().'_'.'none';
@@ -136,8 +137,7 @@ class UploadService
             foreach ($alphas as $a) {
                 $res = in_array($a, $arrLetter );
                 if ($res == false) {
-                    $fileNameCode = $entity->getCode().'_file_'.$a;
-                    return $fileNameCode;
+                    return $entity->getCode().'_file_'.$a;
                 }
             }
             return $entity->getCode().'_'.'none';
@@ -145,18 +145,15 @@ class UploadService
         return $entity->getCode().'_'.'none';
     }
 
-//    public function isImage($path): bool
-//    {
-//        $a = getimagesize($path);
-//        $image_type = $a[2];
-//
-//        if(in_array($image_type , array(IMAGETYPE_GIF , IMAGETYPE_JPEG ,IMAGETYPE_PNG , IMAGETYPE_BMP)))
-//        {
-//            return true;
-//        }
-//        return false;
-//    }
-
-
+    public function deleteFile($entity): bool
+    {
+        if ($entity !== null) {
+            $path =  $this->publicDirectory . $entity::UPLOAD_DIR . $entity->getSrc();
+            $filesystem = new Filesystem();
+            $filesystem->remove($path);
+            return true;
+        }
+        return false;
+    }
 
 }

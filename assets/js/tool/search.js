@@ -17,12 +17,11 @@ if (deploy_search_filter) {
     })
 }
 
-
-const isSortAlpha = document.getElementById('isSortAlpha')
-const isSortAlphaReverse = document.getElementById('isSortAlphaReverse')
-const isSortNumeric = document.getElementById('isSortNumeric')
-const isSortNumericReverse = document.getElementById('isSortNumericReverse')
-const sortDateUpdate = document.getElementById('sortDateUpdate')
+const isSortNumeric = document.getElementById('search_field_isSortNumeric')
+const isSortNumericReverse = document.getElementById('search_field_isSortNumericReverse')
+const isSortAlpha = document.getElementById('search_field_isSortAlpha')
+const isSortAlphaReverse = document.getElementById('search_field_isSortAlphaReverse')
+const sortDateUpdate = document.getElementById('search_field_sortDateUpdate')
 
 isSortAlpha.addEventListener('change', e => {
     if(e.target.checked === true) {

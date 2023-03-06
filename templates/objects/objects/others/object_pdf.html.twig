@@ -96,14 +96,6 @@
                         <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                     {% endif %}
                 </div>
-                <div class="d-flex align-items-center">
-                    <em>Remarques :&nbsp;</em>
-                    {% if object.remarks is defined and object.remarks is not null %}
-                        {{ object.remarks }}
-                    {% else %}
-                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
-                    {% endif %}
-                </div>
             </div>
         </div>
 
@@ -201,8 +193,16 @@
                 </div>
                 <div class="d-flex align-items-center">
                     <em>Exposition :&nbsp;</em>
-                    {% if object.location is defined and object.location is not null %}
-                        {{ object.location.nameFR }}
+                    {% if object.expositionLocation is defined and object.expositionLocation is not null %}
+                        {{ object.expositionLocation.nameFR }}
+                    {% else %}
+                        <span class="px-2"><i class="fa-solid fa-ban"></i></span>
+                    {% endif %}
+                </div>
+                <div class="d-flex align-items-center">
+                    <em>Remarques Emplacement :&nbsp;</em>
+                    {% if object.expositionRemarks is defined and object.expositionRemarks is not null %}
+                        {{ object.expositionRemarks }}
                     {% else %}
                         <span class="px-2"><i class="fa-solid fa-ban"></i></span>
                     {% endif %}

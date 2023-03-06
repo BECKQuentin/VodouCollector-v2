@@ -3,24 +3,24 @@
 namespace App\Controller\Objects\Media;
 
 use App\Entity\Objects\Media\File;
-use App\Entity\Objects\Objects;
-use App\Entity\Site\Action;
-use App\Form\Objects\MediaFormType;
-use App\Repository\Objects\Media\FileRepository;
 use App\Repository\Objects\ObjectsRepository;
-use App\Repository\Site\ActionCategoryRepository;
+use App\Service\ActionService;
 use App\Service\UploadService;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FileController extends AbstractController
 {
 
+    public function __construct(
+        private ActionService $actionService,
+        private EntityManagerInterface $manager,
+        private ObjectsRepository $objectsRepository,
+        private UploadService $uploadService,
+    ){}
 
 //    #[Route('/objects/{id}/file', name: 'objects_files')]
 //    #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
@@ -75,30 +75,23 @@ class FileController extends AbstractController
 //    }
 
 
-    #[Route('/file-delete/{id}/{object}', name: 'delete_objects_file')]
+    #[Route('/file-delete/{id}', name: 'delete_objects_file')]
     #[IsGranted("ROLE_MEMBER", message: "Seules les Membres peuvent faire ça")]
-    public function fileDelete(File $files, ActionCategoryRepository $actionCategoryRepository, ObjectsRepository $objectsRepository, Request $request, UploadService $uploadService, ManagerRegistry $doctrine) {
+    public function fileDelete(File $file, Request $request) {
 
-        $objId = $request->get('object');
+        $object = $file->getObjects();
 
-        $filesystem = new Filesystem();
-//        dd($files->getAbsolutePath());
-        $filesystem->remove($files->getAbsolutePath());
+        $this->uploadService->deleteFile($file);
 
-        $action = new Action();
-        $action->setName('Fichier supprimé');
-        $action->setObject($objectsRepository->findOneBy(['id' => $objId]));
-        $action->setOthersValue($files->getSrc());
-        $action->setCreatedBy($this->getUser());
-        $action->setCategory($actionCategoryRepository->find(2));
+        $this->actionService->addAction(2, 'Image supprimé', $this->objectsRepository->findOneBy(['id' => $object->getId()]), $this->getUser(), $file->getSrc());
 
-        $em = $doctrine->getManager();
-        $em->remove($files);
-        $em->persist($action);
-        $em->flush();
+        $this->manager->remove($file);
+        $this->manager->flush();
 
-        return($this->redirectToRoute('objects_files',
-            ['id' => $objId],
+        $this->addFlash('success', 'Fichier annexe supprimé avec succès');
+
+        return($this->redirectToRoute('objects',
+            ['id' => $object->getId()],
         ));
     }
 

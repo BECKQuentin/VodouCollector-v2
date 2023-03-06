@@ -15,7 +15,7 @@ class InventoryDate
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $inventoriedAt = null;
+    private ?\DateTime $inventoriedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'inventoriedAt')]
     #[ORM\JoinColumn(nullable: false)]
@@ -26,12 +26,12 @@ class InventoryDate
         return $this->id;
     }
 
-    public function getInventoriedAt(): ?\DateTimeImmutable
+    public function getInventoriedAt(): ?\DateTime
     {
         return $this->inventoriedAt;
     }
 
-    public function setInventoriedAt(\DateTimeImmutable $inventoriedAt): self
+    public function setInventoriedAt(\DateTime $inventoriedAt): self
     {
         $this->inventoriedAt = $inventoriedAt;
 

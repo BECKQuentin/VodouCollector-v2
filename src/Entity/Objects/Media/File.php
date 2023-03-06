@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 class File
 {
+    const UPLOAD_DIR = 'upload/files/objects/';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,26 +25,9 @@ class File
     #[ORM\ManyToOne(inversedBy: 'files')]
     private ?Objects $objects = null;
 
-    public function getAbsolutePath()
+    public function getPostPublicPath(): string
     {
-        return null === $this->src
-            ? null
-            : $this->getUploadRootDir().'\\'.$this->src;
-    }
-
-    protected function getUploadRootDir()
-    {
-        // the absolute directory path where uploaded
-        // documents should be saved
-        $dirname = dirname(__DIR__,4);
-        return $dirname.'\public'.$this->getUploadDir();
-    }
-
-    protected function getUploadDir()
-    {
-        // get rid of the __DIR__ so it doesn't screw up
-        // when displaying uploaded doc/image in the view.
-        return '\upload\objects\files';
+        return self::UPLOAD_DIR.'/'.$this->getSrc();
     }
 
     public function getExtension()

@@ -20,47 +20,59 @@
 
 
     <div id="search_filter_to_hide" class="hide fadeIn">
-        <h5 class="text-center">Filtres de Recherche</h5>
-        <div id="filter_circle_info" title="Les mots-clés sont recherchés dans :
-        Code,
-        Titre,
-        Catégories,
-        Période(ère),
-        Population,
-        Origine,
-        Divinités,
-        Description,
-        Période,
-        Mode d'acquisition,
-        Fonction d'usage,
-        Remarques sur l'état,
-        Remarques,
-        ">
-            <i class="fa-solid fa-circle-info"></i>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center">Trier par :</div>
+                <div class="search_order_filter px-2" title="Code croissant">{{ form_row(searchForm.isSortNumeric) }}</div>
+                <div class="search_order_filter px-2" title="Code décroissant">{{ form_row(searchForm.isSortNumericReverse) }}</div>
+                <div class="search_order_filter px-2" title="Ordre Alphabétique">{{ form_row(searchForm.isSortAlpha) }}</div>
+                <div class="search_order_filter px-2" title="Ordre Alphabétique inverse">{{ form_row(searchForm.isSortAlphaReverse) }}</div>
+                <div class="search_order_filter px-2" title="Date de mise à jour">{{ form_row(searchForm.sortDateUpdate) }}</div>
+{#                            {% if is_granted('ROLE_ADMIN') %}#}
+{#                                <div class="px-2" title="Modifié par">{{ form_row(searchForm.updatedBy) }}</div>#}
+{#                            {% endif %}#}
+            </div>
+
+            <h4 class="text-center me-4 text-white">Filtres de Recherche</h4>
+            <div id="filter_circle_info" title="Les mots-clés sont recherchés dans :
+                Code,
+                Nom vernaculaire,
+                Typologie,
+                Population,
+                Origine,
+                Divinités,
+                Matériaux
+                ">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
         </div>
+
 
         <hr class="my-1">
 
         <div class="row mb-2">
-            <div class="col-2 hr-right">
+            <div class="col-3 hr-right">
                 {{ form_row(searchForm.isBasemented) }}
-            </div>
-            <div class="col-4">
                 {{ form_row(searchForm.expositionLocation) }}
             </div>
             <div class="col-6">
-                {{ form_row(searchForm.typology) }}
                 {{ form_row(searchForm.vernacularName) }}
+                {{ form_row(searchForm.typology) }}
+                {{ form_row(searchForm.gods) }}
+            </div>
+            <div class="col-3">
+                {{ form_row(searchForm.antequemDatation) }}
+                {{ form_row(searchForm.preciseDatation) }}
+                {{ form_row(searchForm.postquemDatation) }}
             </div>
         </div>
 
-
         <div class="row mb-2">
             <div class="col-4">
-                {{ form_row(searchForm.gods) }}
+                {{ form_row(searchForm.relatedGods) }}
             </div>
             <div class="col-4">
-                {{ form_row(searchForm.relatedGods) }}
+                {{ form_row(searchForm.origin) }}
             </div>
             <div class="col-4">
                 {{ form_row(searchForm.population) }}
@@ -69,40 +81,16 @@
 
         <div class="row mb-2">
             <div class="col-4">
-                {{ form_row(searchForm.origin) }}
-            </div>
-            <div class="col-4">
                 {{ form_row(searchForm.materials) }}
             </div>
             <div class="col-4">
-                {{ form_row(searchForm.antequemDatation) }}
-                {{ form_row(searchForm.preciseDatation) }}
-                {{ form_row(searchForm.postequemDatation) }}
-            </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-4">
                 {{ form_row(searchForm.state) }}
-            </div>
-            <div class="col-4">
                 {{ form_row(searchForm.floor) }}
             </div>
             <div class="col-4">
                 {{ form_row(searchForm.showcaseCode) }}
                 {{ form_row(searchForm.shelf) }}
             </div>
-        </div>
-        <div class="d-flex justify-content-center align-items-center py-2">
-            <div class="text-center">Trier par :</div>
-            <div class="px-2" title="Ordre Alphabétique">{{ form_row(searchForm.isSortAlpha) }}</div>
-            <div class="px-2" title="Ordre Alphabétique inverse">{{ form_row(searchForm.isSortAlphaReverse) }}</div>
-            <div class="px-2" title="Code croissant">{{ form_row(searchForm.isSortNumeric) }}</div>
-            <div class="px-2" title="Code décroissant">{{ form_row(searchForm.isSortNumericReverse) }}</div>
-            <div class="px-2" title="Date de mise à jour">{{ form_row(searchForm.sortDateUpdate) }}</div>
-{#            {% if is_granted('ROLE_ADMIN') %}#}
-{#                <div class="px-2" title="Modifié par">{{ form_row(searchForm.updatedBy) }}</div>#}
-{#            {% endif %}#}
         </div>
 
         <hr class="my-1">

@@ -2,13 +2,20 @@
 
 namespace App\Twig;
 
-use App\Entity\Objects;
+
+use App\Entity\Objects\Media\File;
+use App\Entity\Objects\Media\Image;
+use App\Entity\Objects\Media\Video;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
+
+    public function __construct(
+        private string $publicDirectory,
+    ){}
 
     public function getFilters(): array
     {
@@ -29,16 +36,16 @@ class AppExtension extends AbstractExtension
     }
     public function getImagesPath($images): string
     {
-        return '/upload/images/objects/'.$images;
+        return '/'.Image::UPLOAD_DIR.$images;
     }
 
     public function getVideosPath($videos): string
     {
-        return '/upload/videos/objects/'.$videos;
+        return '/'.Video::UPLOAD_DIR.$videos;
     }
     public function getFilesPath($files): string
     {
-        return '/upload/files/objects/'.$files;
+        return '/'.File::UPLOAD_DIR.$files;
     }
 
     public function printRoles($role) {

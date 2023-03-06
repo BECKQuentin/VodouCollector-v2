@@ -1,0 +1,10 @@
+{{ form_start(inventoriedAtForm, {'action' : path('inventoried_at_create', {id: object.id}), 'attr' : {'id' : 'inventoried_at_form'} }) }}
+
+<div>
+    {{ form_row(inventoriedAtForm.inventoriedAt) }}
+</div>
+
+{{ form_rest(inventoriedAtForm) }}
+
+{{ form_end(inventoriedAtForm) }}
+

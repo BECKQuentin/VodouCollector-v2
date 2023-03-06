@@ -5,9 +5,6 @@ import '../styles/app.scss';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
-
-console.log('connected');
-
 let login_password_show =  document.querySelector('.login_password_show');
 let passwordInput = document.getElementById('password');
 

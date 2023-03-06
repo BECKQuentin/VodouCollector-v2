@@ -97,7 +97,7 @@ class VernacularNameController extends AbstractController
                     foreach ($objects as $object) {
                         //mettre celui avec id 1 soit ???
                         if  ($this->vernacularNameRepository->find(1)) {
-                            $object->setTypology($this->vernacularNameRepository->find(1));
+                            $object->setVernacularName($this->vernacularNameRepository->find(1));
                         } else {
                             $this->addFlash('danger', 'Désolé mais ' . self::METADATA_NAME . ' avec l\'ID 1 qui vaut ??? est inexistant vérifier bien en base de données ou contacté l\'Admin.');
                             return $this->redirectToRoute(self::ROUTE);

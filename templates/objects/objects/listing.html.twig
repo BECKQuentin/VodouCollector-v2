@@ -6,7 +6,7 @@
 {% block body %}
 
     <div class="content_box">
-        <h4 class="p-1 m-0 bg_main rounded-top">Resultats : {{ totalItemsCount ?? '' }} objets</h4>
+        <h4 class="p-1 m-0 bg_main rounded-top text-white">Resultats : {{ totalItemsCount ?? '' }} objets</h4>
 
         <div class="position-relative">
             {% include 'base/tool/sort_item_toolbar.html.twig' %}
@@ -83,17 +83,9 @@
                                 </div>
                             </td>
 
-                            <!--Titre-->
+                            <!--Désignation-->
                             <td title="{{ object.vernacularName.name }}">{{ object.vernacularName.name|u.truncate(25, '...') }}</td>
-                            <td>Sculpture Antrepomorphe</td>
-
-                            {#                        <td>#}
-                            {#                            {% if object.categories != null %}#}
-                            {#                                <a class="list_tag_link" href="{{ path('objects', {'categories[]': object.categories.id}) }}">#}
-                            {#                                    {{ object.categories.name }}#}
-                            {#                                </a>#}
-                            {#                            {% endif %}#}
-                            {#                        </td>#}
+                            <td title="{{ object.typology.name }}">{{ object.typology.name|u.truncate(25, '...') }}</td>
 
                             <!--Vodou-->
                             <td>
@@ -103,7 +95,6 @@
                                     </a>
                                 {% endif %}
                             </td>
-
 
                             <!--Fonction usage-->
                             <td>

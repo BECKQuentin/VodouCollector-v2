@@ -6,6 +6,7 @@ use App\Data\SearchData;
 use App\Entity\Objects\Media\File;
 use App\Entity\Objects\Media\Image;
 use App\Entity\Objects\Media\Video;
+use App\Entity\Objects\Media\Youtube;
 use App\Entity\Objects\Objects;
 use App\Form\Objects\ObjectsFormType;
 use App\Form\SearchFieldType;
@@ -68,9 +69,8 @@ class ObjectsController extends AbstractController
 //            $searchForm->remove('updatedBy');
 //        }
         $searchForm->handleRequest($request);
+
         $searchObjects = $this->objectsRepository->searchObjects($data);
-
-
 
         //array des ID de la recherche
         $arrIdSearchObj = [];
@@ -165,7 +165,6 @@ class ObjectsController extends AbstractController
                         $img->setSrc($fileName);
                         $img->setCode($fileNameCode);
                         $img->setObjects($objects);
-                        dd($img);
                         $objects->addImage($img);
 
                         $this->actionService->addAction(2, 'Image ajouté', $objects, $this->getUser(), $img->getSrc());
@@ -233,34 +232,31 @@ class ObjectsController extends AbstractController
                 }
             }
 
-//            $urlYoutube = $form->get('youtube')->getData();
-//            if ($urlYoutube) {
-//                dd($urlYoutube);
-//
-////                   extraire code youtube de l'url
-//                $arrLink = explode('/', $urlYoutube);
-//                if ($arrLink[2] == 'www.youtube.com') {
-//                    preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $urlYoutube, $match);
-//                    $youtube_id = $match[1];
-//                    //Flush in BDD
-//                    $youtube = new Youtube();
-//                    $youtube->setSrc($youtube_id);
-//                    $youtube->setCode($objects->getCode());
-//                    $youtube->setObjects($objects);
-//
-//                    $this->actionService->addAction(2, 'Video youtube ajouté', $objects, $this->getUser());
-//
-//                    $em = $doctrine->getManager();
-//                    $em->persist($youtube);
-//                    $em->flush();
-//
-//                } else {
-//                    $this->addFlash('danger', 'Ceci n\'est pas une vidéo youtube valide');
-//                    $this->redirectToRoute('objects_youtube',
-//                        ['id' => $objects->getId()]);
-//                }
-//
-//            }
+            $youtubeLink = $form->get('youtube_link')->getData();
+
+            if ($youtubeLink) {
+                // extraire code youtube de l'url
+                $arrLink = explode('/', $youtubeLink);
+                if ($arrLink[2] == 'www.youtube.com') {
+                    preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $youtubeLink, $match);
+                    $youtube_id = $match[1];
+                    //Flush in BDD
+                    $youtube = new Youtube();
+                    $youtube->setSrc($youtube_id);
+                    $youtube->setCode($objects->getCode());
+                    $youtube->setObjects($objects);
+
+                    $this->actionService->addAction(2, 'Video youtube ajouté', $objects, $this->getUser());
+
+                    $this->entityManager->persist($youtube);
+                    $this->entityManager->flush();
+
+                } else {
+                    $this->addFlash('danger', 'Ceci n\'est pas une vidéo youtube valide');
+                    $this->redirectToRoute('objects_youtube',
+                        ['id' => $objects->getId()]);
+                }
+            }
 
 
             if ($isAdding) {

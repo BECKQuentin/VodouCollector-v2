@@ -31,7 +31,6 @@ export default class extends Controller {
 
     addGroupBookmark(e) {
         let button = e.currentTarget;
-        console.log(e);
     }
 
     saveBookmark(e) {

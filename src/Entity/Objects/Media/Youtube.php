@@ -21,6 +21,7 @@ class Youtube
     private ?string $src = null;
 
     #[ORM\ManyToOne(inversedBy: 'youtube')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Objects $objects = null;
 
     public function getId(): ?int
